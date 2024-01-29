@@ -1,3 +1,4 @@
+import React from "react";
 import EditScreenInfo from "@/src/components/EditScreenInfo";
 import { Text, Theme, View } from "tamagui";
 

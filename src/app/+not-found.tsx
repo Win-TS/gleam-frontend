@@ -1,3 +1,4 @@
+import React from "react";
 import { Link, Stack } from "expo-router";
 import { StyleSheet } from "react-native";
 
@@ -14,7 +15,7 @@ export default function NotFoundScreen() {
       <Stack.Screen options={{ title: "Oops!" }} />
       <View flex={1} justifyContent="center" alignItems="center" padding={20}>
         <Text fontSize={20} fontWeight={"bold"}>
-          This screen doesn't exist.
+          This screen doesn&apos;t exist.
         </Text>
 
         <Link href="/" style={styles.link}>

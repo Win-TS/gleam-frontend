@@ -1,15 +1,15 @@
 // Learn more https://docs.expo.io/guides/customizing-metro
 
-const { getDefaultConfig } = require("expo/metro-config");
+import { getDefaultConfig } from "expo/metro-config";
 /** @type {import('expo/metro-config').MetroConfig} */
 
 const config = getDefaultConfig(__dirname, {
   // [Web-only]: Enables CSS support in Metro.
   isCSSEnabled: true,
 });
-const { withTamagui } = require("@tamagui/metro-plugin");
+import { withTamagui } from "@tamagui/metro-plugin";
 
-module.exports = withTamagui(config, {
+export default withTamagui(config, {
   components: ["tamagui"],
   config: "./tamagui.config.ts",
   themeBuilder: {
