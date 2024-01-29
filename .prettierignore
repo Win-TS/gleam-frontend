@@ -1,0 +1,7 @@
+.expo/
+.tamagui/
+
+pnpm-lock.yaml
+
+tamagui.css
+themes.ts
