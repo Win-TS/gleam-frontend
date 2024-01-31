@@ -1,6 +1,6 @@
 import { config as configBase } from "@tamagui/config";
-import { createFont, createTamagui } from "tamagui";
 import defu from "defu";
+import { createFont, createTamagui } from "tamagui";
 
 export const config = createTamagui(
   defu(
@@ -32,8 +32,8 @@ export const config = createTamagui(
         }),
       },
     },
-    configBase
-  ) as typeof configBase
+    configBase,
+  ) as typeof configBase,
 );
 
 export default config;

@@ -1,8 +1,8 @@
 import React from "react";
 import { StyleSheet } from "react-native";
+import { Text, View } from "tamagui";
 
 import { ExternalLink } from "./ExternalLink";
-import { Text, View } from "tamagui";
 
 import { useColorScheme } from "@/src/components/useColorScheme";
 import Colors from "@/src/constants/Colors";

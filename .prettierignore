@@ -1,6 +1,8 @@
 .expo/
 .tamagui/
 
+expo-env.d.ts
+
 pnpm-lock.yaml
 
 tamagui.css

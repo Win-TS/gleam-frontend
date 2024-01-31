@@ -8,16 +8,14 @@ module.exports = {
     browser: true,
     node: true,
   },
-  extends: [
-    "plugin:@typescript-eslint/recommended",
-    "plugin:react/recommended",
-    "prettier",
-  ],
-  plugins: ["@typescript-eslint", "react"],
-  settings: {
-    react: {
-      version: "detect",
+  extends: ["universe", "universe/shared/typescript-analysis"],
+  overrides: [
+    {
+      files: ["*.ts", "*.tsx", "*.d.ts"],
+      parserOptions: {
+        project: "./tsconfig.json",
+      },
     },
-  },
+  ],
   rules: {},
 };
