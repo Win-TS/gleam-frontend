@@ -1,4 +1,10 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { Inter_400Regular, Inter_700Bold } from "@expo-google-fonts/inter";
+import {
+  Silkscreen_400Regular,
+  Silkscreen_700Bold,
+} from "@expo-google-fonts/silkscreen";
+import { SpaceMono_400Regular } from "@expo-google-fonts/space-mono";
 import {
   DarkTheme,
   DefaultTheme,
@@ -28,11 +34,11 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    Inter: require("@tamagui/font-inter/otf/Inter-Medium.otf"),
-    InterBold: require("@tamagui/font-inter/otf/Inter-Bold.otf"),
-    Silkscreen: require("@tamagui/font-silkscreen/files/slkscr.ttf"),
-    SilkscreenBold: require("@tamagui/font-silkscreen/files/slkscrb.ttf"),
-    "Space Mono": require("../../assets/fonts/SpaceMono-Regular.ttf"),
+    Inter: Inter_400Regular,
+    InterBold: Inter_700Bold,
+    Silkscreen: Silkscreen_400Regular,
+    SilkscreenBold: Silkscreen_700Bold,
+    SpaceMono: SpaceMono_400Regular,
     ...FontAwesome.font,
   });
 

@@ -7,7 +7,7 @@ export const config = createTamagui(
     {
       fonts: {
         mono: createFont({
-          family: `Space Mono`,
+          family: `SpaceMono`,
           weight: {
             1: "500",
           },
