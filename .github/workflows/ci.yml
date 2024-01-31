@@ -15,10 +15,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
+      - name: Enable Corepack
+        run: corepack enable
 
       - name: Setup node.js
         uses: actions/setup-node@v4
@@ -37,10 +35,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
+      - name: Enable Corepack
+        run: corepack enable
 
       - name: Setup node.js
         uses: actions/setup-node@v4
@@ -62,10 +58,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
+      - name: Enable Corepack
+        run: corepack enable
 
       - name: Setup node.js
         uses: actions/setup-node@v4
