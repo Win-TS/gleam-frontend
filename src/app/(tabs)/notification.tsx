@@ -1,23 +1,18 @@
-import { StatusBar } from "expo-status-bar";
 import React from "react";
-import { Platform } from "react-native";
 import { Text, Theme, View } from "tamagui";
 
 import EditScreenInfo from "@/src/components/EditScreenInfo";
 
-export default function ModalScreen() {
+export default function TabTwoScreen() {
   return (
     <View flex={1} justifyContent="center" alignItems="center">
       <Text fontSize={20} fontWeight={"bold"}>
-        Modal
+        Tab Two
       </Text>
       <Theme inverse>
         <View marginVertical={32} height={1} width="80%" />
       </Theme>
-      <EditScreenInfo path="app/modal.tsx" />
-
-      {/* Use a light status bar on iOS to account for the black space above the modal */}
-      <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
+      <EditScreenInfo path="app/(tabs)/two.tsx" />
     </View>
   );
 }
