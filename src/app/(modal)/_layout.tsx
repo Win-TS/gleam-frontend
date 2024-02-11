@@ -19,6 +19,13 @@ export default function ModalLayout() {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="signup"
+        options={{
+          title: "Sign up",
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 }

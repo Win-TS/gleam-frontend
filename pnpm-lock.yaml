@@ -23,6 +23,9 @@ dependencies:
   '@react-native-async-storage/async-storage':
     specifier: 1.21.0
     version: 1.21.0(react-native@0.73.2)
+  '@react-native-community/datetimepicker':
+    specifier: 7.6.1
+    version: 7.6.1
   '@react-native/assets-registry':
     specifier: ^0.74.0
     version: 0.74.0
@@ -98,6 +101,9 @@ dependencies:
   react-native:
     specifier: 0.73.2
     version: 0.73.2(@babel/core@7.23.9)(@babel/preset-env@7.23.9)(react@18.2.0)
+  react-native-ios-modal:
+    specifier: ^0.1.8
+    version: 0.1.8(react-native@0.73.2)(react@18.2.0)
   react-native-reanimated:
     specifier: ~3.6.2
     version: 3.6.2(@babel/core@7.23.9)(@babel/plugin-proposal-nullish-coalescing-operator@7.18.6)(@babel/plugin-proposal-optional-chaining@7.21.0)(@babel/plugin-transform-arrow-functions@7.23.3)(@babel/plugin-transform-shorthand-properties@7.23.3)(@babel/plugin-transform-template-literals@7.23.3)(react-native@0.73.2)(react@18.2.0)
@@ -2962,6 +2968,12 @@ packages:
       - encoding
       - supports-color
       - utf-8-validate
+    dev: false
+
+  /@react-native-community/datetimepicker@7.6.1:
+    resolution: {integrity: sha512-g66Q2Kd9Uw3eRL7kkrTsGhi+eXxNoPDRFYH6z78sZQuYjPkUQgJDDMUYgBmaBsQx/fKMtemPrCj1ulGmyi0OSw==}
+    dependencies:
+      invariant: 2.2.4
     dev: false
 
   /@react-native/assets-registry@0.73.1:
@@ -10781,6 +10793,16 @@ packages:
     transitivePeerDependencies:
       - '@babel/core'
       - supports-color
+    dev: false
+
+  /react-native-ios-modal@0.1.8(react-native@0.73.2)(react@18.2.0):
+    resolution: {integrity: sha512-kA068hIhI9+r21OnRXzkRevGjGYTVAYf5kzsIFI15IrCiAkR40dE2lqJtOpnrB3lZ9KZeS0ph59qNNpDSG7xpA==}
+    peerDependencies:
+      react: '*'
+      react-native: '*'
+    dependencies:
+      react: 18.2.0
+      react-native: 0.73.2(@babel/core@7.23.9)(@babel/preset-env@7.23.9)(react@18.2.0)
     dev: false
 
   /react-native-reanimated@3.6.2(@babel/core@7.23.9)(@babel/plugin-proposal-nullish-coalescing-operator@7.18.6)(@babel/plugin-proposal-optional-chaining@7.21.0)(@babel/plugin-transform-arrow-functions@7.23.3)(@babel/plugin-transform-shorthand-properties@7.23.3)(@babel/plugin-transform-template-literals@7.23.3)(react-native@0.73.2)(react@18.2.0):

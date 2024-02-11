@@ -15,7 +15,9 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
-import { TamaguiProvider } from "tamagui";
+// @ts-expect-error
+import { ModalView } from "react-native-ios-modal";
+import { TamaguiProvider, setupNativeSheet } from "tamagui";
 
 import { useColorScheme } from "@/src/components/useColorScheme";
 import { config } from "@/tamagui.config";
@@ -24,6 +26,8 @@ export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
 } from "expo-router";
+
+// setupNativeSheet("ios", ModalView);
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
