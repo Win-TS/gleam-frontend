@@ -20,6 +20,7 @@ import { ModalView } from "react-native-ios-modal";
 import { TamaguiProvider, setupNativeSheet } from "tamagui";
 
 import { useColorScheme } from "@/src/components/useColorScheme";
+import { useFirebaseStore } from "@/src/stores/firebase";
 import { config } from "@/tamagui.config";
 
 export {
@@ -40,6 +41,8 @@ SplashScreen.preventAutoHideAsync();
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
+  const firebaseStore = useFirebaseStore();
+
   const [loaded, error] = useFonts({
     Inter: Inter_400Regular,
     InterBold: Inter_700Bold,
@@ -57,6 +60,7 @@ export default function RootLayout() {
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
+      firebaseStore.initialize();
     }
   }, [loaded]);
 
@@ -78,17 +82,17 @@ function RootLayoutNav() {
         >
           <Stack>
             <Stack.Screen
-              name="(tabs)"
-              options={{
-                title: "GLEAM",
-                headerTitleAlign: "center",
-              }}
-            />
-            <Stack.Screen
               name="(modal)"
               options={{
                 headerShown: false,
                 presentation: "fullScreenModal",
+              }}
+            />
+            <Stack.Screen
+              name="(tabs)"
+              options={{
+                title: "GLEAM",
+                headerTitleAlign: "center",
               }}
             />
           </Stack>

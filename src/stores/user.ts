@@ -1,6 +1,15 @@
+import type { UserInfo } from "firebase/auth";
 import { create } from "zustand";
 
-export const useUserStore = create((set) => ({
-  token: "",
-  setToken: (token: string) => set(() => ({ bears: token })),
+type UserState = {
+  user?: UserInfo;
+  setUser: (user: UserInfo) => void;
+};
+
+export const useUserStore = create<UserState>((set) => ({
+  user: undefined,
+  setUser: async (user: UserInfo) => {
+    console.log(user);
+    set({ user });
+  },
 }));
