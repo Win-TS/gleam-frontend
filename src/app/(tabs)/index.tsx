@@ -1,9 +1,9 @@
+import { Link } from "expo-router";
 import React from "react";
+import { Pressable } from "react-native";
 import { Text, Theme, View } from "tamagui";
 
 import EditScreenInfo from "@/src/components/EditScreenInfo";
-import { Link } from "expo-router";
-import { Pressable } from "react-native";
 
 export default function TabOneScreen() {
   return (
