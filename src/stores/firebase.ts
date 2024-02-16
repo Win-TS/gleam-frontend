@@ -1,3 +1,4 @@
+import axios from "axios";
 import { router } from "expo-router";
 import { initializeApp, FirebaseApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
@@ -26,19 +27,31 @@ export const useFirebaseStore = create<FirebaseState>((set) => ({
     const app = initializeApp(firebaseConfig);
     const auth = getAuth();
 
-    auth.onAuthStateChanged((user) => {
+    auth.onAuthStateChanged(async (user) => {
       if (user) {
-        useUserStore.setState({
-          user: {
-            displayName: user.displayName,
-            email: user.email,
-            phoneNumber: user.phoneNumber,
-            photoURL: user.photoURL,
-            providerId: user.providerId,
-            uid: user.uid,
-          },
-        });
-        router.navigate("/");
+        try {
+          await axios.get("/auth_v1/verify", {
+            headers: {
+              Authorization: await auth.currentUser?.getIdToken(),
+            },
+            baseURL: process.env.EXPO_PUBLIC_AUTH_API,
+          });
+          useUserStore.setState({
+            user: {
+              displayName: user.displayName,
+              email: user.email,
+              phoneNumber: user.phoneNumber,
+              photoURL: user.photoURL,
+              providerId: user.providerId,
+              uid: user.uid,
+            },
+          });
+          router.navigate("/");
+        } catch (error) {
+          console.error("verify token failed");
+          console.error(error);
+          await auth.signOut();
+        }
       } else {
         router.navigate("/login");
       }

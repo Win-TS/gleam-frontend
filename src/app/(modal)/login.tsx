@@ -3,11 +3,7 @@ import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { Link } from "expo-router";
 import { FirebaseError } from "firebase/app";
-import {
-  UserCredential,
-  getAuth,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import React from "react";
 import { Button, View, Text, Input, Checkbox, Theme } from "tamagui";
 
@@ -19,9 +15,9 @@ export default function LoginScreen() {
     password: string;
   };
 
-  const loginMutation = useMutation<UserCredential, FirebaseError, FormFields>({
+  const loginMutation = useMutation<undefined, FirebaseError, FormFields>({
     mutationFn: async ({ email, password }: FormFields) => {
-      return await signInWithEmailAndPassword(auth, email, password);
+      await signInWithEmailAndPassword(auth, email, password);
     },
   });
 
