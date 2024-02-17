@@ -8,8 +8,6 @@ import React from "react";
 import { Button, View, Text, Input, Checkbox, Theme } from "tamagui";
 
 export default function LoginScreen() {
-  const auth = getAuth();
-
   type FormFields = {
     email: string;
     password: string;
@@ -17,6 +15,7 @@ export default function LoginScreen() {
 
   const loginMutation = useMutation<undefined, FirebaseError, FormFields>({
     mutationFn: async ({ email, password }: FormFields) => {
+      const auth = getAuth();
       await signInWithEmailAndPassword(auth, email, password);
     },
   });
@@ -126,7 +125,7 @@ export default function LoginScreen() {
             >
               LOG IN
             </Button>
-            <Link href="/signup" replace asChild>
+            <Link href="/signup/form" replace asChild>
               <Button
                 size="$4"
                 w="100%"

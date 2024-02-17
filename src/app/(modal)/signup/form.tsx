@@ -7,7 +7,7 @@ import { Link, router } from "expo-router";
 import React, { useState } from "react";
 import { Button, View, Text, Input, Theme, Select } from "tamagui";
 
-export default function LoginScreen() {
+export default function SignupFormScreen() {
   const genderItems = ["Male", "Female", "Unspecified"] as const;
   const nationalityItems = ["Thai"] as const;
 
@@ -48,7 +48,7 @@ export default function LoginScreen() {
       );
     },
     onSuccess: () => {
-      router.replace("/login");
+      router.replace("/signup/otp");
     },
   });
 
@@ -403,7 +403,16 @@ export default function LoginScreen() {
               Already have an account?
             </Text>
             <Theme name="gleam">
-              <Link href="/login" replace>
+              <Link
+                href={{
+                  pathname: "/login",
+                  params: {
+                    email: form.getFieldValue("email"),
+                    password: form.getFieldValue("password"),
+                  },
+                }}
+                replace
+              >
                 <Text
                   color="$color12"
                   fontSize="$2"
