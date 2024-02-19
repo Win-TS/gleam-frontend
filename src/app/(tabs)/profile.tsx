@@ -1,6 +1,7 @@
 // import { ChevronRight } from "@tamagui/lucide-icons";
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import React, { useState } from "react";
 import {
   Text,
   View,
@@ -15,17 +16,54 @@ import {
 } from "tamagui";
 import type { SizeTokens } from "tamagui";
 
-export default function TabTwoScreen() {
-  const [isEditProfile, setIsEditProfile] = useState<boolean>(false);
-  const [userName, setUserName] = useState<string>("BRUNO MARS");
+export default function ProfileScreen() {
+  const queryClient = useQueryClient();
 
-  const editUserName = () => {
-    axios
-      .patch(
-        `http://localhost:9001/user_v1/editusername?user_id=1&new_username=${userName}`,
-      )
-      .then((response) => console.log(response.data.username))
-      .catch((err) => console.log(err));
+  const [isEditProfile, setIsEditProfile] = useState<boolean>(false);
+  const [userId, setUserId] = useState(1);
+  const [userName, setUserName] = useState<string>();
+
+  const userNameQuery = useQuery<
+    AxiosResponse,
+    AxiosError<{ message: string }>
+  >({
+    queryKey: ["userprofile", userId],
+    queryFn: async () => {
+      return await axios.get("/user_v1/userprofile", {
+        baseURL: process.env.EXPO_PUBLIC_USER_API,
+        params: { user_id: userId },
+      });
+    },
+  });
+
+  const userNameMutation = useMutation<
+    AxiosResponse,
+    AxiosError<{ message: string }>,
+    { userName: string }
+  >({
+    mutationFn: async ({ userName: string }) => {
+      return await axios.patch(
+        "/user_v1/editusername",
+        {},
+        {
+          baseURL: process.env.EXPO_PUBLIC_USER_API,
+          params: {
+            user_id: userId,
+            new_username: userName,
+          },
+        },
+      );
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(["userprofile", userId], data);
+    },
+  });
+
+  const toggleEditProfile = (value: boolean) => {
+    if (userNameQuery.data) {
+      setUserName(userNameQuery.data.data.username);
+      setIsEditProfile(value);
+    }
   };
 
   const SwitchWithLabel = (props: {
@@ -51,13 +89,6 @@ export default function TabTwoScreen() {
       </YStack>
     );
   };
-
-  useEffect(() => {
-    axios
-      .get("http://localhost:9001/user_v1/userprofile?user_id=1")
-      .then((response) => setUserName(response.data.username))
-      .catch((err) => console.log(err));
-  }, []);
 
   return (
     <View
@@ -88,14 +119,10 @@ export default function TabTwoScreen() {
         />
         <View alignItems="center">
           {isEditProfile ? (
-            <Input
-              onChangeText={(text) => {
-                setUserName(text);
-              }}
-            />
+            <Input value={userName} onChangeText={setUserName} />
           ) : (
             <Text fontSize={20} fontWeight={"bold"} color={"#616161"}>
-              {userName}
+              {userNameQuery.data?.data?.username ?? "loading..."}
             </Text>
           )}
 
@@ -113,11 +140,12 @@ export default function TabTwoScreen() {
             backgroundColor="#FEBE00"
             color="#F2F2F2"
             fontWeight="bold"
-            onPress={() => {
-              setIsEditProfile(false);
-              editUserName();
+            onPress={async () => {
+              try {
+                if (userName) await userNameMutation.mutateAsync({ userName });
+              } catch {}
+              toggleEditProfile(false);
             }}
-            textAlign="center"
           >
             DONE
           </Button>
@@ -132,9 +160,8 @@ export default function TabTwoScreen() {
             color="#F2F2F2"
             fontWeight="bold"
             onPress={() => {
-              setIsEditProfile(true);
+              toggleEditProfile(true);
             }}
-            textAlign="center"
           >
             EDIT PROFILE
           </Button>
