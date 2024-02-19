@@ -258,7 +258,7 @@ export default function SignupFormScreen() {
                   </Select.Trigger>
 
                   <Select.Adapt platform="touch">
-                    <Select.Sheet modal>
+                    <Select.Sheet snapPointsMode="fit" modal>
                       <Select.Sheet.Frame>
                         <Select.Sheet.ScrollView>
                           <Select.Adapt.Contents />
@@ -322,7 +322,7 @@ export default function SignupFormScreen() {
                 </Select.Trigger>
 
                 <Select.Adapt platform="touch">
-                  <Select.Sheet modal>
+                  <Select.Sheet snapPointsMode="fit" modal>
                     <Select.Sheet.Frame>
                       <Select.Sheet.ScrollView>
                         <Select.Adapt.Contents />

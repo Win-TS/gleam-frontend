@@ -46,14 +46,28 @@ export const useFirebaseStore = create<FirebaseState>((set) => ({
               uid: user.uid,
             },
           });
-          router.navigate("/");
+          if (
+            process.env.EXPO_PUBLIC_NO_AUTH_NAVIGATION &&
+            !JSON.parse(
+              String(process.env.EXPO_PUBLIC_NO_AUTH_NAVIGATION).toLowerCase(),
+            )
+          ) {
+            router.navigate("/home/");
+          }
         } catch (error) {
           console.error("verify token failed");
           console.error(error);
           await auth.signOut();
         }
       } else {
-        // router.navigate("/login");
+        if (
+          process.env.EXPO_PUBLIC_NO_AUTH_NAVIGATION &&
+          !JSON.parse(
+            String(process.env.EXPO_PUBLIC_NO_AUTH_NAVIGATION).toLowerCase(),
+          )
+        ) {
+          router.navigate("/login");
+        }
       }
     });
     set({ app });

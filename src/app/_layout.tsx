@@ -93,6 +93,9 @@ function RootLayoutNav() {
               options={{
                 title: "GLEAM",
                 headerTitleAlign: "center",
+                headerTitleStyle: {
+                  fontWeight: "bold",
+                },
               }}
             />
           </Stack>
