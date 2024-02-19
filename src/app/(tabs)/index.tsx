@@ -11,7 +11,7 @@ export default function TabOneScreen() {
       <Text fontSize={20} fontWeight={"bold"}>
         Tab One
       </Text>
-      <Link href="/signup/form" asChild>
+      <Link href="/profile" asChild>
         <Pressable>
           <Text fontSize={20}>gooo</Text>
         </Pressable>
