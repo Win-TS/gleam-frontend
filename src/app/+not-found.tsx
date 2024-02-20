@@ -13,7 +13,7 @@ export default function NotFoundScreen() {
     <>
       <Stack.Screen options={{ title: "Oops!" }} />
       <View flex={1} justifyContent="center" alignItems="center" padding={20}>
-        <Text fontSize={20} fontWeight={"bold"}>
+        <Text fontSize={20} fontWeight="bold">
           This screen doesn&apos;t exist.
         </Text>
 
