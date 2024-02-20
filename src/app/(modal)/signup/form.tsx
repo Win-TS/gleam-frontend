@@ -47,8 +47,14 @@ export default function SignupFormScreen() {
         { baseURL: process.env.EXPO_PUBLIC_AUTH_API },
       );
     },
-    onSuccess: () => {
-      router.replace("/signup/otp");
+    onSuccess: (_, { email, password }) => {
+      router.replace({
+        pathname: "/signup/otp",
+        params: {
+          email,
+          password,
+        },
+      });
     },
   });
 
@@ -403,16 +409,7 @@ export default function SignupFormScreen() {
               Already have an account?
             </Text>
             <Theme name="gleam">
-              <Link
-                href={{
-                  pathname: "/login",
-                  params: {
-                    email: form.getFieldValue("email"),
-                    password: form.getFieldValue("password"),
-                  },
-                }}
-                replace
-              >
+              <Link href="/login" replace>
                 <Text
                   color="$color12"
                   fontSize="$2"
