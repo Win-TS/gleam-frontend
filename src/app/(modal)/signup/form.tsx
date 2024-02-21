@@ -5,9 +5,22 @@ import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { Link, router } from "expo-router";
 import React, { useState } from "react";
-import { Button, View, Text, Input, Theme, Select } from "tamagui";
+import {
+  Button,
+  View,
+  Text,
+  Input,
+  Select,
+  YStack,
+  XStack,
+  useTheme,
+} from "tamagui";
+
+import PrimaryBtn from "@/src/components/PrimaryBtn";
 
 export default function SignupFormScreen() {
+  const theme = useTheme();
+
   const genderItems = ["Male", "Female", "Unspecified"] as const;
   const nationalityItems = ["Thai"] as const;
 
@@ -78,9 +91,17 @@ export default function SignupFormScreen() {
   const [showBirthDatePicker, setShowBirthDatePicker] = useState(false);
 
   return (
-    <View flex={1} p="$4" justifyContent="center" alignItems="center" gap="$3">
+    <YStack
+      flex={1}
+      paddingVertical="$4"
+      backgroundColor="$color1"
+      justifyContent="center"
+      alignItems="center"
+      gap="$3"
+      $sm={{ paddingHorizontal: "$4" }}
+    >
       <form.Provider>
-        <View
+        <YStack
           flex={1}
           w="100%"
           justifyContent="center"
@@ -93,10 +114,10 @@ export default function SignupFormScreen() {
               <Input
                 size="$3"
                 w="100%"
-                maxWidth="$20"
                 borderWidth="$1"
                 borderRadius="$6"
                 placeholder="First name"
+                $gtSm={{ maxWidth: "$20" }}
                 value={field.state.value}
                 onBlur={field.handleBlur}
                 onChangeText={field.handleChange}
@@ -109,10 +130,10 @@ export default function SignupFormScreen() {
               <Input
                 size="$3"
                 w="100%"
-                maxWidth="$20"
                 borderWidth="$1"
                 borderRadius="$6"
                 placeholder="Last name"
+                $gtSm={{ maxWidth: "$20" }}
                 value={field.state.value}
                 onBlur={field.handleBlur}
                 onChangeText={field.handleChange}
@@ -125,17 +146,17 @@ export default function SignupFormScreen() {
               <Input
                 size="$3"
                 w="100%"
-                maxWidth="$20"
                 borderWidth="$1"
                 borderRadius="$6"
                 placeholder="Email"
+                $gtSm={{ maxWidth: "$20" }}
                 value={field.state.value}
                 onBlur={field.handleBlur}
                 onChangeText={field.handleChange}
               />
             )}
           />
-          <View flexDirection="row" w="100%" maxWidth="$20">
+          <XStack w="100%" $gtSm={{ maxWidth: "$20" }}>
             <Input
               flexGrow={0}
               size="$3"
@@ -168,18 +189,16 @@ export default function SignupFormScreen() {
                 />
               )}
             />
-          </View>
-          <View flexDirection="row" w="100%" maxWidth="$20" gap="$3">
+          </XStack>
+          <XStack w="100%" gap="$3" $gtSm={{ maxWidth: "$20" }}>
             <form.Field
               name="birthDate"
               children={(field) => (
-                <Button
+                <PrimaryBtn
                   flexGrow={1}
                   flexBasis={0}
                   size="$3"
-                  borderWidth="$1"
-                  borderRadius="$6"
-                  color={field.state.value ? "$color12" : "hsl(0, 0%, 56.1%)"}
+                  fontStyle="normal"
                   onPress={() => setShowBirthDatePicker(true)}
                 >
                   {showBirthDatePicker ? (
@@ -203,7 +222,7 @@ export default function SignupFormScreen() {
                   ) : (
                     "DD/MM/YYYY"
                   )}
-                </Button>
+                </PrimaryBtn>
               )}
             />
             <form.Field
@@ -222,24 +241,20 @@ export default function SignupFormScreen() {
                     borderRadius="$6"
                     borderColor="$color7"
                   >
-                    <View
-                      flexDirection="row"
+                    <XStack
                       justifyContent="center"
                       alignItems="center"
                       gap="$3"
                     >
-                      <FontAwesome
-                        color="hsl(0, 0%, 56.1%)"
-                        name="caret-down"
-                      />
+                      <FontAwesome color={theme.color9.val} name="caret-down" />
                       <Select.Value
                         color={
-                          field.state.value ? "$color12" : "hsl(0, 0%, 56.1%)"
+                          field.state.value ? "$color12" : theme.color9.val
                         }
                         size="$3"
                         placeholder="Gender"
                       />
-                    </View>
+                    </XStack>
                   </Select.Trigger>
 
                   <Select.Adapt platform="touch">
@@ -274,7 +289,7 @@ export default function SignupFormScreen() {
                 </Select>
               )}
             />
-          </View>
+          </XStack>
           <form.Field
             name="nationality"
             children={(field) => (
@@ -286,26 +301,24 @@ export default function SignupFormScreen() {
                 <Select.Trigger
                   size="$3"
                   w="100%"
-                  maxWidth="$20"
                   borderWidth="$1"
                   borderRadius="$6"
                   borderColor="$color7"
+                  $gtSm={{ maxWidth: "$20" }}
                 >
-                  <View
+                  <XStack
                     flexDirection="row"
                     justifyContent="center"
                     alignItems="center"
                     gap="$3"
                   >
-                    <FontAwesome color="hsl(0, 0%, 56.1%)" name="caret-down" />
+                    <FontAwesome color={theme.color9.val} name="caret-down" />
                     <Select.Value
-                      color={
-                        field.state.value ? "$color12" : "hsl(0, 0%, 56.1%)"
-                      }
+                      color={field.state.value ? "$color12" : theme.color9.val}
                       size="$3"
                       placeholder="Nationality"
                     />
-                  </View>
+                  </XStack>
                 </Select.Trigger>
 
                 <Select.Adapt platform="touch">
@@ -340,7 +353,7 @@ export default function SignupFormScreen() {
               </Select>
             )}
           />
-          <View position="relative" w="100%" maxWidth="$20">
+          <View position="relative" w="100%" $gtSm={{ maxWidth: "$20" }}>
             <form.Field
               name="password"
               children={(field) => (
@@ -369,60 +382,55 @@ export default function SignupFormScreen() {
               <Button size="$3" borderRadius="$6" chromeless>
                 <FontAwesome
                   size={16}
-                  color="hsl(0, 0%, 56.1%)"
+                  color={theme.color9.val}
                   name="eye-slash"
                 />
               </Button>
             </View>
           </View>
-          <View position="relative" h="$4" w="100%" maxWidth="$20">
+          <YStack
+            position="relative"
+            h="$4"
+            w="100%"
+            $gtSm={{ maxWidth: "$20" }}
+          >
             <Text color="#ff0000" fontSize="$2" fontWeight="bold">
               {signupMutation.error?.response?.data?.message ?? ""}
             </Text>
-          </View>
-        </View>
-        <View
+          </YStack>
+        </YStack>
+        <YStack
           h="$11"
           w="100%"
           justifyContent="center"
           alignItems="center"
           gap="$3"
         >
-          <Theme name="gleam">
-            <Button
-              size="$4"
-              w="100%"
-              maxWidth="$20"
-              borderWidth="$1"
-              borderRadius="$8"
-              backgroundColor="$color12"
-              borderColor="$color12"
-              color="$color1"
-              fontWeight="bold"
-              onPress={form.handleSubmit}
-            >
-              Receive OTP
-            </Button>
-          </Theme>
-          <View flexDirection="row" gap="$3">
+          <PrimaryBtn
+            size="$4"
+            w="100%"
+            $gtSm={{ maxWidth: "$20" }}
+            onPress={form.handleSubmit}
+          >
+            Receive OTP
+          </PrimaryBtn>
+          <XStack gap="$3">
             <Text color="#b8ab8c" fontSize="$2" fontWeight="bold">
               Already have an account?
             </Text>
-            <Theme name="gleam">
-              <Link href="/login" replace>
-                <Text
-                  color="$color12"
-                  fontSize="$2"
-                  fontWeight="bold"
-                  textDecorationLine="underline"
-                >
-                  Log in
-                </Text>
-              </Link>
-            </Theme>
-          </View>
-        </View>
+            <Link href="/login" replace>
+              <Text
+                color="$gleam12"
+                fontSize="$2"
+                fontWeight="bold"
+                textDecorationLine="underline"
+              >
+                Log in
+              </Text>
+            </Link>
+          </XStack>
+        </YStack>
       </form.Provider>
-    </View>
+    </YStack>
   );
 }

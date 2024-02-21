@@ -3,8 +3,10 @@ import { useLocalSearchParams } from "expo-router";
 import { FirebaseError } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import React from "react";
-import { Button, View, Text, Input, Theme } from "tamagui";
+import { Text, Input, YStack, XStack } from "tamagui";
 import z from "zod";
+
+import PrimaryBtn from "@/src/components/PrimaryBtn";
 
 const params = z.object({
   email: z.string(),
@@ -22,15 +24,22 @@ export default function SignupOtpScreen() {
   });
 
   return (
-    <View flex={1} p="$4" justifyContent="center" alignItems="center" gap="$3">
-      <View
+    <YStack
+      flex={1}
+      paddingVertical="$4"
+      backgroundColor="$color1"
+      justifyContent="center"
+      alignItems="center"
+      gap="$3"
+      $sm={{ paddingHorizontal: "$4" }}
+    >
+      <XStack
         flex={1}
-        flexDirection="row"
         w="100%"
-        maxWidth="$20"
         justifyContent="center"
         alignItems="center"
         gap="$3"
+        $gtSm={{ maxWidth: "$20" }}
       >
         {[...Array(6)].map((_, i) => (
           <Input
@@ -46,35 +55,27 @@ export default function SignupOtpScreen() {
             maxLength={1}
           />
         ))}
-      </View>
-      <View
+      </XStack>
+      <YStack
         h="$11"
         w="100%"
         justifyContent="center"
         alignItems="center"
         gap="$3"
       >
-        <Theme name="gleam">
-          <Button
-            size="$4"
-            w="100%"
-            maxWidth="$20"
-            borderWidth="$1"
-            borderRadius="$8"
-            backgroundColor="$color12"
-            borderColor="$color12"
-            color="$color1"
-            fontWeight="bold"
-            onPress={async () => {
-              try {
-                await otpMutation.mutateAsync();
-              } catch {}
-            }}
-          >
-            Create an account
-          </Button>
-        </Theme>
-        <View flexDirection="row" gap="$3">
+        <PrimaryBtn
+          size="$4"
+          w="100%"
+          $gtSm={{ maxWidth: "$20" }}
+          onPress={async () => {
+            try {
+              await otpMutation.mutateAsync();
+            } catch {}
+          }}
+        >
+          Create an account
+        </PrimaryBtn>
+        <XStack gap="$3">
           <Text
             color="#b8ab8c"
             fontSize="$2"
@@ -83,8 +84,8 @@ export default function SignupOtpScreen() {
           >
             Resend OTP
           </Text>
-        </View>
-      </View>
-    </View>
+        </XStack>
+      </YStack>
+    </YStack>
   );
 }

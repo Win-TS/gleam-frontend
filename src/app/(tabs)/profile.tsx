@@ -8,7 +8,6 @@ import {
   Text,
   View,
   Image,
-  Button,
   Separator,
   Avatar,
   XStack,
@@ -17,6 +16,8 @@ import {
   Input,
   useTheme,
 } from "tamagui";
+
+import PrimaryBtn from "@/src/components/PrimaryBtn";
 
 const SwitchWithLabel = () => {
   const theme = useTheme();
@@ -151,14 +152,9 @@ export default function ProfileScreen() {
           </Text>
         </YStack>
         {isEditProfile ? (
-          <Button
+          <PrimaryBtn
             size="$2.5"
             w="$12"
-            borderRadius="$8"
-            backgroundColor="$gleam12"
-            borderColor="$gleam12"
-            color="$color1"
-            fontWeight="bold"
             onPress={async () => {
               try {
                 if (userName) await userNameMutation.mutateAsync({ userName });
@@ -167,22 +163,17 @@ export default function ProfileScreen() {
             }}
           >
             DONE
-          </Button>
+          </PrimaryBtn>
         ) : (
-          <Button
+          <PrimaryBtn
             size="$2.5"
             w="$12"
-            borderRadius="$8"
-            backgroundColor="$gleam12"
-            borderColor="$gleam12"
-            color="$color1"
-            fontWeight="bold"
             onPress={() => {
               toggleEditProfile(true);
             }}
           >
             EDIT PROFILE
-          </Button>
+          </PrimaryBtn>
         )}
         {!isEditProfile && (
           <XStack gap="$3">

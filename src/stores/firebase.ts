@@ -53,7 +53,7 @@ export const useFirebaseStore = create<FirebaseState>((set) => ({
           await auth.signOut();
         }
       } else {
-        router.navigate("/login");
+        // router.navigate("/login");
       }
     });
     set({ app });

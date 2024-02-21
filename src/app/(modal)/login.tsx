@@ -5,9 +5,23 @@ import { Link } from "expo-router";
 import { FirebaseError } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import React from "react";
-import { Button, View, Text, Input, Checkbox, Theme } from "tamagui";
+import {
+  Button,
+  View,
+  Text,
+  Input,
+  Checkbox,
+  YStack,
+  XStack,
+  useTheme,
+} from "tamagui";
+
+import PrimaryBtn from "@/src/components/PrimaryBtn";
+import SecondaryBtn from "@/src/components/SecondaryBtn";
 
 export default function LoginScreen() {
+  const theme = useTheme();
+
   type FormFields = {
     email: string;
     password: string;
@@ -33,8 +47,16 @@ export default function LoginScreen() {
   });
 
   return (
-    <View flex={1} p="$4" justifyContent="center" alignItems="center" gap="$3">
-      <View
+    <YStack
+      flex={1}
+      paddingVertical="$4"
+      backgroundColor="$color1"
+      justifyContent="center"
+      alignItems="center"
+      gap="$3"
+      $sm={{ paddingHorizontal: "$4" }}
+    >
+      <YStack
         flex={1}
         w="100%"
         justifyContent="center"
@@ -48,17 +70,17 @@ export default function LoginScreen() {
               <Input
                 size="$3"
                 w="100%"
-                maxWidth="$20"
                 borderWidth="$1"
                 borderRadius="$6"
                 placeholder="Email"
+                $gtSm={{ maxWidth: "$20" }}
                 value={field.state.value}
                 onBlur={field.handleBlur}
                 onChangeText={field.handleChange}
               />
             )}
           />
-          <View position="relative" w="100%" maxWidth="$20">
+          <View position="relative" w="100%" $gtSm={{ maxWidth: "$20" }}>
             <form.Field
               name="password"
               children={(field) => (
@@ -87,14 +109,14 @@ export default function LoginScreen() {
               <Button size="$3" borderRadius="$6" chromeless>
                 <FontAwesome
                   size={16}
-                  color="hsl(0, 0%, 56.1%)"
+                  color={theme.color9.val}
                   name="eye-slash"
                 />
               </Button>
             </View>
           </View>
-          <View h="$1" w="100%" maxWidth="$20">
-            <View alignSelf="flex-start" flex={1} flexDirection="row" gap="$2">
+          <YStack h="$1" w="100%" $gtSm={{ maxWidth: "$20" }}>
+            <XStack alignSelf="flex-start" flex={1} gap="$2">
               <Checkbox size="$3">
                 <Checkbox.Indicator>
                   <FontAwesome name="check" />
@@ -103,49 +125,36 @@ export default function LoginScreen() {
               <Text color="#b8ab8c" fontSize="$3" fontWeight="bold">
                 remember me
               </Text>
-            </View>
-          </View>
-          <View position="relative" h="$4" w="100%" maxWidth="$20">
+            </XStack>
+          </YStack>
+          <YStack
+            position="relative"
+            h="$4"
+            w="100%"
+            $gtSm={{ maxWidth: "$20" }}
+          >
             <Text color="#ff0000" fontSize="$2" fontWeight="bold">
               {loginMutation.error?.message ?? ""}
             </Text>
-          </View>
-          <Theme name="gleam">
-            <Button
-              size="$4"
-              w="100%"
-              maxWidth="$20"
-              borderWidth="$1"
-              borderRadius="$8"
-              backgroundColor="$color12"
-              borderColor="$color12"
-              color="$color1"
-              fontWeight="bold"
-              onPress={form.handleSubmit}
-            >
-              LOG IN
-            </Button>
-            <Link href="/signup/form" replace asChild>
-              <Button
-                size="$4"
-                w="100%"
-                maxWidth="$20"
-                borderWidth="$1"
-                borderRadius="$8"
-                backgroundColor="$color1"
-                borderColor="$color12"
-                color="$color12"
-                fontWeight="bold"
-              >
-                SIGN UP
-              </Button>
-            </Link>
-          </Theme>
+          </YStack>
+          <PrimaryBtn
+            size="$4"
+            w="100%"
+            $gtSm={{ maxWidth: "$20" }}
+            onPress={form.handleSubmit}
+          >
+            LOG IN
+          </PrimaryBtn>
+          <Link href="/signup/form" replace asChild>
+            <SecondaryBtn size="$4" w="100%" $gtSm={{ maxWidth: "$20" }}>
+              SIGN UP
+            </SecondaryBtn>
+          </Link>
         </form.Provider>
-      </View>
+      </YStack>
       <Text h="$4" color="#b8ab8c" fontSize="$2" fontWeight="bold">
         Forgot password?
       </Text>
-    </View>
+    </YStack>
   );
 }
