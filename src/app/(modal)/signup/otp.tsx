@@ -44,6 +44,7 @@ export default function SignupOtpScreen() {
         {[...Array(6)].map((_, i) => (
           <Input
             key={i}
+            flex={1}
             h="$6"
             p="$0"
             borderWidth="$1"

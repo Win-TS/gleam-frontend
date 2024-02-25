@@ -240,6 +240,7 @@ export default function SignupFormScreen() {
                     borderWidth="$1"
                     borderRadius="$6"
                     borderColor="$color7"
+                    backgroundColor="$color3"
                   >
                     <XStack
                       justifyContent="center"
@@ -304,6 +305,7 @@ export default function SignupFormScreen() {
                   borderWidth="$1"
                   borderRadius="$6"
                   borderColor="$color7"
+                  backgroundColor="$color3"
                   $gtSm={{ maxWidth: "$20" }}
                 >
                   <XStack

@@ -143,7 +143,7 @@ export default function ProfileScreen() {
             />
           ) : (
             <Text h="$2.5" fontSize="$7" fontWeight="bold" color="$color11">
-              {userNameQuery.data?.data?.username ?? "loading..."}
+              {userNameQuery.data?.data?.username ?? "Bruno Mars"}
             </Text>
           )}
 
@@ -177,7 +177,7 @@ export default function ProfileScreen() {
         )}
         {!isEditProfile && (
           <XStack gap="$3">
-            <YStack justifyContent="center" alignItems="center">
+            <YStack w="$5" justifyContent="center" alignItems="center">
               <Text color="$color11" fontWeight="bold">
                 FRIEND
               </Text>
@@ -186,7 +186,7 @@ export default function ProfileScreen() {
               </Text>
             </YStack>
             <Separator alignSelf="stretch" vertical borderColor="$gleam12" />
-            <YStack justifyContent="center" alignItems="center">
+            <YStack w="$5" justifyContent="center" alignItems="center">
               <Text color="$color11" fontWeight="bold">
                 LEVEL
               </Text>
@@ -237,7 +237,7 @@ export default function ProfileScreen() {
       {isEditProfile ? (
         <XStack w="100%" gap="$3" $gtSm={{ maxWidth: "$20" }}>
           <Text flex={1} color="$color11">
-            MY LEAGUE
+            MY HIVE
           </Text>
           <SwitchWithLabel />
         </XStack>
@@ -255,7 +255,7 @@ export default function ProfileScreen() {
             $gtSm={{ maxWidth: "$20" }}
           >
             <Text flex={1} color="$color11">
-              MY LEAGUE
+              MY HIVE
             </Text>
             <View p="$2">
               <FontAwesome

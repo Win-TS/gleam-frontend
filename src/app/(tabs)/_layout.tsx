@@ -5,6 +5,7 @@ import React from "react";
 import { useClientOnlyValue } from "@/src/components/useClientOnlyValue";
 import { useColorScheme } from "@/src/components/useColorScheme";
 import Colors from "@/src/constants/Colors";
+import { useTheme } from "tamagui";
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -15,6 +16,7 @@ function TabBarIcon(props: {
 }
 
 export default function TabLayout() {
+  const theme = useTheme();
   const colorScheme = useColorScheme();
 
   return (
@@ -30,16 +32,24 @@ export default function TabLayout() {
         name="home"
         options={{
           headerShown: false,
-          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
-          tabBarLabelPosition: "below-icon",
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon name="home" color={theme.gleam12.val} />
+          ),
+          tabBarLabel: () => null,
         }}
       />
       <Tabs.Screen
         name="search"
         options={{
-          headerShown: false,
-          tabBarIcon: ({ color }) => <TabBarIcon name="search" color={color} />,
-          tabBarLabelPosition: "below-icon",
+          title: "GLEAM",
+          headerTitleAlign: "center",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon name="search" color={theme.gleam12.val} />
+          ),
+          tabBarLabel: () => null,
         }}
       />
       <Tabs.Screen
@@ -48,25 +58,33 @@ export default function TabLayout() {
           title: "add streak",
           headerShown: false,
           tabBarIcon: ({ color }) => (
-            <TabBarIcon name="plus-circle" color={color} />
+            <TabBarIcon name="plus-circle" color={theme.gleam12.val} />
           ),
-          tabBarLabelPosition: "below-icon",
+          tabBarLabel: () => null,
         }}
       />
       <Tabs.Screen
         name="notification"
         options={{
           headerShown: false,
-          tabBarIcon: ({ color }) => <TabBarIcon name="bell" color={color} />,
-          tabBarLabelPosition: "below-icon",
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon name="bell" color={theme.gleam12.val} />
+          ),
+          tabBarLabel: () => null,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          headerShown: false,
-          tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
-          tabBarLabelPosition: "below-icon",
+          title: "GLEAM",
+          headerTitleAlign: "center",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon name="user" color={theme.gleam12.val} />
+          ),
+          tabBarLabel: () => null,
         }}
       />
     </Tabs>

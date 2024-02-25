@@ -15,7 +15,7 @@ export default function StackLayout() {
       <Stack.Screen
         name="[id]"
         options={{
-          title: "League",
+          title: "Profile",
           headerShown: false,
         }}
       />

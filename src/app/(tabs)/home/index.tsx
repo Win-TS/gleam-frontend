@@ -11,7 +11,16 @@ export default function TabOneScreen() {
       <Text fontSize={20} fontWeight={"bold"}>
         Tab One
       </Text>
-      <Link href="/home/league/i" asChild>
+      <Link
+        href={{
+          pathname: "/(tabs)/home/hive/[id]/",
+          params: {
+            id: "test",
+          },
+        }}
+        replace
+        asChild
+      >
         <Pressable>
           <Text fontSize={20}>gooo</Text>
         </Pressable>

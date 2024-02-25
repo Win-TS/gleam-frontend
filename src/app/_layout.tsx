@@ -88,16 +88,7 @@ function RootLayoutNav() {
                 presentation: "fullScreenModal",
               }}
             />
-            <Stack.Screen
-              name="(tabs)"
-              options={{
-                title: "GLEAM",
-                headerTitleAlign: "center",
-                headerTitleStyle: {
-                  fontWeight: "bold",
-                },
-              }}
-            />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           </Stack>
         </ThemeProvider>
       </TamaguiProvider>
