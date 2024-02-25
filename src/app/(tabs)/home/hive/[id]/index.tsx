@@ -119,7 +119,9 @@ const HiveOwnerBtn = () => {
 };
 
 const HiveNonOwnerBtn = () => {
-  const state: "none" | "requested" | "joined" = "requested";
+  const [state, setState] = useState<"none" | "requested" | "joined">(
+    "requested",
+  );
 
   return state === "none" ? (
     <HiveJoinBtn />
@@ -137,7 +139,9 @@ const HiveNonOwnerBtn = () => {
 const HiveOptionsPopover = ({ hiveId }: { hiveId: number }) => {
   const theme = useTheme();
 
-  const state: "none" | "requested" | "joined" = "requested";
+  const [state, setState] = useState<"none" | "requested" | "joined">(
+    "requested",
+  );
   const [openPopover, setOpenPopover] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
 
