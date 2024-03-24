@@ -1,11 +1,8 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { useIsFocused } from "@react-navigation/native";
-import { FlashList } from "@shopify/flash-list";
-import { LinearGradient } from "expo-linear-gradient";
 import { Link, useLocalSearchParams } from "expo-router";
 import { atom, useAtom, useAtomValue } from "jotai";
 import React, { useState } from "react";
-import { Dimensions, NativeScrollEvent } from "react-native";
+import { Dimensions } from "react-native";
 import {
   AlertDialog,
   Button,
@@ -26,7 +23,7 @@ import PrimaryBtn from "@/src/components/PrimaryBtn";
 import SecondaryBtn from "@/src/components/SecondaryBtn";
 import VerticalList from "@/src/components/VerticalList";
 
-const editAtom = atom(false);
+export const editAtom = atom(false);
 
 const HiveDescription = () => {
   const edit = useAtomValue(editAtom);
@@ -290,15 +287,17 @@ const HiveHeader = ({ hiveId }: { hiveId: number }) => {
           </View>
           <HiveOptionsPopover hiveId={hiveId} />
         </YStack>
-        <PrimaryBtn
-          size="$2.5"
-          w="100%"
-          borderRadius="$4"
-          justifyContent="center"
-          alignItems="center"
-        >
-          37 members
-        </PrimaryBtn>
+        <Link href={`/home/hive/${hiveId}/member`} asChild>
+          <PrimaryBtn
+            size="$2.5"
+            w="100%"
+            borderRadius="$4"
+            justifyContent="center"
+            alignItems="center"
+          >
+            37 members
+          </PrimaryBtn>
+        </Link>
       </YStack>
     </YStack>
   );
