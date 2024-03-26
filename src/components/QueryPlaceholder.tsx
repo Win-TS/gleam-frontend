@@ -13,5 +13,5 @@ export default function <TData = unknown, TError = DefaultError>({
 }) {
   if (isPending) return <Spinner size={spinnerSize} color="$color11" />;
   if (isError) return <Spinner size={spinnerSize} color="$red11" />;
-  return renderData(data);
+  if (data) return renderData(data);
 }
