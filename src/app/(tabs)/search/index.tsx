@@ -1,10 +1,7 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { Link } from "expo-router";
 import React, { useMemo } from "react";
 import { Dimensions } from "react-native";
 import { Button, Input, Text, View, YStack, ZStack } from "tamagui";
-import * as z from "zod";
 
 import HiveBtn from "@/src/components/HiveBtn";
 import VerticalList from "@/src/components/VerticalList";
