@@ -15,7 +15,7 @@ export default function TabOneScreen() {
         href={{
           pathname: "/(tabs)/home/hive/[id]/",
           params: {
-            id: "test",
+            id: 1,
           },
         }}
         replace

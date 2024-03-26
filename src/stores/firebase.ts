@@ -27,27 +27,29 @@ export const useFirebaseStore = create<FirebaseState>((set) => ({
     const app = initializeApp(firebaseConfig);
     const auth = getAuth();
 
-    auth.onAuthStateChanged(async (user) => {
-      if (user) {
+    auth.onAuthStateChanged(async (authUser) => {
+      console.log(authUser);
+      if (authUser) {
         try {
+          /*
           await axios.get("/auth_v1/verify", {
             headers: {
               Authorization: await auth.currentUser?.getIdToken(),
             },
             baseURL: process.env.EXPO_PUBLIC_AUTH_API,
           });
+          */
+          const user = (
+            await axios.get("/user_v1/userinfobyemail", {
+              params: { email: authUser.email },
+              baseURL: process.env.EXPO_PUBLIC_USER_API,
+            })
+          ).data;
           useUserStore.setState({
-            user: {
-              displayName: user.displayName,
-              email: user.email,
-              phoneNumber: user.phoneNumber,
-              photoURL: user.photoURL,
-              providerId: user.providerId,
-              uid: user.uid,
-            },
+            user,
           });
           if (
-            process.env.EXPO_PUBLIC_NO_AUTH_NAVIGATION &&
+            process.env.EXPO_PUBLIC_NO_AUTH_NAVIGATION === undefined ||
             !JSON.parse(
               String(process.env.EXPO_PUBLIC_NO_AUTH_NAVIGATION).toLowerCase(),
             )
@@ -61,7 +63,7 @@ export const useFirebaseStore = create<FirebaseState>((set) => ({
         }
       } else {
         if (
-          process.env.EXPO_PUBLIC_NO_AUTH_NAVIGATION &&
+          process.env.EXPO_PUBLIC_NO_AUTH_NAVIGATION === undefined ||
           !JSON.parse(
             String(process.env.EXPO_PUBLIC_NO_AUTH_NAVIGATION).toLowerCase(),
           )

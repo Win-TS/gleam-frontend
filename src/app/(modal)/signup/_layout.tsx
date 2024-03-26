@@ -26,6 +26,20 @@ export default function ModalLayout() {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="profile_picture"
+        options={{
+          title: "Profile Picture",
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="tag"
+        options={{
+          title: "Tag",
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 }

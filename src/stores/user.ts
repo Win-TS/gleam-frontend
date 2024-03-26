@@ -1,14 +1,15 @@
-import type { UserInfo } from "firebase/auth";
 import { create } from "zustand";
 
+import { User } from "@/src/schemas/user";
+
 type UserState = {
-  user?: UserInfo;
-  setUser: (user: UserInfo) => void;
+  user?: User;
+  setUser: (user: User) => Promise<void>;
 };
 
 export const useUserStore = create<UserState>((set) => ({
   user: undefined,
-  setUser: async (user: UserInfo) => {
+  setUser: async (user: User) => {
     console.log(user);
     set({ user });
   },

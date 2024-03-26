@@ -1,12 +1,23 @@
 import { Link } from "expo-router";
 import React from "react";
-import { Button, Text, View, YStack, ZStack } from "tamagui";
+import { Button, Image, Text, View, YStack, ZStack } from "tamagui";
 
-export default ({ hiveId }: { hiveId: number }) => {
+import { Hive } from "@/src/schemas/hive";
+
+export default ({
+  hive: {
+    group_id,
+    group_name,
+    photo_url: { String: hiveImg },
+    frequency: { Int32: hiveFreq },
+  },
+}: {
+  hive: Hive;
+}) => {
   return (
     <YStack alignItems="center">
       <Link
-        href={{ pathname: "/(tabs)/home/hive/[id]/", params: { id: hiveId } }}
+        href={{ pathname: "/(tabs)/home/hive/[id]/", params: { id: group_id } }}
         asChild
         replace
       >
@@ -17,12 +28,12 @@ export default ({ hiveId }: { hiveId: number }) => {
             justifyContent="center"
             alignItems="center"
           >
-            <View
+            <Image
+              source={{ uri: hiveImg }}
               w="100%"
               aspectRatio={1}
               borderRadius="$4"
-              backgroundColor="#bbbbbb"
-            ></View>
+            />
             <View
               w="100%"
               aspectRatio={1}
@@ -30,14 +41,14 @@ export default ({ hiveId }: { hiveId: number }) => {
               alignItems="center"
             >
               <Text fontSize="$12" fontWeight="bold" color="$color1">
-                {hiveId}
+                {hiveFreq}
               </Text>
             </View>
           </ZStack>
         </Button>
       </Link>
       <Text fontSize="$3" fontWeight="bold" textOverflow="ellipsis">
-        NO SHOWER
+        {group_name}
       </Text>
     </YStack>
   );
