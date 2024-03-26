@@ -8,37 +8,14 @@ import * as z from "zod";
 
 import HiveBtn from "@/src/components/HiveBtn";
 import VerticalList from "@/src/components/VerticalList";
-import { hive_ } from "@/src/schemas/hive";
+import { useHiveListInfiniteQuery } from "@/src/hooks/hive";
 
 const JoinHiveList = () => {
-  const publicHiveInfiniteQuery = useInfiniteQuery({
-    queryKey: ["publichive"],
-    queryFn: async ({ pageParam }) => {
-      const data = await z.array(hive_).parseAsync(
-        (
-          await axios.get("/group_v1/listgroups", {
-            params: { limit: 12, offset: pageParam },
-            baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-          })
-        ).data,
-      );
-      const calcPreviousOffset = Math.max(0, pageParam - 12);
-      const calcNextOffset = pageParam + data.length;
-      return {
-        data,
-        previousOffset:
-          calcPreviousOffset !== pageParam ? calcPreviousOffset : undefined,
-        nextOffset: calcNextOffset !== pageParam ? calcNextOffset : undefined,
-      };
-    },
-    initialPageParam: 0,
-    getPreviousPageParam: (firstPage) => firstPage.previousOffset ?? undefined,
-    getNextPageParam: (lastPage) => lastPage.nextOffset ?? undefined,
-  });
+  const hiveListInfiniteQuery = useHiveListInfiniteQuery();
 
-  const flattenedPublicHives = useMemo(
-    () => publicHiveInfiniteQuery.data?.pages.flatMap(({ data }) => data) ?? [],
-    [publicHiveInfiniteQuery.data],
+  const flattenedHiveList = useMemo(
+    () => hiveListInfiniteQuery.data?.pages.flatMap(({ data }) => data) ?? [],
+    [hiveListInfiniteQuery.data],
   );
 
   return (
@@ -52,13 +29,13 @@ const JoinHiveList = () => {
         $gtSm={{ maxWidth: 290 }}
       >
         <VerticalList
-          data={flattenedPublicHives}
+          data={flattenedHiveList}
           numColumns={3}
           ItemSeparatorComponent={() => <View h="$0.75" />}
           estimatedItemSize={
             Math.min(Dimensions.get("window").width - 32, 290) / 3 + 16
           }
-          onEndReached={publicHiveInfiniteQuery.fetchNextPage}
+          onEndReached={hiveListInfiniteQuery.fetchNextPage}
           renderItem={({ item }) => (
             <View flex={1} paddingHorizontal="$1.5">
               <HiveBtn hive={item} />

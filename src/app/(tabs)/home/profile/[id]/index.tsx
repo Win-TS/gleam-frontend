@@ -1,7 +1,7 @@
 // import { ChevronRight } from "@tamagui/lucide-icons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Link, useLocalSearchParams } from "expo-router";
-import React from "react";
+import React, { useMemo } from "react";
 import { Dimensions } from "react-native";
 import {
   Text,
@@ -22,6 +22,7 @@ import HiveBtn from "@/src/components/HiveBtn";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
 import QueryPlaceholder from "@/src/components/QueryPlaceholder";
 import VerticalList from "@/src/components/VerticalList";
+import { useHiveListInfiniteQuery } from "@/src/hooks/hive";
 import { useUserprofileQuery } from "@/src/hooks/user";
 
 const ProfileOptionsPopover = ({ userId }: { userId: number }) => {
@@ -196,8 +197,14 @@ const params = z.object({
 export default function ProfileScreen() {
   const { id: userId } = params.parse(useLocalSearchParams<{ id: string }>());
   const userprofileQuery = useUserprofileQuery(userId);
+  const hiveListInfiniteQuery = useHiveListInfiniteQuery(); // TODO
 
   const showHive = true;
+
+  const flattenedHiveList = useMemo(
+    () => hiveListInfiniteQuery.data?.pages.flatMap(({ data }) => data) ?? [],
+    [hiveListInfiniteQuery.data],
+  );
 
   return (
     <YStack
@@ -217,7 +224,7 @@ export default function ProfileScreen() {
       >
         {showHive ? (
           <VerticalList
-            data={[...Array(999)].map((_, i) => i)}
+            data={flattenedHiveList}
             numColumns={3}
             ItemSeparatorComponent={() => <View h="$0.75" />}
             ListHeaderComponent={() => (
@@ -242,9 +249,10 @@ export default function ProfileScreen() {
             estimatedItemSize={
               Math.min(Dimensions.get("window").width - 32, 290) / 3 + 16
             }
+            onEndReached={hiveListInfiniteQuery.fetchNextPage}
             renderItem={({ item }) => (
               <View flex={1} paddingHorizontal="$1.5">
-                <HiveBtn hiveId={item} hiveImg="" />
+                <HiveBtn hive={item} />
               </View>
             )}
           />
