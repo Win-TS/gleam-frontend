@@ -25,7 +25,7 @@ import SecondaryBtn from "@/src/components/SecondaryBtn";
 import VerticalList from "@/src/components/VerticalList";
 import { useHiveQuery } from "@/src/hooks/hive";
 
-const editAtom = atom(false);
+export const editAtom = atom(false);
 
 const HiveDescription = ({ hiveId }: { hiveId: number }) => {
   const edit = useAtomValue(editAtom);
@@ -294,15 +294,17 @@ const HiveHeader = ({ hiveId }: { hiveId: number }) => {
           </View>
           <HiveOptionsPopover hiveId={hiveId} />
         </YStack>
-        <PrimaryBtn
-          size="$2.5"
-          w="100%"
-          borderRadius="$4"
-          justifyContent="center"
-          alignItems="center"
-        >
-          37 members
-        </PrimaryBtn>
+        <Link href={`/home/hive/${hiveId}/member`} asChild>
+          <PrimaryBtn
+            size="$2.5"
+            w="100%"
+            borderRadius="$4"
+            justifyContent="center"
+            alignItems="center"
+          >
+            37 members
+          </PrimaryBtn>
+        </Link>
       </YStack>
     </YStack>
   );
