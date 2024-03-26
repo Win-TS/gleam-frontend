@@ -1,13 +1,11 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { useIsFocused } from "@react-navigation/native";
-import { FlashList } from "@shopify/flash-list";
-import { LinearGradient } from "expo-linear-gradient";
 import { Link, useLocalSearchParams } from "expo-router";
 import { atom, useAtom, useAtomValue } from "jotai";
 import React, { useState } from "react";
-import { Dimensions, NativeScrollEvent } from "react-native";
+import { Dimensions } from "react-native";
 import {
   AlertDialog,
+  Avatar,
   Button,
   Input,
   Popover,
@@ -25,22 +23,21 @@ import DangerBtn from "@/src/components/DangerBtn";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
 import SecondaryBtn from "@/src/components/SecondaryBtn";
 import VerticalList from "@/src/components/VerticalList";
+import { useHiveQuery } from "@/src/hooks/hive";
 
 const editAtom = atom(false);
 
-const HiveDescription = () => {
+const HiveDescription = ({ hiveId }: { hiveId: number }) => {
   const edit = useAtomValue(editAtom);
 
-  const title = "NO SHOWER";
-  const description =
-    "if you are planning for long time of no shower, come join us";
+  const hiveQuery = useHiveQuery(hiveId);
 
   return (
     <View w="100%" justifyContent="center" alignItems="center" gap="$1">
       {edit ? (
         <>
           <Input
-            value={title}
+            value={hiveQuery.data?.group_name}
             paddingVertical="$1"
             w="100%"
             borderWidth="$1"
@@ -48,7 +45,7 @@ const HiveDescription = () => {
             fontWeight="bold"
           />
           <Input
-            value={description}
+            value={hiveQuery.data?.description?.String}
             h="$8"
             w="100%"
             paddingVertical="$1"
@@ -61,10 +58,10 @@ const HiveDescription = () => {
       ) : (
         <>
           <Text fontWeight="bold" textAlign="center" textOverflow="ellipsis">
-            {title}
+            {hiveQuery.data?.group_name}
           </Text>
           <Text fontSize="$2" textAlign="center" textOverflow="ellipsis">
-            {description}
+            {hiveQuery.data?.description?.String}
           </Text>
         </>
       )}
@@ -215,7 +212,8 @@ const HiveOptionsPopover = ({ hiveId }: { hiveId: number }) => {
           <AlertDialog.Overlay key="overlay" />
           <AlertDialog.Content
             key="content"
-            w="$16"
+            p="$6"
+            w="$20"
             backgroundColor="$color1"
             borderWidth="$0"
             justifyContent="center"
@@ -233,7 +231,7 @@ const HiveOptionsPopover = ({ hiveId }: { hiveId: number }) => {
             <AlertDialog.Description fontSize="$2">
               *this action cannot be undone*
             </AlertDialog.Description>
-            <XStack w="100%" gap="$3">
+            <XStack w="100%" gap="$3" pt="$4">
               <AlertDialog.Action asChild>
                 <PrimaryBtn flex={1} size="$2.5" borderRadius="$4">
                   YES
@@ -254,6 +252,8 @@ const HiveOptionsPopover = ({ hiveId }: { hiveId: number }) => {
 
 const HiveHeader = ({ hiveId }: { hiveId: number }) => {
   const owner = true;
+
+  const hiveQuery = useHiveQuery(hiveId);
 
   return (
     <YStack
@@ -277,14 +277,18 @@ const HiveHeader = ({ hiveId }: { hiveId: number }) => {
           gap="$3"
         >
           <View w="100%" justifyContent="center" alignItems="center" gap="$3">
-            <View
-              w="$8"
-              h="$8"
-              backgroundColor="#bbbbbb"
-              borderRadius="$12"
-            ></View>
+            <Avatar circular size="$8">
+              <Avatar.Image
+                src={
+                  hiveQuery.data?.photo_url.Valid
+                    ? hiveQuery.data?.photo_url.String
+                    : undefined
+                }
+              />
+              <Avatar.Fallback bc="$color5" />
+            </Avatar>
             <View w="100%" justifyContent="center" alignItems="center">
-              <HiveDescription />
+              <HiveDescription hiveId={hiveId} />
             </View>
             {owner ? <HiveOwnerBtn /> : <HiveNonOwnerBtn />}
           </View>

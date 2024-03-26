@@ -41,11 +41,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="search"
         options={{
-          title: "GLEAM",
-          headerTitleAlign: "center",
-          headerTitleStyle: {
-            fontWeight: "bold",
-          },
+          headerShown: false,
           tabBarIcon: ({ color }) => (
             <TabBarIcon name="search" color={theme.gleam12.val} />
           ),
