@@ -13,20 +13,20 @@ import { View, useTheme } from "tamagui";
 
 const _Forward = forwardRef<
   FlashList<any>,
-  ComponentPropsWithoutRef<typeof FlashList<any>>
+  ComponentPropsWithoutRef<typeof FlashList<any>> & { isFocused?: boolean }
 >((props, ref) => {
   const theme = useTheme();
-  const isFocused = useIsFocused();
+  const isScreenFocused = useIsFocused();
   const [scrollEvent, setScrollEvent] = useState<NativeScrollEvent>();
 
   // TODO:
-  const defaultedProps = defu(props, {
+  const { isFocused, ...defaultedProps } = defu(props, {
     onScroll: ({ nativeEvent }) => {
       setScrollEvent(nativeEvent);
     },
-  } satisfies Partial<FlashListProps<any>>);
+  } satisfies Partial<FlashListProps<any>> & { isFocused?: boolean });
 
-  return isFocused ? (
+  return isFocused ?? isScreenFocused ? (
     <>
       <FlashList ref={ref} {...defaultedProps}></FlashList>
       {(scrollEvent?.contentOffset.y ?? 0) > 0 ? (
@@ -57,5 +57,5 @@ const _Forward = forwardRef<
 
 export default <T,>(
   props: ComponentPropsWithoutRef<typeof FlashList<T>> &
-    RefAttributes<FlashList<T>>,
+    RefAttributes<FlashList<T>> & { isFocused?: boolean },
 ) => <_Forward {...props} />;
