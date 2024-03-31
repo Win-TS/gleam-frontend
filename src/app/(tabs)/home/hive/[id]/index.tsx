@@ -4,7 +4,6 @@ import { atom, useAtom, useAtomValue } from "jotai";
 import React, { useState } from "react";
 import { Dimensions } from "react-native";
 import {
-  AlertDialog,
   Avatar,
   Button,
   Input,
@@ -13,12 +12,12 @@ import {
   Sheet,
   Text,
   View,
-  XStack,
   YStack,
   useTheme,
 } from "tamagui";
 import z from "zod";
 
+import ActionDialog from "@/src/components/ActionDialog";
 import DangerBtn from "@/src/components/DangerBtn";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
 import SecondaryBtn from "@/src/components/SecondaryBtn";
@@ -188,7 +187,15 @@ const HiveOptionsPopover = ({ hiveId }: { hiveId: number }) => {
                 Leave
               </PrimaryBtn>
             ) : null}
-            <Link href={`/home/hive/${hiveId}/report`} asChild>
+            <Link
+              href={{
+                pathname: "/(tabs)/home/hive/[id]/report",
+                params: {
+                  id: hiveId,
+                },
+              }}
+              asChild
+            >
               <DangerBtn size="$2.5" w="100%" borderRadius="$4">
                 Report
               </DangerBtn>
@@ -207,45 +214,12 @@ const HiveOptionsPopover = ({ hiveId }: { hiveId: number }) => {
           </Popover.Sheet>
         </Popover.Adapt>
       </Popover>
-      <AlertDialog open={openDialog} onOpenChange={setOpenDialog}>
-        <AlertDialog.Portal>
-          <AlertDialog.Overlay key="overlay" />
-          <AlertDialog.Content
-            key="content"
-            p="$6"
-            w="$20"
-            backgroundColor="$color1"
-            borderWidth="$0"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <AlertDialog.Title
-              key="title"
-              w="$14"
-              fontSize="$7"
-              lineHeight="$2"
-              textAlign="center"
-            >
-              Are you sure you want to leave?
-            </AlertDialog.Title>
-            <AlertDialog.Description fontSize="$2">
-              *this action cannot be undone*
-            </AlertDialog.Description>
-            <XStack w="100%" gap="$3" pt="$4">
-              <AlertDialog.Action asChild>
-                <PrimaryBtn flex={1} size="$2.5" borderRadius="$4">
-                  YES
-                </PrimaryBtn>
-              </AlertDialog.Action>
-              <AlertDialog.Cancel asChild>
-                <SecondaryBtn flex={1} size="$2.5" borderRadius="$4">
-                  NO
-                </SecondaryBtn>
-              </AlertDialog.Cancel>
-            </XStack>
-          </AlertDialog.Content>
-        </AlertDialog.Portal>
-      </AlertDialog>
+      <ActionDialog
+        open={openDialog}
+        onOpenChange={setOpenDialog}
+        title="Are you sure you want to leave?"
+        description="*this action cannot be undone*"
+      />
     </>
   );
 };
@@ -294,7 +268,15 @@ const HiveHeader = ({ hiveId }: { hiveId: number }) => {
           </View>
           <HiveOptionsPopover hiveId={hiveId} />
         </YStack>
-        <Link href={`/home/hive/${hiveId}/member`} asChild>
+        <Link
+          href={{
+            pathname: "/(tabs)/home/hive/[id]/member",
+            params: {
+              id: hiveId,
+            },
+          }}
+          asChild
+        >
           <PrimaryBtn
             size="$2.5"
             w="100%"

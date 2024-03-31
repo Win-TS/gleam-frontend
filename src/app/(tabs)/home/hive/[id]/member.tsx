@@ -1,9 +1,9 @@
 import { FontAwesome6, AntDesign } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { useAtomValue } from "jotai";
+import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
-import { Dimensions, Modal, ModalProps } from "react-native";
+import { Dimensions } from "react-native";
 import {
   Input,
   XStack,
@@ -14,19 +14,10 @@ import {
   View,
   useTheme,
 } from "tamagui";
+import z from "zod";
 
-import { editAtom } from ".";
-
-import PrimaryBtn from "@/src/components/PrimaryBtn";
-import SecondaryBtn from "@/src/components/SecondaryBtn";
+import ActionDialog from "@/src/components/ActionDialog";
 import VerticalList from "@/src/components/VerticalList";
-
-type MODALPROPS = ModalProps & {
-  isOpen?: boolean;
-  name?: string;
-  setValue?: (value: boolean) => void;
-  command?: string;
-};
 
 type MEMBERLIST = {
   created_at: string;
@@ -34,61 +25,9 @@ type MEMBERLIST = {
   member_id: number;
   role: string;
 };
-const MemberModal = ({
-  isOpen,
-  name,
-  setValue,
-  command,
-  ...rest
-}: MODALPROPS) => {
-  const content = (
-    <View
-      backgroundColor="$gleam1"
-      justifyContent="center"
-      alignItems="center"
-      flex={1}
-    >
-      <YStack gap="$3">
-        <View>
-          <Text
-            fontWeight="bold"
-            fontSize="$4"
-            textAlign="center"
-            textOverflow="ellipsis"
-          >
-            {command} "{name}"
-          </Text>
-          <Text fontSize="$2" textAlign="center" textOverflow="ellipsis">
-            *this action can't be undone*
-          </Text>
-        </View>
-
-        <XStack gap="$3">
-          <PrimaryBtn size="$2.5" w="$8" onPress={() => setValue?.(true)}>
-            YES
-          </PrimaryBtn>
-          <SecondaryBtn size="$2.5" w="$8" onPress={() => setValue?.(false)}>
-            NO
-          </SecondaryBtn>
-        </XStack>
-      </YStack>
-    </View>
-  );
-  return (
-    <Modal
-      visible={isOpen}
-      animationType="fade"
-      statusBarTranslucent
-      presentationStyle="pageSheet"
-      {...rest}
-    >
-      {content}
-    </Modal>
-  );
-};
 
 const MemberInList = ({ name, role }: { name: string; role: string }) => {
-  const edit = useAtomValue(editAtom);
+  const edit = useState(true);
   const theme = useTheme();
   const [promoteModal, setPromoteModal] = useState<boolean>(false);
   const [deleteModal, setDeleteModal] = useState<boolean>(false);
@@ -117,12 +56,12 @@ const MemberInList = ({ name, role }: { name: string; role: string }) => {
             color={theme.gleam12.val}
             onPress={() => setPromoteModal(true)}
           />
-          <MemberModal
-            isOpen={promoteModal}
-            setValue={() => setPromoteModal(false)}
-            name={name}
-            command={rankConversion}
-          ></MemberModal>
+          <ActionDialog
+            open={promoteModal}
+            onOpenChange={setPromoteModal}
+            title={`${rankConversion} "${name}"`}
+            description="*this action cannot be undone*"
+          />
 
           <AntDesign
             name="deleteuser"
@@ -130,30 +69,34 @@ const MemberInList = ({ name, role }: { name: string; role: string }) => {
             color={theme.gleam12.val}
             onPress={() => setDeleteModal(true)}
           />
-          <MemberModal
-            isOpen={deleteModal}
-            setValue={() => setDeleteModal(false)}
-            name={name}
-            command="Remove"
-          ></MemberModal>
+          <ActionDialog
+            open={deleteModal}
+            onOpenChange={setDeleteModal}
+            title={`Remove "${name}"`}
+            description="*this action cannot be undone*"
+          />
         </XStack>
       )}
     </XStack>
   );
 };
 
+const params = z.object({
+  id: z.coerce.number(),
+});
+
 export default function MemberScreen() {
-  const [groupId, setGroupId] = useState(2);
+  const { id: hiveId } = params.parse(useLocalSearchParams<{ id: string }>());
 
   const userListQuery = useQuery<
     AxiosResponse,
     AxiosError<{ message: string }>
   >({
-    queryKey: ["userList", groupId],
+    queryKey: ["userList", hiveId],
     queryFn: async () => {
       return await axios.get("/group_v1/groupmembers", {
         baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-        params: { group_id: groupId },
+        params: { group_id: hiveId },
       });
     },
   });
@@ -169,7 +112,7 @@ export default function MemberScreen() {
         $gtSm={{ maxWidth: "$20" }}
       />
       <VerticalList
-        data={userListQuery.data?.data ?? [...Array(999)].map((_, i) => i)}
+        data={userListQuery.data?.data ?? []}
         numColumns={1}
         ItemSeparatorComponent={() => (
           <Separator

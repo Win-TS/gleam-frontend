@@ -50,7 +50,15 @@ const ProfileOptionsPopover = ({ userId }: { userId: number }) => {
         borderColor="$color4"
       >
         <View w="100%" gap="$2">
-          <Link href={`/home/profile/${userId}/report`} asChild>
+          <Link
+            href={{
+              pathname: "/(tabs)/home/profile/[id]/report",
+              params: {
+                id: userId,
+              },
+            }}
+            asChild
+          >
             <DangerBtn size="$2.5" w="100%" borderRadius="$4">
               Report
             </DangerBtn>
