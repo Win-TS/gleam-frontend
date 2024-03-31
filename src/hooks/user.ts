@@ -21,9 +21,10 @@ export const useUserprofileQuery = (userId: number) => {
 };
 
 export const useNameMutation = (userId: number) => {
+  const queryClient = useQueryClient();
   return useMutation<
     void,
-    AxiosError<{ message: string }>,
+    AxiosError<{ message: string }> | ZodError,
     { firstname: string; lastname: string }
   >({
     mutationFn: async ({
@@ -44,16 +45,16 @@ export const useNameMutation = (userId: number) => {
         },
       );
     },
-    onSuccess: () => {
-      useQueryClient().invalidateQueries({
+    onSettled: async () => {
+      return await queryClient.invalidateQueries({
         queryKey: ["userprofile", userId],
-        refetchType: "all",
       });
     },
   });
 };
 
 export const useUsernameMutation = (userId: number) => {
+  const queryClient = useQueryClient();
   return useMutation<
     void,
     AxiosError<{ message: string }>,
@@ -72,10 +73,9 @@ export const useUsernameMutation = (userId: number) => {
         },
       );
     },
-    onSuccess: () => {
-      useQueryClient().invalidateQueries({
+    onSettled: async () => {
+      return await queryClient.invalidateQueries({
         queryKey: ["userprofile", userId],
-        refetchType: "all",
       });
     },
   });

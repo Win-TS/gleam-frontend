@@ -18,7 +18,7 @@ const JoinHiveList = () => {
   return (
     <>
       <YStack w="100%" $gtSm={{ maxWidth: "$20" }}>
-        <Text>JOIN HIVE</Text>
+        <Text>EXPLORE</Text>
       </YStack>
       <View
         flex={1}

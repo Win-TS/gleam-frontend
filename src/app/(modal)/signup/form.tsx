@@ -50,12 +50,25 @@ export default function SignupFormScreen() {
       nationality,
       password,
     }: FormFields) => {
-      return await axios.post(
+      await axios.post(
         "/auth_v1/signup",
         {
           email,
           phone_number: `+66${phoneNumber}`,
           password,
+        },
+        { baseURL: process.env.EXPO_PUBLIC_AUTH_API },
+      );
+      return await axios.post(
+        "/user_v1/createuser",
+        {
+          firstname: firstName,
+          lastname: lastName,
+          phone_number: `+66${phoneNumber}`,
+          email,
+          nationality,
+          birthday: birthDate?.toISOString(),
+          gender,
         },
         { baseURL: process.env.EXPO_PUBLIC_AUTH_API },
       );

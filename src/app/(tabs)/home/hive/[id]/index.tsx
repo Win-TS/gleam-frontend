@@ -1,11 +1,12 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Link, useLocalSearchParams } from "expo-router";
 import { atom, useAtom, useAtomValue } from "jotai";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Dimensions } from "react-native";
 import {
   Avatar,
   Button,
+  Image,
   Input,
   Popover,
   PortalProvider,
@@ -22,7 +23,7 @@ import DangerBtn from "@/src/components/DangerBtn";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
 import SecondaryBtn from "@/src/components/SecondaryBtn";
 import VerticalList from "@/src/components/VerticalList";
-import { useHiveQuery } from "@/src/hooks/hive";
+import { useHivePostListInfiniteQuery, useHiveQuery } from "@/src/hooks/hive";
 
 export const editAtom = atom(false);
 
@@ -298,6 +299,13 @@ const params = z.object({
 
 export default function HiveScreen() {
   const { id: hiveId } = params.parse(useLocalSearchParams<{ id: string }>());
+  const hivePostListInfiniteQuery = useHivePostListInfiniteQuery(hiveId);
+
+  const flattenedHivePostList = useMemo(
+    () =>
+      hivePostListInfiniteQuery.data?.pages.flatMap(({ data }) => data) ?? [],
+    [hivePostListInfiniteQuery.data],
+  );
 
   return (
     <PortalProvider>
@@ -317,7 +325,7 @@ export default function HiveScreen() {
           $gtSm={{ maxWidth: 290 }}
         >
           <VerticalList
-            data={[...Array(999)].map((_, i) => i)}
+            data={flattenedHivePostList}
             numColumns={3}
             ItemSeparatorComponent={() => <View h="$0.75" />}
             ListHeaderComponent={() => (
@@ -330,11 +338,12 @@ export default function HiveScreen() {
             }
             renderItem={({ item }) => (
               <View flex={1} paddingHorizontal="$1.5">
-                <View
+                <Image
+                  source={{ uri: item.photo_url.String }}
+                  w="100%"
                   aspectRatio={1}
                   borderRadius="$4"
-                  backgroundColor="#bbbbbb"
-                ></View>
+                />
               </View>
             )}
           />

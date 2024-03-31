@@ -10,11 +10,17 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  focusManager,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
+
+import { AppState, AppStateStatus, Platform } from "react-native";
 // @ts-expect-error
 import { ModalView } from "react-native-ios-modal";
 import { TamaguiProvider, setupNativeSheet } from "tamagui";
@@ -42,6 +48,18 @@ const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const firebaseStore = useFirebaseStore();
+
+  const onAppStateChange = (status: AppStateStatus) => {
+    if (Platform.OS !== "web") {
+      focusManager.setFocused(status === "active");
+    }
+  };
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", onAppStateChange);
+
+    return () => subscription.remove();
+  }, []);
 
   const [loaded, error] = useFonts({
     Inter: Inter_400Regular,

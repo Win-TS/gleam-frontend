@@ -84,18 +84,23 @@ export default function ProfileScreen() {
           renderData={(data) => (
             <YStack w="100%" justifyContent="center" alignItems="center">
               {isEditProfile ? (
-                <XStack>
+                <XStack
+                  w="100%"
+                  justifyContent="center"
+                  alignItems="center"
+                  gap="$2"
+                >
                   <Input
+                    flex={1}
                     h="$2.5"
-                    w="100%"
                     backgroundColor="$gleam1"
                     color="$color11"
                     value={firstname}
                     onChangeText={setFirstname}
                   />
                   <Input
+                    flex={1}
                     h="$2.5"
-                    w="100%"
                     backgroundColor="$gleam1"
                     color="$color11"
                     value={lastname}
@@ -124,7 +129,6 @@ export default function ProfileScreen() {
                   await nameMutation.mutateAsync({ firstname, lastname });
               } catch {}
               toggleEditProfile(false);
-              await userprofileQuery.refetch();
             }}
           >
             DONE
