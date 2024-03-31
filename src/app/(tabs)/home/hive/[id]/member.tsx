@@ -64,10 +64,10 @@ const MemberModal = ({
         </View>
 
         <XStack gap="$3">
-          <PrimaryBtn size="$2.5" w="$8" onPress={setValue}>
+          <PrimaryBtn size="$2.5" w="$8" onPress={() => setValue?.(true)}>
             YES
           </PrimaryBtn>
-          <SecondaryBtn size="$2.5" w="$8" onPress={setValue}>
+          <SecondaryBtn size="$2.5" w="$8" onPress={() => setValue?.(false)}>
             NO
           </SecondaryBtn>
         </XStack>
