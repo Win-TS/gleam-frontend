@@ -143,13 +143,14 @@ export const useUserHiveListQuery = (userId: number) => {
   });
 };
 
-export const useDeleteHiveMutation = (hiveId: number) => {
+export const useDeleteHiveMutation = (hiveId: number, userId: number) => {
   return useMutation<void, AxiosError<{ message: string }>>({
     mutationFn: async () => {
       return await axios.delete("/group_v1/group", {
         baseURL: process.env.EXPO_PUBLIC_GROUP_API,
         params: {
           group_id: hiveId,
+          editor_id: userId,
         },
       });
     },
