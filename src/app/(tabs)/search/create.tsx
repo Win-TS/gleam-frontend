@@ -2,10 +2,11 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import axios from "axios";
 import React, { useMemo } from "react";
 import { Dimensions } from "react-native";
-import { Input, Text, View, YStack } from "tamagui";
+import { Text, View, YStack } from "tamagui";
 import * as z from "zod";
 
 import HiveBtn from "@/src/components/HiveBtn";
+import SecondaryInput from "@/src/components/SecondaryInput";
 import VerticalList from "@/src/components/VerticalList";
 import { hive_ } from "@/src/schemas/hive";
 
@@ -42,7 +43,7 @@ const JoinHiveList = () => {
 
   return (
     <>
-      <YStack w="100%" $gtSm={{ maxWidth: "$20" }}>
+      <YStack w="100%">
         <Text>JOIN HIVE</Text>
       </YStack>
       <View
@@ -81,14 +82,7 @@ export default function SearchScreen() {
       gap="$3"
       $sm={{ paddingHorizontal: "$4" }}
     >
-      <Input
-        size="$3"
-        w="100%"
-        borderWidth="$1"
-        borderRadius="$6"
-        placeholder="What're you looking for?"
-        $gtSm={{ maxWidth: "$20" }}
-      />
+      <SecondaryInput w="100%" placeholder="What're you looking for?" />
 
       <JoinHiveList />
     </View>

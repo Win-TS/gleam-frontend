@@ -6,10 +6,11 @@ import React from "react";
 import { Text, Input, YStack, XStack } from "tamagui";
 import z from "zod";
 
+import PageContainer from "@/src/components/PageContainer";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
 
 const params = z.object({
-  email: z.string(),
+  email: z.string().email(),
   password: z.string(),
 });
 
@@ -24,28 +25,20 @@ export default function SignupOtpScreen() {
   });
 
   return (
-    <YStack
-      flex={1}
-      paddingVertical="$4"
-      backgroundColor="$color1"
-      justifyContent="center"
-      alignItems="center"
-      gap="$3"
-      $sm={{ paddingHorizontal: "$4" }}
-    >
+    <PageContainer>
       <XStack
         flex={1}
         w="100%"
         justifyContent="center"
         alignItems="center"
         gap="$3"
-        $gtSm={{ maxWidth: "$20" }}
       >
         {[...Array(6)].map((_, i) => (
           <Input
             key={i}
             flex={1}
             h="$6"
+            maw="$4"
             p="$0"
             borderWidth="$1"
             borderRadius="$4"
@@ -67,7 +60,6 @@ export default function SignupOtpScreen() {
         <PrimaryBtn
           size="$4"
           w="100%"
-          $gtSm={{ maxWidth: "$20" }}
           onPress={async () => {
             try {
               await otpMutation.mutateAsync();
@@ -87,6 +79,6 @@ export default function SignupOtpScreen() {
           </Text>
         </XStack>
       </YStack>
-    </YStack>
+    </PageContainer>
   );
 }

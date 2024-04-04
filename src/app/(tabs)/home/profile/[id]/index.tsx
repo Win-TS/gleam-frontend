@@ -6,7 +6,6 @@ import { Dimensions } from "react-native";
 import {
   Text,
   View,
-  Image,
   Separator,
   Avatar,
   XStack,
@@ -20,6 +19,7 @@ import { z } from "zod";
 import DangerBtn from "@/src/components/DangerBtn";
 import HiveBtn from "@/src/components/HiveBtn";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
+import ProfileHeader from "@/src/components/ProfileHeader";
 import QueryPlaceholder from "@/src/components/QueryPlaceholder";
 import VerticalList from "@/src/components/VerticalList";
 import { useHiveListInfiniteQuery } from "@/src/hooks/hive";
@@ -100,31 +100,11 @@ const ProfileScreenNoHive = ({ userId }: { userId: number }) => {
         alignItems="center"
         gap="$3"
       >
-        <Image
-          source={{
-            uri: "https://placekitten.com/200/300",
-            width: 102,
-            height: 102,
-          }}
-          style={{ borderRadius: 50 }}
+        <QueryPlaceholder
+          query={userprofileQuery}
+          spinnerSize="large"
+          renderData={(data) => <ProfileHeader userprofile={data} />}
         />
-        <YStack w="100%" justifyContent="center" alignItems="center">
-          <QueryPlaceholder
-            query={userprofileQuery}
-            spinnerSize="large"
-            renderData={(data) => (
-              <>
-                <Text h="$2.5" fontSize="$7" fontWeight="bold" color="$color11">
-                  {[data.firstname, data.lastname].join(" ")}
-                </Text>
-
-                <Text fontSize="$4" fontWeight="normal" color="$color11">
-                  {data.username}
-                </Text>
-              </>
-            )}
-          />
-        </YStack>
         <XStack justifyContent="center" alignItems="center" gap="$3">
           <PrimaryBtn w="$10" size="$2.5">
             FOLLOW

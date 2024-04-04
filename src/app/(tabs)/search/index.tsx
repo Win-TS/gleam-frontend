@@ -1,11 +1,13 @@
 import { Link } from "expo-router";
 import React, { useMemo } from "react";
 import { Dimensions } from "react-native";
-import { Button, Input, Text, View, YStack, ZStack } from "tamagui";
+import { Button, Input, Text, View, YStack, ZStack, useTheme } from "tamagui";
 
 import HiveBtn from "@/src/components/HiveBtn";
+import PageContainer from "@/src/components/PageContainer";
 import VerticalList from "@/src/components/VerticalList";
 import { useHiveListInfiniteQuery } from "@/src/hooks/hive";
+import { FontAwesome } from "@expo/vector-icons";
 
 const JoinHiveList = () => {
   const hiveListInfiniteQuery = useHiveListInfiniteQuery();
@@ -17,7 +19,7 @@ const JoinHiveList = () => {
 
   return (
     <>
-      <YStack w="100%" $gtSm={{ maxWidth: "$20" }}>
+      <YStack w="100%">
         <Text>EXPLORE</Text>
       </YStack>
       <View
@@ -45,28 +47,22 @@ const JoinHiveList = () => {
 };
 
 export default function SearchScreen() {
+  const theme = useTheme();
+
   return (
-    <View
-      flex={1}
-      paddingVertical="$4"
-      backgroundColor="$color1"
-      justifyContent="flex-start"
-      alignItems="center"
-      overflow="scroll"
-      gap="$3"
-      $sm={{ paddingHorizontal: "$4" }}
-    >
+    <PageContainer>
       <Input
         size="$3"
         w="100%"
         borderWidth="$1"
         borderRadius="$6"
         placeholder="What're you looking for?"
-        $gtSm={{ maxWidth: "$20" }}
       />
 
-      <YStack w="100%" $gtSm={{ maxWidth: "$20" }}>
+      <YStack w="100%">
         <Text>CREATE NEW HIVE</Text>
+      </YStack>
+      <YStack w="100%">
         <Link href="/(tabs)/search/create" asChild>
           <Button w="$10" aspectRatio={1} unstyled>
             <ZStack
@@ -87,7 +83,7 @@ export default function SearchScreen() {
                 justifyContent="center"
                 alignItems="center"
               >
-                <Text>+</Text>
+                <FontAwesome name="plus" color={theme.color1.val} size={48} />
               </View>
             </ZStack>
           </Button>
@@ -95,6 +91,6 @@ export default function SearchScreen() {
       </YStack>
 
       <JoinHiveList />
-    </View>
+    </PageContainer>
   );
 }

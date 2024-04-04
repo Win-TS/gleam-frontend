@@ -13,6 +13,7 @@ import {
   Sheet,
   Text,
   View,
+  XStack,
   YStack,
   useTheme,
 } from "tamagui";
@@ -20,7 +21,9 @@ import z from "zod";
 
 import ActionDialog from "@/src/components/ActionDialog";
 import DangerBtn from "@/src/components/DangerBtn";
+import PageContainer from "@/src/components/PageContainer";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
+import QueryPlaceholder from "@/src/components/QueryPlaceholder";
 import SecondaryBtn from "@/src/components/SecondaryBtn";
 import VerticalList from "@/src/components/VerticalList";
 import { useHivePostListInfiniteQuery, useHiveQuery } from "@/src/hooks/hive";
@@ -34,6 +37,14 @@ const HiveDescription = ({ hiveId }: { hiveId: number }) => {
 
   return (
     <View w="100%" justifyContent="center" alignItems="center" gap="$1">
+      <Text
+        fontSize="$2"
+        fontWeight="bold"
+        textAlign="center"
+        textOverflow="ellipsis"
+      >
+        {hiveQuery.data?.tag_name}
+      </Text>
       {edit ? (
         <>
           <Input
@@ -42,6 +53,7 @@ const HiveDescription = ({ hiveId }: { hiveId: number }) => {
             w="100%"
             borderWidth="$1"
             borderColor="$gleam12"
+            fontSize="$6"
             fontWeight="bold"
           />
           <Input
@@ -57,7 +69,12 @@ const HiveDescription = ({ hiveId }: { hiveId: number }) => {
         </>
       ) : (
         <>
-          <Text fontWeight="bold" textAlign="center" textOverflow="ellipsis">
+          <Text
+            fontSize="$6"
+            fontWeight="bold"
+            textAlign="center"
+            textOverflow="ellipsis"
+          >
             {hiveQuery.data?.group_name}
           </Text>
           <Text fontSize="$2" textAlign="center" textOverflow="ellipsis">
@@ -88,13 +105,10 @@ const HiveJoinBtn = () => {
           <Input
             h="$12"
             w="100%"
-            $gtSm={{ maxWidth: "$20" }}
             placeholder="Anything you want to tell the league owner?"
             multiline
           />
-          <SecondaryBtn w="100%" $gtSm={{ maxWidth: "$20" }}>
-            REQUEST
-          </SecondaryBtn>
+          <SecondaryBtn w="100%">REQUEST</SecondaryBtn>
         </Sheet.Frame>
       </Sheet>
     </>
@@ -285,7 +299,19 @@ const HiveHeader = ({ hiveId }: { hiveId: number }) => {
             justifyContent="center"
             alignItems="center"
           >
-            37 members
+            <XStack gap="$2">
+              <QueryPlaceholder
+                query={hiveQuery}
+                renderData={(data) => (
+                  <Text color="$color1" fontWeight="bold">
+                    {data.total_member}
+                  </Text>
+                )}
+              ></QueryPlaceholder>
+              <Text color="$color1" fontWeight="bold">
+                members
+              </Text>
+            </XStack>
           </PrimaryBtn>
         </Link>
       </YStack>
@@ -293,12 +319,8 @@ const HiveHeader = ({ hiveId }: { hiveId: number }) => {
   );
 };
 
-const params = z.object({
-  id: z.coerce.number(),
-});
-
-export default function HiveScreen() {
-  const { id: hiveId } = params.parse(useLocalSearchParams<{ id: string }>());
+const HiveBody = ({ hiveId }: { hiveId: number }) => {
+  const hiveQuery = useHiveQuery(hiveId);
   const hivePostListInfiniteQuery = useHivePostListInfiniteQuery(hiveId);
 
   const flattenedHivePostList = useMemo(
@@ -308,31 +330,17 @@ export default function HiveScreen() {
   );
 
   return (
-    <PortalProvider>
-      <YStack
-        flex={1}
-        paddingVertical="$4"
-        backgroundColor="$color1"
-        justifyContent="flex-start"
-        alignItems="center"
-        overflow="scroll"
-        gap="$3"
-        $sm={{ paddingHorizontal: "$4" }}
-      >
-        <View
-          flex={1}
-          w={Math.min(Dimensions.get("window").width - 16)}
-          $gtSm={{ maxWidth: 290 }}
-        >
+    <QueryPlaceholder
+      query={hiveQuery}
+      spinnerSize="large"
+      renderData={(data) =>
+        data.visibility ? (
+          <Text>This hive is only visible to its member</Text>
+        ) : (
           <VerticalList
             data={flattenedHivePostList}
             numColumns={3}
             ItemSeparatorComponent={() => <View h="$0.75" />}
-            ListHeaderComponent={() => (
-              <View w="100%" paddingBottom="$3">
-                <HiveHeader hiveId={hiveId} />
-              </View>
-            )}
             estimatedItemSize={
               Math.min(Dimensions.get("window").width - 32, 290) / 3
             }
@@ -347,8 +355,33 @@ export default function HiveScreen() {
               </View>
             )}
           />
+        )
+      }
+    />
+  );
+};
+
+const params = z.object({
+  id: z.coerce.number(),
+});
+
+export default function HiveScreen() {
+  const { id: hiveId } = params.parse(useLocalSearchParams<{ id: string }>());
+
+  return (
+    <PortalProvider>
+      <PageContainer>
+        <View w="100%" paddingBottom="$3">
+          <HiveHeader hiveId={hiveId} />
         </View>
-      </YStack>
+        <View
+          flex={1}
+          w={Math.min(Dimensions.get("window").width - 16)}
+          $gtSm={{ maxWidth: 290 }}
+        >
+          <HiveBody hiveId={hiveId} />
+        </View>
+      </PageContainer>
     </PortalProvider>
   );
 }

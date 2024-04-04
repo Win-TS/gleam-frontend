@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { z, ZodError } from "zod";
 
@@ -72,5 +72,18 @@ export const useHivePostListInfiniteQuery = (hiveId: number) => {
     initialPageParam: 0,
     getPreviousPageParam: (firstPage) => firstPage.previousOffset ?? undefined,
     getNextPageParam: (lastPage) => lastPage.nextOffset ?? undefined,
+  });
+};
+
+export const useDeleteHiveMutation = (hiveId: number) => {
+  return useMutation<void, AxiosError<{ message: string }>>({
+    mutationFn: async () => {
+      return await axios.delete("/group_v1/group", {
+        baseURL: process.env.EXPO_PUBLIC_GROUP_API,
+        params: {
+          group_id: hiveId,
+        },
+      });
+    },
   });
 };

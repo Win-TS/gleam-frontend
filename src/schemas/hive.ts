@@ -12,16 +12,16 @@ export const hive_ = z.object({
     String: z.string(),
     Valid: z.boolean(),
   }),
-  tag_id: z.optional(z.coerce.number()), // TODO: ask backend which one is getting returned
-  tag_name: z.optional(z.string()),
+  tag_name: z.string(),
   frequency: z.object({
     Int32: z.coerce.number(),
     Valid: z.boolean(),
   }),
   max_members: z.coerce.number(),
+  total_member: z.coerce.number(),
   group_type: z.string(),
   visibility: z.boolean(),
-  created_at: z.string(),
+  created_at: z.string().datetime(),
 });
 
 export type Hive = z.infer<typeof hive_>;

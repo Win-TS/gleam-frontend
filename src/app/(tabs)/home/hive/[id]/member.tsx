@@ -3,11 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
-import { Dimensions } from "react-native";
+import { Dimensions, useWindowDimensions } from "react-native";
 import {
   Input,
   XStack,
-  YStack,
   Separator,
   Avatar,
   Text,
@@ -17,6 +16,7 @@ import {
 import z from "zod";
 
 import ActionDialog from "@/src/components/ActionDialog";
+import PageContainer from "@/src/components/PageContainer";
 import VerticalList from "@/src/components/VerticalList";
 
 type MEMBERLIST = {
@@ -34,14 +34,7 @@ const MemberInList = ({ name, role }: { name: string; role: string }) => {
   const rankConversion = role === "member" ? "Promote" : "Demote";
 
   return (
-    <XStack
-      w="100%"
-      alignItems="center"
-      gap="$2.5"
-      $gtSm={{ maxWidth: "$20" }}
-      marginVertical="$2"
-      marginHorizontal="$2.5"
-    >
+    <XStack w="100%" alignItems="center" gap="$2.5" my="$2" mx="$2.5">
       <Avatar circular size="$4">
         <Avatar.Fallback bc="grey" />
       </Avatar>
@@ -88,6 +81,8 @@ const params = z.object({
 export default function MemberScreen() {
   const { id: hiveId } = params.parse(useLocalSearchParams<{ id: string }>());
 
+  const { width } = useWindowDimensions();
+
   const userListQuery = useQuery<
     AxiosResponse,
     AxiosError<{ message: string }>
@@ -102,46 +97,51 @@ export default function MemberScreen() {
   });
 
   return (
-    <YStack flex={1} backgroundColor="$gleam1">
+    <PageContainer>
       <Input
         size="$3"
         w="100%"
         borderWidth="$1"
         borderRadius="$6"
         placeholder="What're you looking for?"
-        $gtSm={{ maxWidth: "$20" }}
       />
-      <VerticalList
-        data={userListQuery.data?.data ?? []}
-        numColumns={1}
-        ItemSeparatorComponent={() => (
-          <Separator
-            w={Dimensions.get("window").width}
-            borderColor="$gleam12"
-            $gtSm={{ maxWidth: "$20" }}
-          />
-        )}
-        estimatedItemSize={Dimensions.get("window").width}
-        renderItem={({
-          item,
-          index,
-        }: {
-          item: MEMBERLIST | number;
-          index: number;
-        }) => (
-          <View flex={1} paddingHorizontal="$1.5">
-            <MemberInList
-              name={
-                typeof item === "number"
-                  ? item.toString()
-                  : item.member_id.toString()
-              }
-              role={typeof item === "number" ? "member" : item.role}
-              key={index}
+      <View
+        flex={1}
+        w={Math.min(Dimensions.get("window").width - 16)}
+        $gtSm={{ maxWidth: 290 }}
+      >
+        <VerticalList
+          data={userListQuery.data?.data ?? []}
+          numColumns={1}
+          ItemSeparatorComponent={() => (
+            <Separator
+              w={width}
+              $gtSm={{ maxWidth: "$20" }}
+              borderColor="$gleam12"
             />
-          </View>
-        )}
-      />
-    </YStack>
+          )}
+          estimatedItemSize={Dimensions.get("window").width}
+          renderItem={({
+            item,
+            index,
+          }: {
+            item: MEMBERLIST | number;
+            index: number;
+          }) => (
+            <View flex={1} paddingHorizontal="$1.5">
+              <MemberInList
+                name={
+                  typeof item === "number"
+                    ? item.toString()
+                    : item.member_id.toString()
+                }
+                role={typeof item === "number" ? "member" : item.role}
+                key={index}
+              />
+            </View>
+          )}
+        />
+      </View>
+    </PageContainer>
   );
 }

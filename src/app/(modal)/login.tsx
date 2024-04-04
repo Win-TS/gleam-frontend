@@ -5,23 +5,14 @@ import { Link } from "expo-router";
 import { FirebaseError } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import React from "react";
-import {
-  Button,
-  View,
-  Text,
-  Input,
-  Checkbox,
-  YStack,
-  XStack,
-  useTheme,
-} from "tamagui";
+import { Text, Checkbox, YStack, XStack } from "tamagui";
 
+import PageContainer from "@/src/components/PageContainer";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
 import SecondaryBtn from "@/src/components/SecondaryBtn";
+import SecondaryInput from "@/src/components/SecondaryInput";
 
 export default function LoginScreen() {
-  const theme = useTheme();
-
   type FormFields = {
     email: string;
     password: string;
@@ -47,15 +38,7 @@ export default function LoginScreen() {
   });
 
   return (
-    <YStack
-      flex={1}
-      paddingVertical="$4"
-      backgroundColor="$color1"
-      justifyContent="center"
-      alignItems="center"
-      gap="$3"
-      $sm={{ paddingHorizontal: "$4" }}
-    >
+    <PageContainer>
       <YStack
         flex={1}
         w="100%"
@@ -67,86 +50,46 @@ export default function LoginScreen() {
           <form.Field
             name="email"
             children={(field) => (
-              <Input
-                size="$3"
+              <SecondaryInput
                 w="100%"
-                borderWidth="$1"
-                borderRadius="$6"
                 placeholder="Email"
-                $gtSm={{ maxWidth: "$20" }}
                 value={field.state.value}
                 onBlur={field.handleBlur}
                 onChangeText={field.handleChange}
               />
             )}
           />
-          <View position="relative" w="100%" $gtSm={{ maxWidth: "$20" }}>
-            <form.Field
-              name="password"
-              children={(field) => (
-                <Input
-                  size="$3"
-                  w="100%"
-                  borderWidth="$1"
-                  borderRadius="$6"
-                  placeholder="Password"
-                  secureTextEntry
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChangeText={field.handleChange}
-                />
-              )}
-            />
-            <View
-              position="absolute"
-              flex={1}
-              right="$0"
-              top="$0"
-              h="$3"
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Button size="$3" borderRadius="$6" chromeless>
-                <FontAwesome
-                  size={16}
-                  color={theme.color9.val}
-                  name="eye-slash"
-                />
-              </Button>
-            </View>
-          </View>
-          <YStack h="$1" w="100%" $gtSm={{ maxWidth: "$20" }}>
-            <XStack alignSelf="flex-start" flex={1} gap="$2">
-              <Checkbox size="$3">
-                <Checkbox.Indicator>
-                  <FontAwesome name="check" />
-                </Checkbox.Indicator>
-              </Checkbox>
-              <Text color="#b8ab8c" fontSize="$3" fontWeight="bold">
-                remember me
-              </Text>
-            </XStack>
-          </YStack>
-          <YStack
-            position="relative"
-            h="$4"
-            w="100%"
-            $gtSm={{ maxWidth: "$20" }}
-          >
-            <Text color="#ff0000" fontSize="$2" fontWeight="bold">
-              {loginMutation.error?.message ?? ""}
+          <form.Field
+            name="password"
+            children={(field) => (
+              <SecondaryInput
+                w="100%"
+                password
+                placeholder="Password"
+                value={field.state.value}
+                onBlur={field.handleBlur}
+                onChangeText={field.handleChange}
+              />
+            )}
+          />
+          <XStack h="$1" w="100%" alignSelf="flex-start" gap="$2">
+            <Checkbox size="$3">
+              <Checkbox.Indicator>
+                <FontAwesome name="check" />
+              </Checkbox.Indicator>
+            </Checkbox>
+            <Text color="#b8ab8c" fontSize="$3" fontWeight="bold">
+              remember me
             </Text>
-          </YStack>
-          <PrimaryBtn
-            size="$4"
-            w="100%"
-            $gtSm={{ maxWidth: "$20" }}
-            onPress={form.handleSubmit}
-          >
+          </XStack>
+          <Text h="$4" w="100%" color="#ff0000" fontSize="$2" fontWeight="bold">
+            {loginMutation.error?.message ?? ""}
+          </Text>
+          <PrimaryBtn size="$4" w="100%" onPress={form.handleSubmit}>
             LOG IN
           </PrimaryBtn>
           <Link href="/signup/form" replace asChild>
-            <SecondaryBtn size="$4" w="100%" $gtSm={{ maxWidth: "$20" }}>
+            <SecondaryBtn size="$4" w="100%">
               SIGN UP
             </SecondaryBtn>
           </Link>
@@ -155,6 +98,6 @@ export default function LoginScreen() {
       <Text h="$4" color="#b8ab8c" fontSize="$2" fontWeight="bold">
         Forgot password?
       </Text>
-    </YStack>
+    </PageContainer>
   );
 }

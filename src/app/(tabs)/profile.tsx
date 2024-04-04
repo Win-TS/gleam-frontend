@@ -1,11 +1,11 @@
 // import { ChevronRight } from "@tamagui/lucide-icons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { useForm } from "@tanstack/react-form";
 import React, { useState } from "react";
-import { Dimensions } from "react-native";
+import { useWindowDimensions } from "react-native";
 import {
   Text,
   View,
-  Image,
   Separator,
   Avatar,
   XStack,
@@ -14,41 +14,105 @@ import {
   useTheme,
 } from "tamagui";
 
+import ImagePicker from "@/src/components/ImagePicker";
+import PageContainer from "@/src/components/PageContainer";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
+import ProfileHeader from "@/src/components/ProfileHeader";
 import QueryPlaceholder from "@/src/components/QueryPlaceholder";
 import SwitchWithLabel from "@/src/components/SwitchWithLabel";
-import { useNameMutation, useUserprofileQuery } from "@/src/hooks/user";
+import { useUserprofileMutation, useUserprofileQuery } from "@/src/hooks/user";
+import { Userprofile } from "@/src/schemas/userprofile";
 import { useUserStore } from "@/src/stores/user";
+
+const ProfileFormHeader = ({
+  userprofile,
+  setIsEditProfile,
+}: {
+  userprofile: Userprofile;
+  setIsEditProfile: (edit: boolean) => void;
+}) => {
+  const userprofileMutation = useUserprofileMutation({
+    onSettled: () => setIsEditProfile(false),
+  });
+
+  const form = useForm({
+    defaultValues: {
+      photo: undefined as string | undefined,
+      firstname: userprofile.firstname,
+      lastname: userprofile.lastname,
+    },
+    onSubmit: async ({ value }) => {
+      try {
+        await userprofileMutation.mutateAsync(value);
+      } catch {}
+    },
+  });
+
+  return (
+    <YStack w="100%" justifyContent="center" alignItems="center" gap="$3">
+      <form.Provider>
+        <form.Field
+          name="photo"
+          children={(field) => (
+            <ImagePicker
+              image={field.state.value ?? userprofile.photo_url}
+              setImage={field.handleChange}
+            />
+          )}
+        />
+        <YStack w="100%" justifyContent="center" alignItems="center" gap="$1">
+          <XStack w="100%" justifyContent="center" alignItems="center" gap="$2">
+            <form.Field
+              name="firstname"
+              children={(field) => (
+                <Input
+                  flex={1}
+                  h="$2.5"
+                  backgroundColor="$gleam1"
+                  color="$color11"
+                  value={field.state.value}
+                  onChangeText={field.handleChange}
+                />
+              )}
+            />
+            <form.Field
+              name="lastname"
+              children={(field) => (
+                <Input
+                  flex={1}
+                  h="$2.5"
+                  backgroundColor="$gleam1"
+                  color="$color11"
+                  value={field.state.value}
+                  onChangeText={field.handleChange}
+                />
+              )}
+            />
+          </XStack>
+        </YStack>
+        <Text fontSize="$4" fontWeight="normal" color="$color11">
+          {userprofile.username}
+        </Text>
+        <PrimaryBtn size="$2.5" w="$12" onPress={form.handleSubmit}>
+          DONE
+        </PrimaryBtn>
+      </form.Provider>
+    </YStack>
+  );
+};
 
 export default function ProfileScreen() {
   const theme = useTheme();
+  const { width } = useWindowDimensions();
 
   const userStore = useUserStore();
 
   const [isEditProfile, setIsEditProfile] = useState<boolean>(false);
-  const [firstname, setFirstname] = useState<string>();
-  const [lastname, setLastname] = useState<string>();
 
   const userprofileQuery = useUserprofileQuery(userStore.user?.id ?? 1);
-  const nameMutation = useNameMutation(userStore.user?.id ?? 1);
-
-  const toggleEditProfile = (value: boolean) => {
-    setFirstname(userprofileQuery.data?.firstname ?? "");
-    setLastname(userprofileQuery.data?.lastname ?? "");
-    setIsEditProfile(value);
-  };
 
   return (
-    <YStack
-      flex={1}
-      paddingVertical="$4"
-      backgroundColor="$color1"
-      justifyContent="flex-start"
-      alignItems="center"
-      overflow="scroll"
-      gap="$3"
-      $sm={{ paddingHorizontal: "$4" }}
-    >
+    <PageContainer>
       <YStack
         p="$3"
         w="100%"
@@ -61,89 +125,32 @@ export default function ProfileScreen() {
         justifyContent="center"
         alignItems="center"
         gap="$3"
-        $gtSm={{ maxWidth: "$20" }}
       >
         <QueryPlaceholder
           query={userprofileQuery}
           spinnerSize="large"
-          renderData={(data) => (
-            <Image
-              source={{
-                uri: data.photo_url,
-                width: 102,
-                height: 102,
-              }}
-              style={{ borderRadius: 50 }}
-            />
-          )}
-        />
-
-        <QueryPlaceholder
-          query={userprofileQuery}
-          spinnerSize="large"
-          renderData={(data) => (
-            <YStack w="100%" justifyContent="center" alignItems="center">
-              {isEditProfile ? (
-                <XStack
-                  w="100%"
-                  justifyContent="center"
-                  alignItems="center"
-                  gap="$2"
+          renderData={(data) =>
+            isEditProfile ? (
+              <ProfileFormHeader
+                userprofile={data}
+                setIsEditProfile={setIsEditProfile}
+              />
+            ) : (
+              <>
+                <ProfileHeader userprofile={data} />
+                <PrimaryBtn
+                  size="$2.5"
+                  w="$12"
+                  onPress={() => {
+                    setIsEditProfile(true);
+                  }}
                 >
-                  <Input
-                    flex={1}
-                    h="$2.5"
-                    backgroundColor="$gleam1"
-                    color="$color11"
-                    value={firstname}
-                    onChangeText={setFirstname}
-                  />
-                  <Input
-                    flex={1}
-                    h="$2.5"
-                    backgroundColor="$gleam1"
-                    color="$color11"
-                    value={lastname}
-                    onChangeText={setLastname}
-                  />
-                </XStack>
-              ) : (
-                <Text h="$2.5" fontSize="$7" fontWeight="bold" color="$color11">
-                  {data.firstname} {data.lastname}
-                </Text>
-              )}
-              <Text fontSize="$4" fontWeight="normal" color="$color11">
-                {data.username}
-              </Text>
-            </YStack>
-          )}
+                  EDIT PROFILE
+                </PrimaryBtn>
+              </>
+            )
+          }
         />
-
-        {isEditProfile ? (
-          <PrimaryBtn
-            size="$2.5"
-            w="$12"
-            onPress={async () => {
-              try {
-                if (firstname && lastname)
-                  await nameMutation.mutateAsync({ firstname, lastname });
-              } catch {}
-              toggleEditProfile(false);
-            }}
-          >
-            DONE
-          </PrimaryBtn>
-        ) : (
-          <PrimaryBtn
-            size="$2.5"
-            w="$12"
-            onPress={() => {
-              toggleEditProfile(true);
-            }}
-          >
-            EDIT PROFILE
-          </PrimaryBtn>
-        )}
         {!isEditProfile && (
           <XStack gap="$3">
             <YStack w="$5" justifyContent="center" alignItems="center">
@@ -180,7 +187,6 @@ export default function ProfileScreen() {
         justifyContent="center"
         alignItems="center"
         gap="$3"
-        $gtSm={{ maxWidth: "$20" }}
       >
         <Text color="$color1" fontSize="$4" fontWeight="bold">
           HIGHEST STREAKS
@@ -193,7 +199,7 @@ export default function ProfileScreen() {
         </Text>
       </XStack>
 
-      <YStack w="100%" gap="$3" $gtSm={{ maxWidth: "$20" }}>
+      <YStack w="100%" gap="$3">
         <XStack>
           <Text flex={1} color="$color11">
             BADGES
@@ -210,7 +216,7 @@ export default function ProfileScreen() {
       </YStack>
 
       {isEditProfile ? (
-        <XStack w="100%" gap="$3" $gtSm={{ maxWidth: "$20" }}>
+        <XStack w="100%" gap="$3">
           <Text flex={1} color="$color11">
             MY HIVE
           </Text>
@@ -218,17 +224,8 @@ export default function ProfileScreen() {
         </XStack>
       ) : (
         <>
-          <Separator
-            w={Dimensions.get("window").width}
-            borderColor="$gleam12"
-            $gtSm={{ maxWidth: "$20" }}
-          />
-          <XStack
-            w="100%"
-            alignItems="center"
-            gap="$3"
-            $gtSm={{ maxWidth: "$20" }}
-          >
+          <Separator w={width} $gtSm={{ maw: "$20" }} borderColor="$gleam12" />
+          <XStack w="100%" alignItems="center" gap="$3">
             <Text flex={1} color="$color11">
               MY HIVE
             </Text>
@@ -240,13 +237,9 @@ export default function ProfileScreen() {
               />
             </View>
           </XStack>
-          <Separator
-            w={Dimensions.get("window").width}
-            borderColor="$gleam12"
-            $gtSm={{ maxWidth: "$20" }}
-          />
+          <Separator w={width} $gtSm={{ maw: "$20" }} borderColor="$gleam12" />
         </>
       )}
-    </YStack>
+    </PageContainer>
   );
 }
