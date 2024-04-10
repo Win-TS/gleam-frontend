@@ -1,8 +1,7 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Stack, router, useLocalSearchParams } from "expo-router";
+import { Stack, router } from "expo-router";
 import React from "react";
 import { Button, useTheme } from "tamagui";
-import z from "zod";
 
 import { useClientOnlyValue } from "@/src/components/useClientOnlyValue";
 

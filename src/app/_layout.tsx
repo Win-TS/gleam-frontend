@@ -17,7 +17,7 @@ import React, { useEffect } from "react";
 import { AppState, AppStateStatus, Platform } from "react-native";
 // @ts-expect-error
 import { ModalView } from "react-native-ios-modal";
-import { TamaguiProvider, Image, setupNativeSheet } from "tamagui";
+import { TamaguiProvider, setupNativeSheet } from "tamagui";
 
 import { fonts } from "@/assets";
 import { useColorScheme } from "@/src/components/useColorScheme";

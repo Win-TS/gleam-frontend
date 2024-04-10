@@ -1,11 +1,11 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Tabs } from "expo-router";
 import React from "react";
+import { useTheme } from "tamagui";
 
 import { useClientOnlyValue } from "@/src/components/useClientOnlyValue";
 import { useColorScheme } from "@/src/components/useColorScheme";
 import Colors from "@/src/constants/Colors";
-import { useTheme } from "tamagui";
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {

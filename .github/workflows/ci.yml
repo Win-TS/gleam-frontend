@@ -8,67 +8,34 @@ on:
   workflow_dispatch:
 
 jobs:
-  cache-dependencies:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Enable Corepack
-        run: corepack enable
-
-      - name: Setup node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "pnpm"
-
-      - name: Install Dependencies
-        run: pnpm install
-
   format-lint:
-    needs: [cache-dependencies]
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Enable Corepack
-        run: corepack enable
-
-      - name: Setup node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "pnpm"
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v1
 
       - name: Install Dependencies
-        run: pnpm install
+        run: bun install
 
       - name: Run Lint
-        run: pnpm eslint .
+        run: bun eslint .
 
   typecheck:
-    needs: [cache-dependencies]
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Enable Corepack
-        run: corepack enable
-
-      - name: Setup node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "pnpm"
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v1
 
       - name: Install Dependencies
-        run: pnpm install
+        run: bun install
 
       - name: Run Typecheck
-        run: pnpm tsc --noEmit --skipLibCheck --project ./tsconfig.json
+        run: bun tsc --noEmit --skipLibCheck --project ./tsconfig.json

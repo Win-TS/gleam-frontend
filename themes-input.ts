@@ -1,6 +1,5 @@
 import { createThemeBuilder, objectEntries } from "@tamagui/theme-builder";
 import {
-  componentThemeDefinitions,
   palettes,
   templates,
   masks,

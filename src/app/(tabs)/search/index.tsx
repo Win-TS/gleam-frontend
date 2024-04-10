@@ -1,3 +1,4 @@
+import { FontAwesome } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import React, { useMemo } from "react";
 import { Dimensions } from "react-native";
@@ -7,7 +8,6 @@ import HiveBtn from "@/src/components/HiveBtn";
 import PageContainer from "@/src/components/PageContainer";
 import VerticalList from "@/src/components/VerticalList";
 import { useHiveListInfiniteQuery } from "@/src/hooks/hive";
-import { FontAwesome } from "@expo/vector-icons";
 
 const JoinHiveList = () => {
   const hiveListInfiniteQuery = useHiveListInfiniteQuery();

@@ -160,7 +160,7 @@ export const useDeletePostReactionMutation = (
     mutationFn: async () => {
       const filteredReaction = postReactionsQuery.data?.filter(
         ({ member_id, reaction: postReaction }) =>
-          member_id === (userStore.user?.id ?? 1) && postReaction == reaction,
+          member_id === (userStore.user?.id ?? 1) && postReaction === reaction,
       )?.[0];
       if (filteredReaction) {
         return await axios.delete("/reaction_v1/reaction", {
