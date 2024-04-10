@@ -15,4 +15,15 @@ export const post_ = z.object({
   created_at: z.string(),
 });
 
+export const feedPost_ = post_.extend({
+  group_name: z.string(),
+  group_photo_url: z.object({
+    String: z.string(),
+    Valid: z.boolean(),
+  }),
+  poster_username: z.string(),
+  poster_photo_url: z.string(),
+});
+
 export type Post = z.infer<typeof post_>;
+export type FeedPost = z.infer<typeof feedPost_>;

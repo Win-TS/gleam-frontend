@@ -1,9 +1,4 @@
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Inter_400Regular, Inter_700Bold } from "@expo-google-fonts/inter";
-import {
-  Silkscreen_400Regular,
-  Silkscreen_700Bold,
-} from "@expo-google-fonts/silkscreen";
+import { FontAwesome } from "@expo/vector-icons";
 import { SpaceMono_400Regular } from "@expo-google-fonts/space-mono";
 import {
   DarkTheme,
@@ -19,12 +14,12 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
-
 import { AppState, AppStateStatus, Platform } from "react-native";
 // @ts-expect-error
 import { ModalView } from "react-native-ios-modal";
-import { TamaguiProvider, setupNativeSheet } from "tamagui";
+import { TamaguiProvider, Image, setupNativeSheet } from "tamagui";
 
+import { fonts } from "@/assets";
 import { useColorScheme } from "@/src/components/useColorScheme";
 import { useFirebaseStore } from "@/src/stores/firebase";
 import { config } from "@/tamagui.config";
@@ -62,10 +57,7 @@ export default function RootLayout() {
   }, []);
 
   const [loaded, error] = useFonts({
-    Inter: Inter_400Regular,
-    InterBold: Inter_700Bold,
-    Silkscreen: Silkscreen_400Regular,
-    SilkscreenBold: Silkscreen_700Bold,
+    ...fonts,
     SpaceMono: SpaceMono_400Regular,
     ...FontAwesome.font,
   });
@@ -82,9 +74,7 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  if (!loaded) {
-    return null;
-  }
+  if (!loaded) return null;
 
   return <RootLayoutNav />;
 }

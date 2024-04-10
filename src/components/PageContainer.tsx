@@ -12,7 +12,7 @@ export default function ({
   return (
     <YStack
       flex={1}
-      paddingVertical="$4"
+      py="$4"
       backgroundColor="$color1"
       justifyContent="flex-start"
       alignItems="center"

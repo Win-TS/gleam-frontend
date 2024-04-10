@@ -13,30 +13,9 @@ export default function StackLayout() {
       }}
     >
       <Stack.Screen
-        name="index"
-        options={{
-          title: "Home",
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="hive"
-        options={{
-          title: "Hive",
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="post"
+        name="[id]"
         options={{
           title: "Post",
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="profile"
-        options={{
-          title: "Profile",
           headerShown: false,
         }}
       />

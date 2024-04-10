@@ -26,7 +26,8 @@ import PrimaryBtn from "@/src/components/PrimaryBtn";
 import QueryPlaceholder from "@/src/components/QueryPlaceholder";
 import SecondaryBtn from "@/src/components/SecondaryBtn";
 import VerticalList from "@/src/components/VerticalList";
-import { useHivePostListInfiniteQuery, useHiveQuery } from "@/src/hooks/hive";
+import { useHiveQuery } from "@/src/hooks/hive";
+import { useHivePostListInfiniteQuery } from "@/src/hooks/post";
 
 export const editAtom = atom(false);
 
