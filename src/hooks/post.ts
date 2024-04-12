@@ -120,6 +120,35 @@ export const usePostReactionsQuery = (postId: number) => {
   });
 };
 
+export const useCreatePostMutation = () => {
+  const userStore = useUserStore();
+
+  return useMutation<
+    void,
+    AxiosError<{ message: string }>,
+    {
+      hiveId: number;
+      photo: string;
+    }
+  >({
+    mutationFn: async ({ hiveId, photo }) => {
+      const photoBlob = await (await fetch(photo)).blob();
+      const postFormData = new FormData();
+      postFormData.append("member_id", (userStore.user?.id ?? 1).toString());
+      postFormData.append("group_id", hiveId.toString());
+      postFormData.append("description", "");
+      postFormData.append(
+        "photo",
+        photoBlob,
+        `${userStore.user?.id ?? 1}_${Date.now()}.${photo.split(";")[0].split("/")[1]}`,
+      );
+      return await axios.post("/post_v1/post", postFormData, {
+        baseURL: process.env.EXPO_PUBLIC_GROUP_API,
+      });
+    },
+  });
+};
+
 export const useCreatePostReactionMutation = (
   postId: number,
   reaction: string,
@@ -154,22 +183,16 @@ export const useDeletePostReactionMutation = (
   const userStore = useUserStore();
   const queryClient = useQueryClient();
 
-  const postReactionsQuery = usePostReactionsQuery(postId);
-
   return useMutation<void, AxiosError<{ message: string }>>({
     mutationFn: async () => {
-      const filteredReaction = postReactionsQuery.data?.filter(
-        ({ member_id, reaction: postReaction }) =>
-          member_id === (userStore.user?.id ?? 1) && postReaction === reaction,
-      )?.[0];
-      if (filteredReaction) {
-        return await axios.delete("/reaction_v1/reaction", {
-          baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-          params: {
-            reaction_id: filteredReaction.reaction_id,
-          },
-        });
-      }
+      return await axios.delete("/reaction_v1/reaction", {
+        baseURL: process.env.EXPO_PUBLIC_GROUP_API,
+        params: {
+          post_id: postId,
+          member_id: userStore.user?.id ?? 1,
+          reaction,
+        },
+      });
     },
     onSettled: async () => {
       return await queryClient.invalidateQueries({

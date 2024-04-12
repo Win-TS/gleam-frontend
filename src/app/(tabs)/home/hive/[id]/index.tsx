@@ -44,12 +44,12 @@ const HiveDescription = ({ hiveId }: { hiveId: number }) => {
         textAlign="center"
         textOverflow="ellipsis"
       >
-        {hiveQuery.data?.tag_name}
+        {hiveQuery.data?.group_info?.tag_name}
       </Text>
       {edit ? (
         <>
           <Input
-            value={hiveQuery.data?.group_name}
+            value={hiveQuery.data?.group_info?.group_name}
             paddingVertical="$1"
             w="100%"
             borderWidth="$1"
@@ -58,7 +58,7 @@ const HiveDescription = ({ hiveId }: { hiveId: number }) => {
             fontWeight="bold"
           />
           <Input
-            value={hiveQuery.data?.description?.String}
+            value={hiveQuery.data?.group_info?.description?.String}
             h="$8"
             w="100%"
             paddingVertical="$1"
@@ -76,10 +76,10 @@ const HiveDescription = ({ hiveId }: { hiveId: number }) => {
             textAlign="center"
             textOverflow="ellipsis"
           >
-            {hiveQuery.data?.group_name}
+            {hiveQuery.data?.group_info?.group_name}
           </Text>
           <Text fontSize="$2" textAlign="center" textOverflow="ellipsis">
-            {hiveQuery.data?.description?.String}
+            {hiveQuery.data?.group_info?.description?.String}
           </Text>
         </>
       )}
@@ -270,8 +270,8 @@ const HiveHeader = ({ hiveId }: { hiveId: number }) => {
             <Avatar circular size="$8">
               <Avatar.Image
                 src={
-                  hiveQuery.data?.photo_url.Valid
-                    ? hiveQuery.data?.photo_url.String
+                  hiveQuery.data?.group_info?.photo_url?.Valid
+                    ? hiveQuery.data?.group_info?.photo_url?.String
                     : undefined
                 }
               />
@@ -305,7 +305,7 @@ const HiveHeader = ({ hiveId }: { hiveId: number }) => {
                 query={hiveQuery}
                 renderData={(data) => (
                   <Text color="$color1" fontWeight="bold">
-                    {data.total_member}
+                    {data.group_info.total_member}
                   </Text>
                 )}
               ></QueryPlaceholder>
@@ -335,7 +335,7 @@ const HiveBody = ({ hiveId }: { hiveId: number }) => {
       query={hiveQuery}
       spinnerSize="large"
       renderData={(data) =>
-        data.visibility ? (
+        data.group_info.visibility ? (
           <Text>This hive is only visible to its member</Text>
         ) : (
           <VerticalList

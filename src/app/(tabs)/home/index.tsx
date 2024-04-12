@@ -266,6 +266,7 @@ const Feed = ({ postList }: { postList: FeedPost[] }) => {
       data={postList}
       numColumns={1}
       ItemSeparatorComponent={() => <View h="$1" />}
+      estimatedItemSize={366}
       renderItem={({ item }) => (
         <View px="$4">
           <FeedPostComponent post={item} />

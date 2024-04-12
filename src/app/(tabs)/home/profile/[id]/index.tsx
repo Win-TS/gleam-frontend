@@ -1,6 +1,6 @@
 // import { ChevronRight } from "@tamagui/lucide-icons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Link, useLocalSearchParams } from "expo-router";
+import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useMemo } from "react";
 import { Dimensions } from "react-native";
 import {
@@ -184,6 +184,9 @@ const params = z.object({
 
 export default function ProfileScreen() {
   const { id: userId } = params.parse(useLocalSearchParams<{ id: string }>());
+
+  const router = useRouter();
+
   const userprofileQuery = useUserprofileQuery(userId);
   const hiveListInfiniteQuery = useHiveListInfiniteQuery(); // TODO
 
@@ -240,7 +243,15 @@ export default function ProfileScreen() {
             onEndReached={hiveListInfiniteQuery.fetchNextPage}
             renderItem={({ item }) => (
               <View flex={1} paddingHorizontal="$1.5">
-                <HiveBtn hive={item} />
+                <HiveBtn
+                  hive={item}
+                  onPress={() =>
+                    router.replace({
+                      pathname: "/(tabs)/home/hive/[id]/",
+                      params: { id: item.group_id },
+                    })
+                  }
+                />
               </View>
             )}
           />

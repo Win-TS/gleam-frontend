@@ -1,7 +1,9 @@
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import * as ImagePicker from "expo-image-picker";
+import React, { useState } from "react";
 import { Pressable } from "react-native";
-import { View, ZStack, XStack, useTheme, Image, Circle } from "tamagui";
+import { View, ZStack, useTheme, Avatar } from "tamagui";
+
+import Pencil from "@/assets/icons/pencil.svg";
+import ImagePickerSheet from "@/src/components/ImagePickerSheet";
 
 export default function ({
   image,
@@ -11,104 +13,23 @@ export default function ({
   setImage: (image: string) => void;
 }) {
   const theme = useTheme();
+
+  const [open, setOpen] = useState(false);
+
   return (
-    <ZStack w="$12" h="$12">
-      {image && URL.canParse(image) ? (
-        <Image
-          source={{ width: 144, height: 144, uri: image }}
-          br={72}
-          borderColor="$gleam12"
-          bw="$1"
-        />
-      ) : (
-        <Circle w="$12" h="$12" bc="$color5" borderColor="$gleam12" bw="$1" />
-      )}
-      <View w="$12" h="$12" justifyContent="center" alignItems="center">
-        <XStack gap="$1.5">
-          <Pressable
-            onPress={async () => {
-              const result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                allowsEditing: true,
-                aspect: [1, 1],
-                quality: 1,
-              });
-
-              if (!result.canceled) {
-                setImage(result.assets[0].uri);
-              }
-            }}
-          >
-            <ZStack
-              w="$6"
-              h="$6"
-              borderColor="$gleam12"
-              borderRadius="$12"
-              bw="$1"
-            >
-              <View
-                w="100%"
-                h="100%"
-                borderRadius="$12"
-                backgroundColor="$color1"
-                opacity={0.5}
-              />
-              <View
-                w="100%"
-                h="100%"
-                borderRadius="$12"
-                justifyContent="center"
-                alignItems="center"
-              >
-                <FontAwesome size={36} color={theme.gleam12.val} name="photo" />
-              </View>
-            </ZStack>
-          </Pressable>
-          <Pressable
-            onPress={async () => {
-              const result = await ImagePicker.launchCameraAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                allowsEditing: true,
-                aspect: [1, 1],
-                quality: 1,
-              });
-
-              if (!result.canceled) {
-                setImage(result.assets[0].uri);
-              }
-            }}
-          >
-            <ZStack
-              w="$6"
-              h="$6"
-              borderColor="$gleam12"
-              borderRadius="$12"
-              bw="$1"
-            >
-              <View
-                w="100%"
-                h="100%"
-                borderRadius="$12"
-                backgroundColor="$color1"
-                opacity={0.5}
-              />
-              <View
-                w="100%"
-                h="100%"
-                borderRadius="$12"
-                justifyContent="center"
-                alignItems="center"
-              >
-                <FontAwesome
-                  size={36}
-                  color={theme.gleam12.val}
-                  name="camera"
-                />
-              </View>
-            </ZStack>
-          </Pressable>
-        </XStack>
-      </View>
-    </ZStack>
+    <>
+      <Pressable onPress={() => setOpen(true)}>
+        <ZStack pos="relative" w="$12" h="$12" zi="$0">
+          <Avatar circular size="$12" boc="$gleam12" bw="$1" zi="$0">
+            <Avatar.Image source={{ uri: image ?? "" }} />
+            <Avatar.Fallback bc="$color5" />
+          </Avatar>
+          <View w="$12" h="$12" jc="center" ai="center" zi="$1">
+            <Pencil fill={theme.gleam12.val} />
+          </View>
+        </ZStack>
+      </Pressable>
+      <ImagePickerSheet open={open} setOpen={setOpen} setImage={setImage} />
+    </>
   );
 }

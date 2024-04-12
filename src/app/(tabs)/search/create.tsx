@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { useRouter } from "expo-router";
 import React, { useMemo } from "react";
 import { Dimensions } from "react-native";
 import { Text, View, YStack } from "tamagui";
@@ -11,6 +12,8 @@ import VerticalList from "@/src/components/VerticalList";
 import { hive_ } from "@/src/schemas/hive";
 
 const JoinHiveList = () => {
+  const router = useRouter();
+
   const publicHiveInfiniteQuery = useInfiniteQuery({
     queryKey: ["publichive"],
     queryFn: async ({ pageParam }) => {
@@ -61,7 +64,15 @@ const JoinHiveList = () => {
           onEndReached={publicHiveInfiniteQuery.fetchNextPage}
           renderItem={({ item }) => (
             <View flex={1} paddingHorizontal="$1.5">
-              <HiveBtn hive={item} />
+              <HiveBtn
+                hive={item}
+                onPress={() =>
+                  router.replace({
+                    pathname: "/(tabs)/home/hive/[id]/",
+                    params: { id: item.group_id },
+                  })
+                }
+              />
             </View>
           )}
         />
