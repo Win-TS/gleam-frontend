@@ -10,19 +10,12 @@ export default function ({
   children: React.ReactNode;
 }) {
   return (
-    <YStack
-      flex={1}
-      py="$4"
-      backgroundColor="$color1"
-      justifyContent="flex-start"
-      alignItems="center"
-      overflow="scroll"
-    >
+    <YStack f={1} py="$4" bc="$color1" jc="flex-start" ai="center" ov="scroll">
       <YStack
-        flex={1}
+        f={1}
         w="100%"
-        justifyContent={justifyContent ?? "center"}
-        alignItems="center"
+        jc={justifyContent ?? "center"}
+        ai="center"
         gap="$3"
         $sm={{ px: "$4" }}
         $gtSm={{ maw: "$20" }}

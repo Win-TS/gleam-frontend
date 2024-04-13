@@ -1,8 +1,7 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Link, useLocalSearchParams } from "expo-router";
-import { atom, useAtom, useAtomValue } from "jotai";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import React, { useMemo, useState } from "react";
-import { Dimensions } from "react-native";
 import {
   Avatar,
   Button,
@@ -16,6 +15,7 @@ import {
   XStack,
   YStack,
   useTheme,
+  useWindowDimensions,
 } from "tamagui";
 import z from "zod";
 
@@ -30,6 +30,7 @@ import { useHiveQuery } from "@/src/hooks/hive";
 import { useHivePostListInfiniteQuery } from "@/src/hooks/post";
 
 export const editAtom = atom(false);
+export const openLeaveDialogAtom = atom(false);
 
 const HiveDescription = ({ hiveId }: { hiveId: number }) => {
   const edit = useAtomValue(editAtom);
@@ -37,48 +38,38 @@ const HiveDescription = ({ hiveId }: { hiveId: number }) => {
   const hiveQuery = useHiveQuery(hiveId);
 
   return (
-    <View w="100%" justifyContent="center" alignItems="center" gap="$1">
-      <Text
-        fontSize="$2"
-        fontWeight="bold"
-        textAlign="center"
-        textOverflow="ellipsis"
-      >
+    <View w="100%" jc="center" ai="center" gap="$1">
+      <Text fos="$2" fow="bold" ta="center" textOverflow="ellipsis">
         {hiveQuery.data?.group_info?.tag_name}
       </Text>
       {edit ? (
         <>
           <Input
             value={hiveQuery.data?.group_info?.group_name}
-            paddingVertical="$1"
+            py="$1"
             w="100%"
-            borderWidth="$1"
-            borderColor="$gleam12"
-            fontSize="$6"
-            fontWeight="bold"
+            bw="$1"
+            boc="$gleam12"
+            fos="$6"
+            fow="bold"
           />
           <Input
             value={hiveQuery.data?.group_info?.description?.String}
             h="$8"
             w="100%"
-            paddingVertical="$1"
-            borderWidth="$1"
-            borderColor="$gleam12"
-            fontSize="$2"
+            py="$1"
+            bw="$1"
+            boc="$gleam12"
+            fos="$2"
             multiline
           />
         </>
       ) : (
         <>
-          <Text
-            fontSize="$6"
-            fontWeight="bold"
-            textAlign="center"
-            textOverflow="ellipsis"
-          >
+          <Text fos="$6" fow="bold" ta="center" textOverflow="ellipsis">
             {hiveQuery.data?.group_info?.group_name}
           </Text>
-          <Text fontSize="$2" textAlign="center" textOverflow="ellipsis">
+          <Text fos="$2" ta="center" textOverflow="ellipsis">
             {hiveQuery.data?.group_info?.description?.String}
           </Text>
         </>
@@ -87,7 +78,7 @@ const HiveDescription = ({ hiveId }: { hiveId: number }) => {
   );
 };
 
-const HiveJoinBtn = () => {
+const HiveRequestBtn = ({ hiveId }: { hiveId: number }) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -96,13 +87,7 @@ const HiveJoinBtn = () => {
         JOIN
       </PrimaryBtn>
       <Sheet open={open} snapPointsMode="fit" modal onOpenChange={setOpen}>
-        <Sheet.Frame
-          padding="$4"
-          justifyContent="center"
-          alignItems="center"
-          backgroundColor="$gleam12"
-          gap="$3"
-        >
+        <Sheet.Frame p="$4" jc="center" ai="center" bc="$gleam12" gap="$3">
           <Input
             h="$12"
             w="100%"
@@ -116,7 +101,19 @@ const HiveJoinBtn = () => {
   );
 };
 
-const HiveOwnerBtn = () => {
+const HiveNonMemberBtn = ({ hiveId }: { hiveId: number }) => {
+  const [state, setState] = useState<"none" | "requested">("requested");
+
+  return state === "none" ? (
+    <HiveRequestBtn hiveId={hiveId} />
+  ) : state === "requested" ? (
+    <SecondaryBtn size="$2.5" w="$12" disabled>
+      REQUESTED
+    </SecondaryBtn>
+  ) : null;
+};
+
+const HiveAdminBtn = () => {
   const [edit, setEdit] = useAtom(editAtom);
 
   return edit ? (
@@ -130,32 +127,56 @@ const HiveOwnerBtn = () => {
   );
 };
 
-const HiveNonOwnerBtn = () => {
-  const [state, setState] = useState<"none" | "requested" | "joined">(
-    "requested",
-  );
+const HiveHeaderBtn = ({ hiveId }: { hiveId: number }) => {
+  const hiveQuery = useHiveQuery(hiveId);
 
-  return state === "none" ? (
-    <HiveJoinBtn />
-  ) : state === "requested" ? (
-    <SecondaryBtn size="$2.5" w="$12">
-      REQUESTED
-    </SecondaryBtn>
-  ) : state === "joined" ? (
-    <SecondaryBtn size="$2.5" w="$8">
-      JOINED
-    </SecondaryBtn>
-  ) : null;
+  return (
+    <QueryPlaceholder
+      query={hiveQuery}
+      renderData={(data) => {
+        if (data.status === "non-member")
+          return <HiveNonMemberBtn hiveId={hiveId} />;
+        if (data.status === "member")
+          return (
+            <SecondaryBtn size="$2.5" w="$8" disabled>
+              JOINED
+            </SecondaryBtn>
+          );
+        if (data.status === "creator" || data.status === "co_leader")
+          return <HiveAdminBtn />;
+        return <></>;
+      }}
+    />
+  );
+};
+
+const HiveLeaveBtn = ({ onPress }: { onPress?: () => void }) => {
+  const setOpenDialog = useSetAtom(openLeaveDialogAtom);
+
+  return (
+    <>
+      <PrimaryBtn
+        size="$2.5"
+        w="100%"
+        br="$4"
+        onPress={() => {
+          onPress?.();
+          setOpenDialog(true);
+        }}
+      >
+        Leave
+      </PrimaryBtn>
+    </>
+  );
 };
 
 const HiveOptionsPopover = ({ hiveId }: { hiveId: number }) => {
   const theme = useTheme();
+  const router = useRouter();
 
-  const [state, setState] = useState<"none" | "requested" | "joined">(
-    "requested",
-  );
+  const hiveQuery = useHiveQuery(hiveId);
+
   const [openPopover, setOpenPopover] = useState(false);
-  const [openDialog, setOpenDialog] = useState(false);
 
   return (
     <>
@@ -167,14 +188,7 @@ const HiveOptionsPopover = ({ hiveId }: { hiveId: number }) => {
         offset={4}
       >
         <Popover.Trigger asChild>
-          <Button
-            position="absolute"
-            size="$3"
-            borderRadius="$8"
-            top="$0"
-            right="$0"
-            backgroundColor="$gleam1"
-          >
+          <Button pos="absolute" size="$3" br="$8" t="$0" r="$0" bc="$gleam1">
             <FontAwesome
               name="ellipsis-h"
               color={theme.gleam12.val}
@@ -182,41 +196,36 @@ const HiveOptionsPopover = ({ hiveId }: { hiveId: number }) => {
             />
           </Button>
         </Popover.Trigger>
-        <Popover.Content
-          p="$2"
-          w="$12"
-          backgroundColor="$color1"
-          borderWidth="$1"
-          borderColor="$color4"
-        >
-          <View w="100%" gap="$2">
-            {state !== "none" ? (
-              <PrimaryBtn
-                size="$2.5"
-                w="100%"
-                borderRadius="$4"
-                onPress={() => {
-                  setOpenPopover(false);
-                  setOpenDialog(true);
-                }}
-              >
-                Leave
-              </PrimaryBtn>
-            ) : null}
-            <Link
-              href={{
-                pathname: "/(tabs)/home/hive/[id]/report",
-                params: {
-                  id: hiveId,
-                },
-              }}
-              asChild
-            >
-              <DangerBtn size="$2.5" w="100%" borderRadius="$4">
-                Report
-              </DangerBtn>
-            </Link>
-          </View>
+        <Popover.Content p="$2" w="$12" bc="$color1" bw="$1" boc="$color4">
+          <QueryPlaceholder
+            query={hiveQuery}
+            renderData={(data) => (
+              <View w="100%" gap="$2">
+                {data.status === "member" || data.status === "co-leader" ? (
+                  <HiveLeaveBtn
+                    onPress={() => {
+                      setOpenPopover(false);
+                    }}
+                  />
+                ) : null}
+                <DangerBtn
+                  size="$2.5"
+                  w="100%"
+                  br="$4"
+                  onPress={() =>
+                    router.navigate({
+                      pathname: "/(tabs)/home/hive/[id]/report",
+                      params: {
+                        id: hiveId,
+                      },
+                    })
+                  }
+                >
+                  Report
+                </DangerBtn>
+              </View>
+            )}
+          />
         </Popover.Content>
 
         <Popover.Adapt platform="touch">
@@ -230,43 +239,32 @@ const HiveOptionsPopover = ({ hiveId }: { hiveId: number }) => {
           </Popover.Sheet>
         </Popover.Adapt>
       </Popover>
-      <ActionDialog
-        open={openDialog}
-        onOpenChange={setOpenDialog}
-        title="Are you sure you want to leave?"
-        description="*this action cannot be undone*"
-      />
     </>
   );
 };
 
 const HiveHeader = ({ hiveId }: { hiveId: number }) => {
-  const owner = true;
+  const router = useRouter();
 
   const hiveQuery = useHiveQuery(hiveId);
 
   return (
-    <YStack
-      w="100%"
-      paddingHorizontal="$1.5"
-      justifyContent="center"
-      alignItems="center"
-    >
-      <YStack w="100%" justifyContent="center" alignItems="center" gap="$3">
+    <YStack w="100%" px="$1.5" jc="center" ai="center">
+      <YStack w="100%" jc="center" ai="center" gap="$3">
         <YStack
           p="$3"
           w="100%"
-          backgroundColor="$gleam1"
-          borderWidth="$1.5"
-          borderRadius="$8"
-          borderColor="$gleam12"
-          shadowColor="$gleam12"
-          shadowRadius="$2"
-          justifyContent="center"
-          alignItems="center"
+          bc="$gleam1"
+          bw="$1.5"
+          br="$8"
+          boc="$gleam12"
+          shac="$gleam12"
+          shar="$2"
+          jc="center"
+          ai="center"
           gap="$3"
         >
-          <View w="100%" justifyContent="center" alignItems="center" gap="$3">
+          <View w="100%" jc="center" ai="center" gap="$3">
             <Avatar circular size="$8">
               <Avatar.Image
                 src={
@@ -277,50 +275,49 @@ const HiveHeader = ({ hiveId }: { hiveId: number }) => {
               />
               <Avatar.Fallback bc="$color5" />
             </Avatar>
-            <View w="100%" justifyContent="center" alignItems="center">
+            <View w="100%" jc="center" ai="center">
               <HiveDescription hiveId={hiveId} />
             </View>
-            {owner ? <HiveOwnerBtn /> : <HiveNonOwnerBtn />}
+            <HiveHeaderBtn hiveId={hiveId} />
           </View>
           <HiveOptionsPopover hiveId={hiveId} />
         </YStack>
-        <Link
-          href={{
-            pathname: "/(tabs)/home/hive/[id]/member",
-            params: {
-              id: hiveId,
-            },
-          }}
-          asChild
+        <PrimaryBtn
+          size="$2.5"
+          w="100%"
+          br="$4"
+          jc="center"
+          ai="center"
+          onPress={() =>
+            router.navigate({
+              pathname: "/(tabs)/home/hive/[id]/member",
+              params: {
+                id: hiveId,
+              },
+            })
+          }
         >
-          <PrimaryBtn
-            size="$2.5"
-            w="100%"
-            borderRadius="$4"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <XStack gap="$2">
-              <QueryPlaceholder
-                query={hiveQuery}
-                renderData={(data) => (
-                  <Text color="$color1" fontWeight="bold">
-                    {data.group_info.total_member}
-                  </Text>
-                )}
-              ></QueryPlaceholder>
-              <Text color="$color1" fontWeight="bold">
-                members
-              </Text>
-            </XStack>
-          </PrimaryBtn>
-        </Link>
+          <XStack gap="$2">
+            <QueryPlaceholder
+              query={hiveQuery}
+              renderData={(data) => (
+                <Text col="$color1" fow="bold">
+                  {data.group_info.total_member}
+                </Text>
+              )}
+            ></QueryPlaceholder>
+            <Text col="$color1" fow="bold">
+              members
+            </Text>
+          </XStack>
+        </PrimaryBtn>
       </YStack>
     </YStack>
   );
 };
 
 const HiveBody = ({ hiveId }: { hiveId: number }) => {
+  const { width } = useWindowDimensions();
   const hiveQuery = useHiveQuery(hiveId);
   const hivePostListInfiniteQuery = useHivePostListInfiniteQuery(hiveId);
 
@@ -335,23 +332,21 @@ const HiveBody = ({ hiveId }: { hiveId: number }) => {
       query={hiveQuery}
       spinnerSize="large"
       renderData={(data) =>
-        data.group_info.visibility ? (
+        !data.group_info.visibility && data.status === "non-member" ? (
           <Text>This hive is only visible to its member</Text>
         ) : (
           <VerticalList
             data={flattenedHivePostList}
             numColumns={3}
             ItemSeparatorComponent={() => <View h="$0.75" />}
-            estimatedItemSize={
-              Math.min(Dimensions.get("window").width - 32, 290) / 3
-            }
+            estimatedItemSize={Math.min(width - 32, 290) / 3}
             renderItem={({ item }) => (
-              <View flex={1} paddingHorizontal="$1.5">
+              <View f={1} px="$1.5">
                 <Image
                   source={{ uri: item.photo_url.String }}
                   w="100%"
                   aspectRatio={1}
-                  borderRadius="$4"
+                  br="$4"
                 />
               </View>
             )}
@@ -367,21 +362,27 @@ const params = z.object({
 });
 
 export default function HiveScreen() {
+  const { width } = useWindowDimensions();
+
   const { id: hiveId } = params.parse(useLocalSearchParams<{ id: string }>());
+
+  const [openDialog, setOpenDialog] = useAtom(openLeaveDialogAtom);
 
   return (
     <PortalProvider>
       <PageContainer>
-        <View w="100%" paddingBottom="$3">
+        <View w="100%" pb="$3">
           <HiveHeader hiveId={hiveId} />
         </View>
-        <View
-          flex={1}
-          w={Math.min(Dimensions.get("window").width - 16)}
-          $gtSm={{ maxWidth: 290 }}
-        >
+        <View f={1} w={width - 16} $gtSm={{ maw: 290 }}>
           <HiveBody hiveId={hiveId} />
         </View>
+        <ActionDialog
+          open={openDialog}
+          onOpenChange={setOpenDialog}
+          title="Are you sure you want to leave?"
+          description="*this action cannot be undone*"
+        />
       </PageContainer>
     </PortalProvider>
   );

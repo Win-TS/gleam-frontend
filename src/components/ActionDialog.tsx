@@ -24,31 +24,25 @@ export default function ({
           key="content"
           p="$6"
           w="$20"
-          backgroundColor="$color1"
-          borderWidth="$0"
-          justifyContent="center"
-          alignItems="center"
+          bc="$color1"
+          bw="$0"
+          jc="center"
+          ai="center"
         >
-          <AlertDialog.Title
-            key="title"
-            w="$14"
-            fontSize="$7"
-            lineHeight="$2"
-            textAlign="center"
-          >
+          <AlertDialog.Title key="title" w="$14" fos="$7" lh="$2" ta="center">
             {title}
           </AlertDialog.Title>
-          <AlertDialog.Description fontSize="$2">
+          <AlertDialog.Description fos="$2">
             {description}
           </AlertDialog.Description>
           <XStack w="100%" gap="$3" pt="$4">
             <AlertDialog.Action onPress={onAction} asChild>
-              <PrimaryBtn flex={1} size="$2.5" borderRadius="$4">
+              <PrimaryBtn f={1} size="$2.5" br="$4">
                 YES
               </PrimaryBtn>
             </AlertDialog.Action>
             <AlertDialog.Cancel asChild>
-              <SecondaryBtn flex={1} size="$2.5" borderRadius="$4">
+              <SecondaryBtn f={1} size="$2.5" br="$4">
                 NO
               </SecondaryBtn>
             </AlertDialog.Cancel>

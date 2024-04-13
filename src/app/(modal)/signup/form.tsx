@@ -112,13 +112,7 @@ export default function SignupFormScreen() {
   return (
     <PageContainer>
       <form.Provider>
-        <YStack
-          flex={1}
-          w="100%"
-          justifyContent="center"
-          alignItems="center"
-          gap="$3"
-        >
+        <YStack f={1} w="100%" jc="center" ai="center" gap="$3">
           <form.Field
             name="photo"
             children={(field) => (
@@ -192,26 +186,26 @@ export default function SignupFormScreen() {
           />
           <XStack w="100%">
             <SecondaryInput
-              flexGrow={0}
+              fg={0}
               w="$5"
-              borderTopLeftRadius="$6"
-              borderBottomLeftRadius="$6"
-              borderTopRightRadius="$0"
-              borderBottomRightRadius="$0"
-              borderRightWidth="$0.5"
+              btlr="$6"
+              bblr="$6"
+              btrr="$0"
+              bbrr="$0"
+              brw="$0.5"
               placeholder="+66"
             />
             <form.Field
               name="phoneNumber"
               children={(field) => (
                 <SecondaryInput
-                  flexGrow={1}
-                  flexBasis={0}
-                  borderTopRightRadius="$6"
-                  borderBottomRightRadius="$6"
-                  borderTopLeftRadius="$0"
-                  borderBottomLeftRadius="$0"
-                  borderLeftWidth="$0.5"
+                  fg={1}
+                  fb={0}
+                  btrr="$6"
+                  bbrr="$6"
+                  btlr="$0"
+                  bblr="$0"
+                  blw="$0.5"
                   placeholder="Phone number"
                   value={field.state.value}
                   onBlur={field.handleBlur}
@@ -220,15 +214,10 @@ export default function SignupFormScreen() {
               )}
             />
           </XStack>
-          <Separator w="100%" borderColor="$gleam12" />
+          <Separator w="100%" boc="$gleam12" />
           <XStack w="100%" gap="$3">
-            <YStack
-              flexGrow={1}
-              flexBasis={0}
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Text fontSize="$2">Date of Birth</Text>
+            <YStack fg={1} fb={0} jc="center" ai="center">
+              <Text fos="$2">Date of Birth</Text>
               <form.Field
                 name="birthDate"
                 children={(field) =>
@@ -297,26 +286,20 @@ export default function SignupFormScreen() {
                   }
                 >
                   <Select.Trigger
-                    flexGrow={1}
-                    flexBasis={0}
+                    fg={1}
+                    fb={0}
                     h="$3"
                     size="$3"
-                    borderWidth="$1"
-                    borderRadius="$6"
-                    borderColor="$color7"
-                    backgroundColor="$color3"
-                    alignSelf="flex-end"
+                    bw="$1"
+                    br="$6"
+                    boc="$color7"
+                    bc="$color3"
+                    als="flex-end"
                   >
-                    <XStack
-                      justifyContent="center"
-                      alignItems="center"
-                      gap="$3"
-                    >
+                    <XStack jc="center" ai="center" gap="$3">
                       <FontAwesome color={theme.color9.val} name="caret-down" />
                       <Select.Value
-                        color={
-                          field.state.value ? "$color12" : theme.color9.val
-                        }
+                        col={field.state.value ? "$color12" : theme.color9.val}
                         size="$3"
                         placeholder="Gender"
                       />
@@ -367,20 +350,15 @@ export default function SignupFormScreen() {
                 <Select.Trigger
                   size="$3"
                   w="100%"
-                  borderWidth="$1"
-                  borderRadius="$6"
-                  borderColor="$color7"
-                  backgroundColor="$color3"
+                  bw="$1"
+                  br="$6"
+                  boc="$color7"
+                  bc="$color3"
                 >
-                  <XStack
-                    flexDirection="row"
-                    justifyContent="center"
-                    alignItems="center"
-                    gap="$3"
-                  >
+                  <XStack fd="row" jc="center" ai="center" gap="$3">
                     <FontAwesome color={theme.color9.val} name="caret-down" />
                     <Select.Value
-                      color={field.state.value ? "$color12" : theme.color9.val}
+                      col={field.state.value ? "$color12" : theme.color9.val}
                       size="$3"
                       placeholder="Nationality"
                     />
@@ -406,7 +384,7 @@ export default function SignupFormScreen() {
                         return (
                           <Select.Item index={i} key={item} value={item}>
                             <Select.ItemText>{item}</Select.ItemText>
-                            <Select.ItemIndicator marginLeft="auto">
+                            <Select.ItemIndicator ml="auto">
                               <FontAwesome name="check" />
                             </Select.ItemIndicator>
                           </Select.Item>
@@ -419,31 +397,25 @@ export default function SignupFormScreen() {
               </Select>
             )}
           />
-          <YStack position="relative" h="$4" w="100%">
-            <Text color="#ff0000" fontSize="$2" fontWeight="bold">
+          <YStack pos="relative" h="$4" w="100%">
+            <Text col="#ff0000" fos="$2" fow="bold">
               {signupMutation.error?.response?.data?.message ?? ""}
             </Text>
           </YStack>
         </YStack>
-        <YStack
-          h="$11"
-          w="100%"
-          justifyContent="center"
-          alignItems="center"
-          gap="$3"
-        >
+        <YStack h="$11" w="100%" jc="center" ai="center" gap="$3">
           <PrimaryBtn size="$4" w="100%" onPress={form.handleSubmit}>
             Receive OTP
           </PrimaryBtn>
           <XStack gap="$3">
-            <Text color="#b8ab8c" fontSize="$2" fontWeight="bold">
+            <Text col="#b8ab8c" fos="$2" fow="bold">
               Already have an account?
             </Text>
             <Link href="/login" replace>
               <Text
-                color="$gleam12"
-                fontSize="$2"
-                fontWeight="bold"
+                col="$gleam12"
+                fos="$2"
+                fow="bold"
                 textDecorationLine="underline"
               >
                 Log in

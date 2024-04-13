@@ -55,7 +55,7 @@ export default function TabTwoScreen() {
   return (
     <PageContainer>
       <form.Provider>
-        <YStack flex={1} jc="center" ai="center" gap="$3">
+        <YStack f={1} jc="center" ai="center" gap="$3">
           <View w="100%" p="$2" boc="$gleam12" bw="$1" br="$4">
             <form.Field
               name="image"

@@ -24,13 +24,13 @@ export default function ({
       onOpenChange={setOpen}
     >
       <Sheet.Overlay />
-      <Sheet.Frame p="$4" justifyContent="center" alignItems="center">
-        <YStack gap="$1.5" justifyContent="center" alignItems="center">
+      <Sheet.Frame p="$4" jc="center" ai="center">
+        <YStack gap="$1.5" jc="center" ai="center">
           <Text fow="bold">SELECT AN IMAGE FROM...</Text>
           <XStack gap="$1.5">
             <PrimaryBtn
-              flex={1}
-              flexBasis={0}
+              f={1}
+              fb={0}
               onPress={async () => {
                 const result = await ImagePicker.launchImageLibraryAsync({
                   mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -46,11 +46,11 @@ export default function ({
               }}
             >
               <FontAwesome size={36} color={theme.color1.val} name="photo" />
-              <Text color={theme.color1.val}>Photo Library</Text>
+              <Text col={theme.color1.val}>Photo Library</Text>
             </PrimaryBtn>
             <PrimaryBtn
-              flex={1}
-              flexBasis={0}
+              f={1}
+              fb={0}
               onPress={async () => {
                 const result = await ImagePicker.launchCameraAsync({
                   mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -66,7 +66,7 @@ export default function ({
               }}
             >
               <FontAwesome size={36} color={theme.color1.val} name="camera" />
-              <Text color={theme.color1.val}>Camera</Text>
+              <Text col={theme.color1.val}>Camera</Text>
             </PrimaryBtn>
           </XStack>
         </YStack>

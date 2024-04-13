@@ -19,13 +19,13 @@ const PasswordInput = forwardRef<Input, ComponentPropsWithoutRef<typeof Input>>(
 
     return (
       <View
-        position="relative"
-        height={height}
-        minHeight={minHeight}
-        maxHeight={maxHeight}
-        width={width}
-        minWidth={minWidth}
-        maxWidth={maxWidth}
+        pos="relative"
+        h={height}
+        mih={minHeight}
+        mah={maxHeight}
+        w={width}
+        miw={minWidth}
+        maw={maxWidth}
       >
         <Input
           ref={ref}
@@ -36,19 +36,19 @@ const PasswordInput = forwardRef<Input, ComponentPropsWithoutRef<typeof Input>>(
         />
 
         <View
-          position="absolute"
-          flex={1}
+          pos="absolute"
+          f={1}
           r="$0"
           t="$0"
           h="100%"
           mah="$3"
-          justifyContent="center"
-          alignItems="center"
+          jc="center"
+          ai="center"
         >
           <Button
             aspectRatio={1}
             h="100%"
-            borderRadius="$12"
+            br="$12"
             chromeless
             onPress={() => setVisible(!visible)}
           >

@@ -39,13 +39,7 @@ export default function LoginScreen() {
 
   return (
     <PageContainer>
-      <YStack
-        flex={1}
-        w="100%"
-        justifyContent="center"
-        alignItems="center"
-        gap="$3"
-      >
+      <YStack f={1} w="100%" jc="center" ai="center" gap="$3">
         <form.Provider>
           <form.Field
             name="email"
@@ -72,17 +66,17 @@ export default function LoginScreen() {
               />
             )}
           />
-          <XStack h="$1" w="100%" alignSelf="flex-start" gap="$2">
+          <XStack h="$1" w="100%" als="flex-start" gap="$2">
             <Checkbox size="$3">
               <Checkbox.Indicator>
                 <FontAwesome name="check" />
               </Checkbox.Indicator>
             </Checkbox>
-            <Text color="#b8ab8c" fontSize="$3" fontWeight="bold">
+            <Text col="#b8ab8c" fos="$3" fow="bold">
               remember me
             </Text>
           </XStack>
-          <Text h="$4" w="100%" color="#ff0000" fontSize="$2" fontWeight="bold">
+          <Text h="$4" w="100%" col="#ff0000" fos="$2" fow="bold">
             {loginMutation.error?.message ?? ""}
           </Text>
           <PrimaryBtn size="$4" w="100%" onPress={form.handleSubmit}>
@@ -95,7 +89,7 @@ export default function LoginScreen() {
           </Link>
         </form.Provider>
       </YStack>
-      <Text h="$4" color="#b8ab8c" fontSize="$2" fontWeight="bold">
+      <Text h="$4" col="#b8ab8c" fos="$2" fow="bold">
         Forgot password?
       </Text>
     </PageContainer>

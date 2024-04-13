@@ -18,7 +18,7 @@ export default function ({
   const { width } = useWindowDimensions();
 
   return (
-    <View flex={1} w={width - 16} $gtSm={{ maxWidth: 290 }}>
+    <View f={1} w={width - 16} $gtSm={{ maw: 290 }}>
       {spinner ? (
         spinner()
       ) : (
@@ -29,7 +29,7 @@ export default function ({
           estimatedItemSize={Math.min(width - 32, 290) / 3 + 16}
           onEndReached={onEndReached}
           renderItem={({ item }) => (
-            <View flex={1} paddingHorizontal="$1.5">
+            <View f={1} paddingHorizontal="$1.5">
               <HiveBtn hive={item} onPress={() => onPress?.(item)} />
             </View>
           )}

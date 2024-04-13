@@ -3,7 +3,6 @@ import { Image as ExpoImage } from "expo-image";
 import { useRouter } from "expo-router";
 import { countBy, filter } from "lodash";
 import React, { useMemo, useState } from "react";
-import { Dimensions } from "react-native";
 import {
   Avatar,
   Button,
@@ -15,6 +14,7 @@ import {
   YStack,
   ZStack,
   useTheme,
+  useWindowDimensions,
 } from "tamagui";
 
 import { reactions } from "@/assets";
@@ -50,14 +50,7 @@ const PostOptionsPopover = ({ postId }: { postId: number }) => {
         offset={4}
       >
         <Popover.Trigger asChild>
-          <Button
-            position="absolute"
-            size="$3"
-            borderRadius="$8"
-            top="$0"
-            right="$0"
-            backgroundColor="$color1"
-          >
+          <Button pos="absolute" size="$3" br="$8" t="$0" r="$0" bc="$color1">
             <FontAwesome
               name="ellipsis-h"
               color={theme.gleam12.val}
@@ -65,18 +58,12 @@ const PostOptionsPopover = ({ postId }: { postId: number }) => {
             />
           </Button>
         </Popover.Trigger>
-        <Popover.Content
-          p="$2"
-          w="$12"
-          backgroundColor="$color1"
-          borderWidth="$1"
-          borderColor="$color4"
-        >
+        <Popover.Content p="$2" w="$12" bc="$color1" bw="$1" boc="$color4">
           <View w="100%" gap="$2">
             <DangerBtn
               size="$2.5"
               w="100%"
-              borderRadius="$4"
+              br="$4"
               onPress={() =>
                 router.push({
                   pathname: "/(tabs)/home/post/[id]/report",
@@ -194,15 +181,10 @@ const ReactionList = ({ postId }: { postId: number }) => {
         );
 
         return (
-          <XStack gap="$1.5" justifyContent="flex-start" alignItems="center">
+          <XStack gap="$1.5" jc="flex-start" ai="center">
             {REACTIONS.map((reaction) => {
               return (
-                <XStack
-                  justifyContent="center"
-                  alignItems="center"
-                  gap="$1"
-                  key={reaction}
-                >
+                <XStack jc="center" ai="center" gap="$1" key={reaction}>
                   {(postUserReactionsCount[reaction] ?? 0) > 0 ? (
                     <ReactionSelectedButton
                       postId={postId}
@@ -228,13 +210,13 @@ const ReactionList = ({ postId }: { postId: number }) => {
 const FeedPostComponent = ({ post }: { post: FeedPost }) => {
   return (
     <YStack w="100%" p="$2" gap="$1" br="$3" elevation="$4">
-      <XStack alignItems="center">
+      <XStack ai="center" gap="$1.5">
         <Avatar circular size="$4">
           <Avatar.Image src={post.poster_photo_url} />
         </Avatar>
         <Text>{post.poster_username}</Text>
       </XStack>
-      <ZStack h="$20" alignItems="center">
+      <ZStack h="$20" ai="center">
         <YStack pt="$2">
           <YStack br="$8" ov="hidden">
             <Image aspectRatio={1} source={{ uri: post.photo_url.String }} />
@@ -248,7 +230,7 @@ const FeedPostComponent = ({ post }: { post: FeedPost }) => {
           bc="$gleam12"
           boc="$gleam12"
           als="flex-start"
-          alignItems="center"
+          ai="center"
           gap="$2"
         >
           <Text col="$gleam1">?? DAYS ON {post.group_name.toUpperCase()}</Text>
@@ -277,6 +259,8 @@ const Feed = ({ postList }: { postList: FeedPost[] }) => {
 };
 
 const FollowingFeed = () => {
+  const { width } = useWindowDimensions();
+
   const postListInfiniteQuery = useFollowingPostListInfiniteQuery();
 
   const flattenedPostList = useMemo(
@@ -285,11 +269,7 @@ const FollowingFeed = () => {
   );
 
   return (
-    <View
-      flex={1}
-      w={Math.min(Dimensions.get("window").width - 16)}
-      $gtSm={{ maxWidth: 320 }}
-    >
+    <View f={1} w={width - 16} $gtSm={{ maw: 320 }}>
       <QueryPlaceholder
         query={postListInfiniteQuery}
         spinnerSize="large"
@@ -300,6 +280,8 @@ const FollowingFeed = () => {
 };
 
 const OngoingFeed = () => {
+  const { width } = useWindowDimensions();
+
   const postListInfiniteQuery = useOngoingPostListInfiniteQuery();
 
   const flattenedPostList = useMemo(
@@ -308,11 +290,7 @@ const OngoingFeed = () => {
   );
 
   return (
-    <View
-      flex={1}
-      w={Math.min(Dimensions.get("window").width - 16)}
-      $gtSm={{ maxWidth: 320 }}
-    >
+    <View f={1} w={width - 16} $gtSm={{ maw: 320 }}>
       <QueryPlaceholder
         query={postListInfiniteQuery}
         spinnerSize="large"

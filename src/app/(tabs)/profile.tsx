@@ -2,7 +2,6 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useForm } from "@tanstack/react-form";
 import React, { useState } from "react";
-import { useWindowDimensions } from "react-native";
 import {
   Text,
   View,
@@ -12,6 +11,7 @@ import {
   YStack,
   Input,
   useTheme,
+  useWindowDimensions,
 } from "tamagui";
 
 import ImagePicker from "@/src/components/ImagePicker";
@@ -49,7 +49,7 @@ const ProfileFormHeader = ({
   });
 
   return (
-    <YStack w="100%" justifyContent="center" alignItems="center" gap="$3">
+    <YStack w="100%" jc="center" ai="center" gap="$3">
       <form.Provider>
         <form.Field
           name="photo"
@@ -60,16 +60,16 @@ const ProfileFormHeader = ({
             />
           )}
         />
-        <YStack w="100%" justifyContent="center" alignItems="center" gap="$1">
-          <XStack w="100%" justifyContent="center" alignItems="center" gap="$2">
+        <YStack w="100%" jc="center" ai="center" gap="$1">
+          <XStack w="100%" jc="center" ai="center" gap="$2">
             <form.Field
               name="firstname"
               children={(field) => (
                 <Input
-                  flex={1}
+                  f={1}
                   h="$2.5"
-                  backgroundColor="$gleam1"
-                  color="$color11"
+                  bc="$gleam1"
+                  col="$color11"
                   value={field.state.value}
                   onChangeText={field.handleChange}
                 />
@@ -79,10 +79,10 @@ const ProfileFormHeader = ({
               name="lastname"
               children={(field) => (
                 <Input
-                  flex={1}
+                  f={1}
                   h="$2.5"
-                  backgroundColor="$gleam1"
-                  color="$color11"
+                  bc="$gleam1"
+                  col="$color11"
                   value={field.state.value}
                   onChangeText={field.handleChange}
                 />
@@ -90,7 +90,7 @@ const ProfileFormHeader = ({
             />
           </XStack>
         </YStack>
-        <Text fontSize="$4" fontWeight="normal" color="$color11">
+        <Text fos="$4" fow="normal" col="$color11">
           {userprofile.username}
         </Text>
         <PrimaryBtn size="$2.5" w="$12" onPress={form.handleSubmit}>
@@ -116,14 +116,14 @@ export default function ProfileScreen() {
       <YStack
         p="$3"
         w="100%"
-        backgroundColor="$gleam1"
-        borderWidth="$1.5"
-        borderRadius="$8"
-        borderColor="$gleam12"
-        shadowColor="$gleam12"
-        shadowRadius="$2"
-        justifyContent="center"
-        alignItems="center"
+        bc="$gleam1"
+        bw="$1.5"
+        br="$8"
+        boc="$gleam12"
+        shac="$gleam12"
+        shar="$2"
+        jc="center"
+        ai="center"
         gap="$3"
       >
         <QueryPlaceholder
@@ -153,26 +153,26 @@ export default function ProfileScreen() {
         />
         {!isEditProfile && (
           <XStack gap="$3">
-            <YStack w="$5" justifyContent="center" alignItems="center">
-              <Text color="$color11" fontWeight="bold">
+            <YStack w="$5" jc="center" ai="center">
+              <Text col="$color11" fow="bold">
                 FRIEND
               </Text>
               <QueryPlaceholder
                 query={userprofileQuery}
                 spinnerSize="small"
                 renderData={(data) => (
-                  <Text color="$color11" fontWeight="normal">
+                  <Text col="$color11" fow="normal">
                     {data.friends_count}
                   </Text>
                 )}
               />
             </YStack>
-            <Separator alignSelf="stretch" vertical borderColor="$gleam12" />
-            <YStack w="$5" justifyContent="center" alignItems="center">
-              <Text color="$color11" fontWeight="bold">
+            <Separator als="stretch" vertical boc="$gleam12" />
+            <YStack w="$5" jc="center" ai="center">
+              <Text col="$color11" fow="bold">
                 LEVEL
               </Text>
-              <Text color="$color11" fontWeight="normal">
+              <Text col="$color11" fow="normal">
                 130
               </Text>
             </YStack>
@@ -181,27 +181,27 @@ export default function ProfileScreen() {
       </YStack>
       <XStack
         w="100%"
-        borderRadius="$8"
-        backgroundColor="$gleam12"
-        borderColor="$gleam12"
-        justifyContent="center"
-        alignItems="center"
+        br="$8"
+        bc="$gleam12"
+        boc="$gleam12"
+        jc="center"
+        ai="center"
         gap="$3"
       >
-        <Text color="$color1" fontSize="$4" fontWeight="bold">
+        <Text col="$color1" fos="$4" fow="bold">
           HIGHEST STREAKS
         </Text>
-        <Text color="$color1" fontSize="$10" fontWeight="bold">
+        <Text col="$color1" fos="$10" fow="bold">
           81
         </Text>
-        <Text color="$color1" fontSize="$4" fontWeight="bold">
+        <Text col="$color1" fos="$4" fow="bold">
           DAYS
         </Text>
       </XStack>
 
       <YStack w="100%" gap="$3">
         <XStack>
-          <Text flex={1} color="$color11">
+          <Text f={1} col="$color11">
             BADGES
           </Text>
           {isEditProfile && <SwitchWithLabel label="show in profile" />}
@@ -217,16 +217,16 @@ export default function ProfileScreen() {
 
       {isEditProfile ? (
         <XStack w="100%" gap="$3">
-          <Text flex={1} color="$color11">
+          <Text f={1} col="$color11">
             MY HIVE
           </Text>
           <SwitchWithLabel label="show in profile" />
         </XStack>
       ) : (
         <>
-          <Separator w={width} $gtSm={{ maw: "$20" }} borderColor="$gleam12" />
-          <XStack w="100%" alignItems="center" gap="$3">
-            <Text flex={1} color="$color11">
+          <Separator w={width} $gtSm={{ maw: "$20" }} boc="$gleam12" />
+          <XStack w="100%" ai="center" gap="$3">
+            <Text f={1} col="$color11">
               MY HIVE
             </Text>
             <View p="$2">
@@ -237,7 +237,7 @@ export default function ProfileScreen() {
               />
             </View>
           </XStack>
-          <Separator w={width} $gtSm={{ maw: "$20" }} borderColor="$gleam12" />
+          <Separator w={width} $gtSm={{ maw: "$20" }} boc="$gleam12" />
         </>
       )}
     </PageContainer>

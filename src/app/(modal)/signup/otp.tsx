@@ -26,37 +26,25 @@ export default function SignupOtpScreen() {
 
   return (
     <PageContainer>
-      <XStack
-        flex={1}
-        w="100%"
-        justifyContent="center"
-        alignItems="center"
-        gap="$3"
-      >
+      <XStack f={1} w="100%" jc="center" ai="center" gap="$3">
         {[...Array(6)].map((_, i) => (
           <Input
             key={i}
-            flex={1}
+            f={1}
             h="$6"
             maw="$4"
             p="$0"
-            borderWidth="$1"
-            borderRadius="$4"
-            fontSize="$8"
-            fontWeight="bold"
-            textAlign="center"
+            bw="$1"
+            br="$4"
+            fos="$8"
+            fow="bold"
+            ta="center"
             inputMode="numeric"
             maxLength={1}
           />
         ))}
       </XStack>
-      <YStack
-        h="$11"
-        w="100%"
-        justifyContent="center"
-        alignItems="center"
-        gap="$3"
-      >
+      <YStack h="$11" w="100%" jc="center" ai="center" gap="$3">
         <PrimaryBtn
           size="$4"
           w="100%"
@@ -71,8 +59,8 @@ export default function SignupOtpScreen() {
         <XStack gap="$3">
           <Text
             color="#b8ab8c"
-            fontSize="$2"
-            fontWeight="bold"
+            fos="$2"
+            fow="bold"
             textDecorationLine="underline"
           >
             Resend OTP

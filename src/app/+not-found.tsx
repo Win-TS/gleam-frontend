@@ -12,13 +12,13 @@ export default function NotFoundScreen() {
   return (
     <>
       <Stack.Screen options={{ title: "Oops!" }} />
-      <View flex={1} justifyContent="center" alignItems="center" padding={20}>
-        <Text fontSize={20} fontWeight="bold">
+      <View f={1} jc="center" ai="center" p={20}>
+        <Text fos={20} fow="bold">
           This screen doesn&apos;t exist.
         </Text>
 
         <Link href="/home/" style={styles.link}>
-          <Text fontSize={16} color={Colors[colorScheme ?? "light"].tint}>
+          <Text fos={16} col={Colors[colorScheme ?? "light"].tint}>
             Go to home screen!
           </Text>
         </Link>

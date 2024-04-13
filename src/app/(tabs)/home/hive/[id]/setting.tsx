@@ -1,6 +1,5 @@
 import { useLocalSearchParams } from "expo-router";
-import { useWindowDimensions } from "react-native";
-import { Text, View, Separator, XStack } from "tamagui";
+import { Text, View, Separator, XStack, useWindowDimensions } from "tamagui";
 import { z } from "zod";
 
 import PageContainer from "@/src/components/PageContainer";
@@ -19,11 +18,11 @@ export default function SettingScreen() {
 
   return (
     <PageContainer justifyContent="flex-start">
-      <XStack w="100%" alignItems="center" gap="$3" padding="$3">
+      <XStack w="100%" ai="center" gap="$3" p="$3">
         <Text
-          flex={1}
-          color="$red10"
-          fontSize="$5"
+          f={1}
+          col="$red10"
+          fos="$5"
           onPress={async () => {
             try {
               await deleteHiveMutation.mutateAsync();
@@ -33,16 +32,16 @@ export default function SettingScreen() {
           Delete League
         </Text>
       </XStack>
-      <Separator w={width} $gtSm={{ maw: "$20" }} borderColor="$gleam12" />
-      <XStack w="100%" alignItems="center" gap="$3" padding="$3">
-        <Text flex={1} color="$color11" fontSize="$5">
+      <Separator w={width} $gtSm={{ maw: "$20" }} boc="$gleam12" />
+      <XStack w="100%" ai="center" gap="$3" p="$3">
+        <Text f={1} col="$color11" fos="$5">
           Private League
         </Text>
         <View p="$2">
           <PrimarySwitch />
         </View>
       </XStack>
-      <Separator w={width} $gtSm={{ maw: "$20" }} borderColor="$gleam12" />
+      <Separator w={width} $gtSm={{ maw: "$20" }} boc="$gleam12" />
     </PageContainer>
   );
 }

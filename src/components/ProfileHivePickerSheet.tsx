@@ -23,7 +23,7 @@ export default function ({
       onOpenChange={setOpen}
     >
       <Sheet.Overlay />
-      <Sheet.Frame p="$4" justifyContent="center" alignItems="center" gap="$3">
+      <Sheet.Frame p="$4" jc="center" ai="center" gap="$3">
         <ProfileHivePicker
           userId={userId}
           onPress={(hive) => {

@@ -22,7 +22,7 @@ export default function ({
       renderData={({ data, spinner }) => (
         <>
           <Text>PERSONAL HIVE</Text>
-          <View flex={1} flexBasis={0} jc="center" ai="center">
+          <View f={1} fb={0} jc="center" ai="center">
             {spinner ? (
               spinner()
             ) : data.personal_groups.length > 0 ? (
@@ -32,7 +32,7 @@ export default function ({
             )}
           </View>
           <Text>SOCIAL HIVE</Text>
-          <View flex={1} flexBasis={0} jc="center" ai="center">
+          <View f={1} fb={0} jc="center" ai="center">
             {spinner ? (
               spinner()
             ) : data.social_groups.length > 0 ? (

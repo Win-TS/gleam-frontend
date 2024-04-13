@@ -2,7 +2,6 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useMemo } from "react";
-import { Dimensions } from "react-native";
 import {
   Text,
   View,
@@ -13,6 +12,7 @@ import {
   useTheme,
   Popover,
   Button,
+  useWindowDimensions,
 } from "tamagui";
 import { z } from "zod";
 
@@ -86,18 +86,18 @@ const ProfileScreenNoHive = ({ userId }: { userId: number }) => {
   const showBadge = true;
 
   return (
-    <YStack w="100%" gap="$3" $gtSm={{ maxWidth: "$20" }}>
+    <YStack w="100%" gap="$3" $gtSm={{ maw: "$20" }}>
       <YStack
         p="$3"
         w="100%"
-        backgroundColor="$gleam1"
-        borderWidth="$1.5"
-        borderRadius="$8"
-        borderColor="$gleam12"
-        shadowColor="$gleam12"
-        shadowRadius="$2"
-        justifyContent="center"
-        alignItems="center"
+        bc="$gleam1"
+        bw="$1.5"
+        br="$8"
+        boc="$gleam12"
+        shac="$gleam12"
+        shar="$2"
+        jc="center"
+        ai="center"
         gap="$3"
       >
         <QueryPlaceholder
@@ -105,7 +105,7 @@ const ProfileScreenNoHive = ({ userId }: { userId: number }) => {
           spinnerSize="large"
           renderData={(data) => <ProfileHeader userprofile={data} />}
         />
-        <XStack justifyContent="center" alignItems="center" gap="$3">
+        <XStack jc="center" ai="center" gap="$3">
           <PrimaryBtn w="$10" size="$2.5">
             FOLLOW
           </PrimaryBtn>
@@ -114,26 +114,26 @@ const ProfileScreenNoHive = ({ userId }: { userId: number }) => {
           </PrimaryBtn>
         </XStack>
         <XStack gap="$3">
-          <YStack w="$5" justifyContent="center" alignItems="center">
-            <Text color="$color11" fontWeight="bold">
+          <YStack w="$5" jc="center" ai="center">
+            <Text col="$color11" fow="bold">
               FRIEND
             </Text>
             <QueryPlaceholder
               query={userprofileQuery}
               spinnerSize="small"
               renderData={(data) => (
-                <Text color="$color11" fontWeight="normal">
+                <Text col="$color11" fow="normal">
                   {data.friends_count}
                 </Text>
               )}
             />
           </YStack>
-          <Separator alignSelf="stretch" vertical borderColor="$gleam12" />
-          <YStack w="$5" justifyContent="center" alignItems="center">
-            <Text color="$color11" fontWeight="bold">
+          <Separator als="stretch" vertical boc="$gleam12" />
+          <YStack w="$5" jc="center" ai="center">
+            <Text col="$color11" fow="bold">
               LEVEL
             </Text>
-            <Text color="$color11" fontWeight="normal">
+            <Text col="$color11" fow="normal">
               130
             </Text>
           </YStack>
@@ -142,27 +142,27 @@ const ProfileScreenNoHive = ({ userId }: { userId: number }) => {
       </YStack>
       <XStack
         w="100%"
-        borderRadius="$8"
-        backgroundColor="$gleam12"
-        borderColor="$gleam12"
-        justifyContent="center"
-        alignItems="center"
+        bc="$gleam12"
+        br="$8"
+        boc="$gleam12"
+        jc="center"
+        ai="center"
         gap="$3"
       >
-        <Text color="$color1" fontSize="$4" fontWeight="bold">
+        <Text col="$color1" fos="$4" fow="bold">
           HIGHEST STREAKS
         </Text>
-        <Text color="$color1" fontSize="$10" fontWeight="bold">
+        <Text col="$color1" fos="$10" fow="bold">
           81
         </Text>
-        <Text color="$color1" fontSize="$4" fontWeight="bold">
+        <Text col="$color1" fos="$4" fow="bold">
           DAYS
         </Text>
       </XStack>
 
       {showBadge ? (
         <YStack w="100%" gap="$3">
-          <Text flex={1} color="$color11">
+          <Text f={1} col="$color11">
             BADGES
           </Text>
 
@@ -183,6 +183,8 @@ const params = z.object({
 });
 
 export default function ProfileScreen() {
+  const { width } = useWindowDimensions();
+
   const { id: userId } = params.parse(useLocalSearchParams<{ id: string }>());
 
   const router = useRouter();
@@ -199,50 +201,44 @@ export default function ProfileScreen() {
 
   return (
     <YStack
-      flex={1}
-      paddingVertical="$4"
-      backgroundColor="$color1"
-      justifyContent="flex-start"
-      alignItems="center"
-      overflow="scroll"
+      f={1}
+      py="$4"
+      bc="$color1"
+      jc="flex-start"
+      ai="center"
+      ov="scroll"
       gap="$3"
-      $sm={{ paddingHorizontal: "$4" }}
+      $sm={{ px: "$4" }}
     >
-      <View
-        flex={1}
-        w={Math.min(Dimensions.get("window").width - 16)}
-        $gtSm={{ maxWidth: 290 }}
-      >
+      <View f={1} w={width - 16} $gtSm={{ maw: 290 }}>
         {showHive ? (
           <VerticalList
             data={flattenedHiveList}
             numColumns={3}
             ItemSeparatorComponent={() => <View h="$0.75" />}
             ListHeaderComponent={() => (
-              <YStack w="100%" paddingBottom="$3" gap="$3">
+              <YStack w="100%" pb="$3" gap="$3">
                 <ProfileScreenNoHive userId={userId} />
-                <YStack w="100%" gap="$3" $gtSm={{ maxWidth: "$20" }}>
-                  <XStack flex={1}>
+                <YStack w="100%" gap="$3" $gtSm={{ maw: "$20" }}>
+                  <XStack f={1}>
                     <QueryPlaceholder
                       query={userprofileQuery}
                       spinnerSize="small"
                       renderData={(data) => (
-                        <Text color="$color11">
+                        <Text col="$color11">
                           {data?.firstname?.toUpperCase()}
                         </Text>
                       )}
                     />
-                    <Text color="$color11">'S HIVE</Text>
+                    <Text col="$color11">'S HIVE</Text>
                   </XStack>
                 </YStack>
               </YStack>
             )}
-            estimatedItemSize={
-              Math.min(Dimensions.get("window").width - 32, 290) / 3 + 16
-            }
+            estimatedItemSize={Math.min(width - 32, 290) / 3 + 16}
             onEndReached={hiveListInfiniteQuery.fetchNextPage}
             renderItem={({ item }) => (
-              <View flex={1} paddingHorizontal="$1.5">
+              <View f={1} px="$1.5">
                 <HiveBtn
                   hive={item}
                   onPress={() =>

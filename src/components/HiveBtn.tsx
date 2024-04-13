@@ -19,26 +19,11 @@ export default ({
   return (
     <YStack alignItems="center">
       <Pressable onPress={onPress} style={{ width: "100%" }}>
-        <ZStack
-          w="100%"
-          aspectRatio={1}
-          justifyContent="center"
-          alignItems="center"
-        >
-          <Image
-            source={{ uri: hiveImg }}
-            w="100%"
-            aspectRatio={1}
-            borderRadius="$4"
-          />
+        <ZStack w="100%" aspectRatio={1} jc="center" ai="center">
+          <Image source={{ uri: hiveImg }} w="100%" aspectRatio={1} br="$4" />
           {overlay ? (
-            <View
-              w="100%"
-              aspectRatio={1}
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Text fontSize="$12" fontWeight="bold" color="$color1">
+            <View w="100%" aspectRatio={1} jc="center" ai="center">
+              <Text fos="$12" fow="bold" col="$color1">
                 {overlay}
               </Text>
             </View>
