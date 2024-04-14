@@ -9,7 +9,7 @@ import { ZodError, z } from "zod";
 
 import { post_, feedPost_ } from "@/src/schemas/post";
 import { reaction_, Reaction } from "@/src/schemas/reaction";
-import { useUserStore } from "@/src/stores/user";
+import { useUserId, useUserStore } from "@/src/stores/user";
 
 export const useHivePostListInfiniteQuery = (hiveId: number) => {
   return useInfiniteQuery({
@@ -39,16 +39,16 @@ export const useHivePostListInfiniteQuery = (hiveId: number) => {
 };
 
 export const useOngoingPostListInfiniteQuery = () => {
-  const userStore = useUserStore();
+  const userId = useUserId();
 
   return useInfiniteQuery({
-    queryKey: ["post", "user", userStore.user?.id ?? 1, "ongoing", "list"],
+    queryKey: ["post", "user", userId, "ongoing", "list"],
     queryFn: async ({ pageParam }) => {
       const data = await z.array(feedPost_).parseAsync(
         (
           await axios.get("/post_v1/ongoingfeed", {
             params: {
-              user_id: userStore.user?.id ?? 1,
+              user_id: userId,
               limit: 24,
               offset: pageParam,
             },
@@ -72,16 +72,16 @@ export const useOngoingPostListInfiniteQuery = () => {
 };
 
 export const useFollowingPostListInfiniteQuery = () => {
-  const userStore = useUserStore();
+  const userId = useUserId();
 
   return useInfiniteQuery({
-    queryKey: ["post", "user", userStore.user?.id ?? 1, "following", "list"],
+    queryKey: ["post", "user", userId, "following", "list"],
     queryFn: async ({ pageParam }) => {
       const data = await z.array(feedPost_).parseAsync(
         (
           await axios.get("/post_v1/followingfeed", {
             params: {
-              user_id: userStore.user?.id ?? 1,
+              user_id: userId,
               limit: 24,
               offset: pageParam,
             },
@@ -121,7 +121,7 @@ export const usePostReactionsQuery = (postId: number) => {
 };
 
 export const useCreatePostMutation = () => {
-  const userStore = useUserStore();
+  const userId = useUserId();
 
   return useMutation<
     void,
@@ -134,13 +134,13 @@ export const useCreatePostMutation = () => {
     mutationFn: async ({ hiveId, photo }) => {
       const photoBlob = await (await fetch(photo)).blob();
       const postFormData = new FormData();
-      postFormData.append("member_id", (userStore.user?.id ?? 1).toString());
+      postFormData.append("member_id", userId.toString());
       postFormData.append("group_id", hiveId.toString());
       postFormData.append("description", "");
       postFormData.append(
         "photo",
         photoBlob,
-        `${userStore.user?.id ?? 1}_${Date.now()}.${photo.split(";")[0].split("/")[1]}`,
+        `${userId}_${Date.now()}.${photo.split(";")[0].split("/")[1]}`,
       );
       return await axios.post("/post_v1/post", postFormData, {
         baseURL: process.env.EXPO_PUBLIC_GROUP_API,
@@ -153,7 +153,7 @@ export const useCreatePostReactionMutation = (
   postId: number,
   reaction: string,
 ) => {
-  const userStore = useUserStore();
+  const userId = useUserId();
   const queryClient = useQueryClient();
 
   return useMutation<void, AxiosError<{ message: string }>>({
@@ -162,7 +162,7 @@ export const useCreatePostReactionMutation = (
         "/reaction_v1/reaction",
         {
           post_id: postId,
-          member_id: userStore.user?.id ?? 1,
+          member_id: userId,
           reaction,
         },
         { baseURL: process.env.EXPO_PUBLIC_GROUP_API },
@@ -180,7 +180,7 @@ export const useDeletePostReactionMutation = (
   postId: number,
   reaction: string,
 ) => {
-  const userStore = useUserStore();
+  const userId = useUserId();
   const queryClient = useQueryClient();
 
   return useMutation<void, AxiosError<{ message: string }>>({
@@ -189,7 +189,7 @@ export const useDeletePostReactionMutation = (
         baseURL: process.env.EXPO_PUBLIC_GROUP_API,
         params: {
           post_id: postId,
-          member_id: userStore.user?.id ?? 1,
+          member_id: userId,
           reaction,
         },
       });

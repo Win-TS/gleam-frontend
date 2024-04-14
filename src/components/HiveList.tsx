@@ -13,7 +13,7 @@ export default function ({
   hiveList: Hive[];
   onPress?: (hive: Hive) => void;
   onEndReached?: () => void;
-  spinner?: () => React.ReactElement;
+  spinner?: () => React.ReactNode;
 }) {
   const { width } = useWindowDimensions();
 

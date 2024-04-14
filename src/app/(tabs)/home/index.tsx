@@ -32,7 +32,7 @@ import {
   useDeletePostReactionMutation,
 } from "@/src/hooks/post";
 import { FeedPost } from "@/src/schemas/post";
-import { useUserStore } from "@/src/stores/user";
+import { useUserId } from "@/src/stores/user";
 
 const PostOptionsPopover = ({ postId }: { postId: number }) => {
   const theme = useTheme();
@@ -156,7 +156,7 @@ const ReactionSelectedButton = ({
 };
 
 const ReactionList = ({ postId }: { postId: number }) => {
-  const userStore = useUserStore();
+  const userId = useUserId();
   const postReactionsQuery = usePostReactionsQuery(postId);
 
   return (
@@ -171,10 +171,7 @@ const ReactionList = ({ postId }: { postId: number }) => {
         const postUserReactionsCount = useMemo(
           () =>
             countBy(
-              filter(
-                data,
-                (item) => item.member_id === (userStore.user?.id ?? 1),
-              ),
+              filter(data, (item) => item.member_id === userId),
               (item) => item.reaction,
             ),
           [data],
@@ -209,20 +206,24 @@ const ReactionList = ({ postId }: { postId: number }) => {
 
 const FeedPostComponent = ({ post }: { post: FeedPost }) => {
   return (
-    <YStack w="100%" p="$2" gap="$1" br="$3" elevation="$4">
+    <YStack w="100%" p="$2" gap="$3" br="$3" elevation="$4">
       <XStack ai="center" gap="$1.5">
         <Avatar circular size="$4">
           <Avatar.Image src={post.poster_photo_url} />
         </Avatar>
         <Text>{post.poster_username}</Text>
       </XStack>
-      <ZStack h="$20" ai="center">
-        <YStack pt="$2">
-          <YStack br="$8" ov="hidden">
-            <Image aspectRatio={1} source={{ uri: post.photo_url.String }} />
-          </YStack>
-        </YStack>
+      <ZStack pos="relative" w="100%" pt="$2" aspectRatio={1} ai="center">
+        <View w="100%" br="$8">
+          <Image
+            w="100%"
+            aspectRatio={1}
+            source={{ uri: post.photo_url.String }}
+          />
+        </View>
         <XStack
+          pos="absolute"
+          t="$-2"
           h="$3"
           px="$3"
           bw="$1"
@@ -242,13 +243,20 @@ const FeedPostComponent = ({ post }: { post: FeedPost }) => {
   );
 };
 
-const Feed = ({ postList }: { postList: FeedPost[] }) => {
+const Feed = ({
+  postList,
+  onEndReached,
+}: {
+  postList: FeedPost[];
+  onEndReached?: () => void;
+}) => {
   return (
     <VerticalList
       data={postList}
       numColumns={1}
       ItemSeparatorComponent={() => <View h="$1" />}
       estimatedItemSize={366}
+      onEndReached={() => onEndReached?.()}
       renderItem={({ item }) => (
         <View px="$4">
           <FeedPostComponent post={item} />
@@ -273,7 +281,12 @@ const FollowingFeed = () => {
       <QueryPlaceholder
         query={postListInfiniteQuery}
         spinnerSize="large"
-        renderData={() => <Feed postList={flattenedPostList} />}
+        renderData={() => (
+          <Feed
+            postList={flattenedPostList}
+            onEndReached={postListInfiniteQuery.fetchNextPage}
+          />
+        )}
       />
     </View>
   );
@@ -294,7 +307,12 @@ const OngoingFeed = () => {
       <QueryPlaceholder
         query={postListInfiniteQuery}
         spinnerSize="large"
-        renderData={() => <Feed postList={flattenedPostList} />}
+        renderData={() => (
+          <Feed
+            postList={flattenedPostList}
+            onEndReached={postListInfiniteQuery.fetchNextPage}
+          />
+        )}
       />
     </View>
   );
@@ -341,6 +359,7 @@ export default function HomeScreen() {
 
   return (
     <PageContainer>
+      <View h="$0.5" />
       <XStack w="100%" bw="$1" br="$12" boc="$gleam12">
         <ModeButton
           mode="following"

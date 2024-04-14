@@ -2,7 +2,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { useForm } from "@tanstack/react-form";
 import { zodValidator } from "@tanstack/zod-form-adapter";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Image, Spinner, Text, View, XStack, YStack, useTheme } from "tamagui";
 import { z } from "zod";
 
@@ -13,13 +13,13 @@ import ProfileHivePickerSheet from "@/src/components/ProfileHivePickerSheet";
 import SecondaryBtn from "@/src/components/SecondaryBtn";
 import { useCreatePostMutation } from "@/src/hooks/post";
 import { Hive, hive_ } from "@/src/schemas/hive";
-import { useUserStore } from "@/src/stores/user";
+import { useUserId } from "@/src/stores/user";
 
 export default function TabTwoScreen() {
   const theme = useTheme();
   const router = useRouter();
 
-  const user = useUserStore();
+  const userId = useUserId();
 
   const createPostMutation = useCreatePostMutation();
 
@@ -60,10 +60,14 @@ export default function TabTwoScreen() {
             <form.Field
               name="image"
               children={(field) =>
-                URL.canParse(field.getValue()) ? (
-                  <Image aspectRatio={1} source={{ uri: field.getValue() }} />
+                z.string().url().safeParse(field.getValue()).success ? (
+                  <Image
+                    w="100%"
+                    aspectRatio={1}
+                    source={{ uri: field.getValue() }}
+                  />
                 ) : (
-                  <View aspectRatio={1} bc="$color5" />
+                  <View w="100%" aspectRatio={1} bc="$color5" />
                 )
               }
             />
@@ -74,6 +78,7 @@ export default function TabTwoScreen() {
             children={(field) => (
               <SecondaryBtn
                 w="100%"
+                h="$3"
                 onPress={() => setProfileHivePickerOpen(true)}
               >
                 {field.getValue()?.group_name ?? "CHOOSE YOUR HIVE"}
@@ -82,7 +87,12 @@ export default function TabTwoScreen() {
           />
         </YStack>
         <XStack w="100%" jc="space-between" ai="center">
-          <SecondaryBtn h="$5" w="$5" onPress={() => setImagePickerOpen(true)}>
+          <SecondaryBtn
+            h="$5"
+            w="$5"
+            p="$0"
+            onPress={() => setImagePickerOpen(true)}
+          >
             <FontAwesome name="repeat" size={32} color={theme.gleam12.val} />
           </SecondaryBtn>
           <form.Subscribe
@@ -94,6 +104,7 @@ export default function TabTwoScreen() {
                 <PrimaryBtn
                   h="$5"
                   w="$5"
+                  p="$0"
                   disabled={!canSubmit}
                   opacity={canSubmit ? 1 : 0.5}
                   onPress={form.handleSubmit}
@@ -124,7 +135,7 @@ export default function TabTwoScreen() {
             <ProfileHivePickerSheet
               open={profileHivePickerOpen}
               setOpen={setProfileHivePickerOpen}
-              userId={user.user?.id ?? 1}
+              userId={userId}
               onPress={field.handleChange}
             />
           )}

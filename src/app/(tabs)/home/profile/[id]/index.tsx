@@ -17,6 +17,7 @@ import {
 import { z } from "zod";
 
 import DangerBtn from "@/src/components/DangerBtn";
+import HeaderContainer from "@/src/components/HeaderContainer";
 import HiveBtn from "@/src/components/HiveBtn";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
 import ProfileHeader from "@/src/components/ProfileHeader";
@@ -87,19 +88,7 @@ const ProfileScreenNoHive = ({ userId }: { userId: number }) => {
 
   return (
     <YStack w="100%" gap="$3" $gtSm={{ maw: "$20" }}>
-      <YStack
-        p="$3"
-        w="100%"
-        bc="$gleam1"
-        bw="$1.5"
-        br="$8"
-        boc="$gleam12"
-        shac="$gleam12"
-        shar="$2"
-        jc="center"
-        ai="center"
-        gap="$3"
-      >
+      <HeaderContainer>
         <QueryPlaceholder
           query={userprofileQuery}
           spinnerSize="large"
@@ -139,7 +128,7 @@ const ProfileScreenNoHive = ({ userId }: { userId: number }) => {
           </YStack>
         </XStack>
         <ProfileOptionsPopover userId={userId} />
-      </YStack>
+      </HeaderContainer>
       <XStack
         w="100%"
         bc="$gleam12"

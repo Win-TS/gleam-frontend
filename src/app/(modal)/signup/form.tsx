@@ -117,6 +117,7 @@ export default function SignupFormScreen() {
             name="photo"
             children={(field) => (
               <ImagePicker
+                size="$12"
                 image={field.state.value}
                 setImage={field.handleChange}
               />

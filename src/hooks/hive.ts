@@ -1,4 +1,9 @@
-import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { z, ZodError } from "zod";
 
@@ -8,10 +13,10 @@ import {
   hiveWithMemberInfo_,
   HiveWithMemberInfo,
 } from "@/src/schemas/hive";
-import { useUserStore } from "@/src/stores/user";
+import { useUserId } from "@/src/stores/user";
 
 export const useHiveQuery = (hiveId: number) => {
-  const userStore = useUserStore();
+  const userId = useUserId();
 
   return useQuery<
     HiveWithMemberInfo,
@@ -23,7 +28,7 @@ export const useHiveQuery = (hiveId: number) => {
         (
           await axios.get("/group_v1/group", {
             baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-            params: { group_id: hiveId, user_id: userStore.user?.id ?? 1 },
+            params: { group_id: hiveId, user_id: userId },
           })
         ).data,
       );
@@ -117,6 +122,125 @@ export const useDeleteHiveMutation = (hiveId: number) => {
         params: {
           group_id: hiveId,
         },
+      });
+    },
+  });
+};
+
+export const useRequestHiveMutation = (hiveId: number) => {
+  const userId = useUserId();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    void,
+    AxiosError<{ message: string }>,
+    { description: string }
+  >({
+    mutationFn: async ({ description }) => {
+      return await axios.post(
+        "/group_v1/requesttojoin",
+        { group_id: hiveId, member_id: userId, description },
+        {
+          baseURL: process.env.EXPO_PUBLIC_GROUP_API,
+        },
+      );
+    },
+    onSettled: async () => {
+      return await queryClient.invalidateQueries({
+        queryKey: ["hive", hiveId, "data"],
+      });
+    },
+  });
+};
+
+export const useLeaveHiveMutation = (hiveId: number) => {
+  const userId = useUserId();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    void,
+    AxiosError<{ message: string }>,
+    { description: string }
+  >({
+    mutationFn: async ({ description }) => {
+      return await axios.post(
+        "/group_v1/requesttojoin",
+        { group_id: hiveId, member_id: userId, description },
+        {
+          baseURL: process.env.EXPO_PUBLIC_GROUP_API,
+        },
+      );
+    },
+    onSettled: async () => {
+      return await queryClient.invalidateQueries({
+        queryKey: ["hive", hiveId, "data"],
+      });
+    },
+  });
+};
+
+export const useHiveInfoMutation = (hiveId: number) => {
+  const userId = useUserId();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    void,
+    AxiosError<{ message: string }> | ZodError,
+    { photo: string | undefined; name: string; description: string }
+  >({
+    mutationFn: async ({ photo, name, description }) => {
+      await Promise.all(
+        [
+          axios.patch(
+            "/group_v1/editgroupname",
+            { group_name: name, member_id: userId },
+            {
+              baseURL: process.env.EXPO_PUBLIC_GROUP_API,
+              params: {
+                group_id: hiveId,
+              },
+            },
+          ),
+          axios.patch(
+            "/group_v1/editgroupname",
+            {},
+            {
+              baseURL: process.env.EXPO_PUBLIC_GROUP_API,
+              params: {
+                group_id: hiveId,
+                editor_id: userId,
+                description,
+              },
+            },
+          ),
+          photo
+            ? (async () => {
+                const photoBlob = await (await fetch(photo)).blob();
+                const editPhotoFormData = new FormData();
+                editPhotoFormData.append("editor_id", userId.toString());
+                editPhotoFormData.append(
+                  "photo",
+                  photoBlob,
+                  `${userId}_${Date.now()}.${photo.split(";")[0].split("/")[1]}`,
+                );
+                await axios.patch(
+                  "/group_v1/editgroupphoto",
+                  editPhotoFormData,
+                  {
+                    baseURL: process.env.EXPO_PUBLIC_GROUP_API,
+                    params: {
+                      group_id: hiveId,
+                    },
+                  },
+                );
+              })()
+            : undefined,
+        ].filter(Boolean),
+      );
+    },
+    onSettled: async () => {
+      return await queryClient.invalidateQueries({
+        queryKey: ["hive", hiveId, "data"],
       });
     },
   });

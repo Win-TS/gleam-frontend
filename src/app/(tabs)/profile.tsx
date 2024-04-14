@@ -14,6 +14,7 @@ import {
   useWindowDimensions,
 } from "tamagui";
 
+import HeaderContainer from "@/src/components/HeaderContainer";
 import ImagePicker from "@/src/components/ImagePicker";
 import PageContainer from "@/src/components/PageContainer";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
@@ -22,7 +23,7 @@ import QueryPlaceholder from "@/src/components/QueryPlaceholder";
 import SwitchWithLabel from "@/src/components/SwitchWithLabel";
 import { useUserprofileMutation, useUserprofileQuery } from "@/src/hooks/user";
 import { Userprofile } from "@/src/schemas/userprofile";
-import { useUserStore } from "@/src/stores/user";
+import { useUserId } from "@/src/stores/user";
 
 const ProfileFormHeader = ({
   userprofile,
@@ -31,9 +32,7 @@ const ProfileFormHeader = ({
   userprofile: Userprofile;
   setIsEditProfile: (edit: boolean) => void;
 }) => {
-  const userprofileMutation = useUserprofileMutation({
-    onSettled: () => setIsEditProfile(false),
-  });
+  const userprofileMutation = useUserprofileMutation();
 
   const form = useForm({
     defaultValues: {
@@ -45,6 +44,7 @@ const ProfileFormHeader = ({
       try {
         await userprofileMutation.mutateAsync(value);
       } catch {}
+      setIsEditProfile(false);
     },
   });
 
@@ -55,6 +55,7 @@ const ProfileFormHeader = ({
           name="photo"
           children={(field) => (
             <ImagePicker
+              size="$12"
               image={field.state.value ?? userprofile.photo_url}
               setImage={field.handleChange}
             />
@@ -105,27 +106,15 @@ export default function ProfileScreen() {
   const theme = useTheme();
   const { width } = useWindowDimensions();
 
-  const userStore = useUserStore();
+  const userId = useUserId();
 
   const [isEditProfile, setIsEditProfile] = useState<boolean>(false);
 
-  const userprofileQuery = useUserprofileQuery(userStore.user?.id ?? 1);
+  const userprofileQuery = useUserprofileQuery(userId);
 
   return (
     <PageContainer>
-      <YStack
-        p="$3"
-        w="100%"
-        bc="$gleam1"
-        bw="$1.5"
-        br="$8"
-        boc="$gleam12"
-        shac="$gleam12"
-        shar="$2"
-        jc="center"
-        ai="center"
-        gap="$3"
-      >
+      <HeaderContainer>
         <QueryPlaceholder
           query={userprofileQuery}
           spinnerSize="large"
@@ -178,7 +167,7 @@ export default function ProfileScreen() {
             </YStack>
           </XStack>
         )}
-      </YStack>
+      </HeaderContainer>
       <XStack
         w="100%"
         br="$8"

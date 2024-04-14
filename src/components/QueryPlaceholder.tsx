@@ -7,15 +7,15 @@ type QueryPlaceholderProps<TData, TError> = {
   spinnerSize?: "small" | "large";
 } & (
   | {
-      renderData: (data: TData) => React.ReactElement;
+      renderData: (data: TData) => React.ReactNode;
       renderSpinner?: false;
     }
   | {
       renderData: (
         data:
           | { data: TData; spinner: undefined }
-          | { data: undefined; spinner: () => React.ReactElement },
-      ) => React.ReactElement;
+          | { data: undefined; spinner: () => React.ReactNode },
+      ) => React.ReactNode;
       renderSpinner: true;
     }
 );

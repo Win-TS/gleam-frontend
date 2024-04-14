@@ -3,7 +3,7 @@ import axios, { AxiosError } from "axios";
 import { z, ZodError } from "zod";
 
 import { userprofile_, Userprofile } from "@/src/schemas/userprofile";
-import { useUserStore } from "@/src/stores/user";
+import { useUserId } from "@/src/stores/user";
 
 export const useUserprofileQuery = (userId: number) => {
   return useQuery<Userprofile, AxiosError<{ message: string }> | ZodError>({
@@ -27,13 +27,10 @@ export const uploadUserPhotoResponse_ = z.object({
   url: z.string(),
 });
 
-export const useUserprofileMutation = ({
-  onSettled,
-}: {
-  onSettled?: () => void;
-}) => {
-  const userStore = useUserStore();
+export const useUserprofileMutation = () => {
+  const userId = useUserId();
   const queryClient = useQueryClient();
+
   return useMutation<
     void,
     AxiosError<{ message: string }> | ZodError,
@@ -56,7 +53,7 @@ export const useUserprofileMutation = ({
             {
               baseURL: process.env.EXPO_PUBLIC_USER_API,
               params: {
-                user_id: userStore.user?.id ?? 1,
+                user_id: userId,
               },
             },
           ),
@@ -67,7 +64,7 @@ export const useUserprofileMutation = ({
                 uploadUserPhotoFormData.append(
                   "photo",
                   photoBlob,
-                  `${userStore.user?.id ?? 1}_${Date.now()}.${photo.split(";")[0].split("/")[1]}`,
+                  `${userId}_${Date.now()}.${photo.split(";")[0].split("/")[1]}`,
                 );
                 const { url: photoUrl } =
                   await uploadUserPhotoResponse_.parseAsync(
@@ -89,7 +86,7 @@ export const useUserprofileMutation = ({
                 await axios.patch("/user_v1/editphoto", editPhotoFormData, {
                   baseURL: process.env.EXPO_PUBLIC_USER_API,
                   params: {
-                    user_id: userStore.user?.id ?? 1,
+                    user_id: userId,
                   },
                 });
               })()
@@ -98,9 +95,8 @@ export const useUserprofileMutation = ({
       );
     },
     onSettled: async () => {
-      onSettled?.();
       return await queryClient.invalidateQueries({
-        queryKey: ["userprofile", userStore.user?.id ?? 1],
+        queryKey: ["userprofile", userId],
       });
     },
   });
