@@ -1,8 +1,6 @@
 import { FontAwesome6, AntDesign } from "@expo/vector-icons";
-import { useQuery } from "@tanstack/react-query";
-import axios, { AxiosError, AxiosResponse } from "axios";
 import { useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Input,
   XStack,
@@ -12,64 +10,102 @@ import {
   View,
   useTheme,
   useWindowDimensions,
+  Button,
 } from "tamagui";
 import z from "zod";
 
 import ActionDialog from "@/src/components/ActionDialog";
 import PageContainer from "@/src/components/PageContainer";
 import VerticalList from "@/src/components/VerticalList";
+import {
+  useDeleteHiveMemberMutation,
+  useEditMemberRoleMutation,
+  useHiveMemberListInfiniteQuery,
+  useHiveQuery,
+} from "@/src/hooks/hive";
+import { HiveMember } from "@/src/schemas/hive";
+import { useUserId } from "@/src/stores/user";
 
-type MEMBERLIST = {
-  created_at: string;
-  group_id: number;
-  member_id: number;
-  role: string;
-};
-
-const MemberInList = ({ name, role }: { name: string; role: string }) => {
-  const edit = useState(true);
+const MemberActions = ({ member }: { member: HiveMember }) => {
   const theme = useTheme();
+
+  const userId = useUserId();
+  const hiveQuery = useHiveQuery(member.group_id);
+
+  const editMemberRoleMutation = useEditMemberRoleMutation(
+    member.group_id,
+    member.member_id,
+    member.role === "member" ? "co-leader" : "member",
+  );
+  const deleteHiveMemberMutation = useDeleteHiveMemberMutation(
+    member.group_id,
+    member.member_id,
+  );
+
   const [promoteModal, setPromoteModal] = useState<boolean>(false);
   const [deleteModal, setDeleteModal] = useState<boolean>(false);
-  const rankConversion = role === "member" ? "Promote" : "Demote";
+  const rankConversion = member.role === "member" ? "Promote" : "Demote";
 
+  if (member.member_id === userId) return <Text fos="$3">(You)</Text>;
+  if (
+    hiveQuery.data?.status !== "creator" &&
+    hiveQuery.data?.status !== "co-leader"
+  )
+    return <XStack />;
   return (
-    <XStack w="100%" ai="center" gap="$2.5" my="$2" mx="$2.5">
-      <Avatar circular size="$4">
-        <Avatar.Fallback bc="grey" />
-      </Avatar>
-      <Text>{name}</Text>
+    <XStack jc="flex-start" ai="center" gap="$1.5">
+      <Button p="$2" chromeless onPress={() => setPromoteModal(true)}>
+        <FontAwesome6 name="crown" size={25} color={theme.gleam12.val} />
+      </Button>
+      <ActionDialog
+        open={promoteModal}
+        onOpenChange={setPromoteModal}
+        onAction={async () => {
+          try {
+            await editMemberRoleMutation.mutateAsync();
+          } catch {}
+        }}
+        title={`${rankConversion} "${member.username}"`}
+        description="*this action cannot be undone*"
+      />
+      <Button p="$2" chromeless onPress={() => setDeleteModal(true)}>
+        <AntDesign name="deleteuser" size={25} color={theme.gleam12.val} />
+      </Button>
+      <ActionDialog
+        open={deleteModal}
+        onOpenChange={setDeleteModal}
+        onAction={async () => {
+          try {
+            await deleteHiveMemberMutation.mutateAsync();
+          } catch {}
+        }}
+        title={`Remove "${member.username}"`}
+        description="*this action cannot be undone*"
+      />
+    </XStack>
+  );
+};
 
-      {/* TODO:  move the icon more to the right & system to determine role of member => demote or promote */}
-      {edit && (
-        <XStack left="$20" gap="$1.5">
-          <FontAwesome6
-            name="crown"
-            size={25}
-            color={theme.gleam12.val}
-            onPress={() => setPromoteModal(true)}
-          />
-          <ActionDialog
-            open={promoteModal}
-            onOpenChange={setPromoteModal}
-            title={`${rankConversion} "${name}"`}
-            description="*this action cannot be undone*"
-          />
+const Member = ({ member }: { member: HiveMember }) => {
+  return (
+    <XStack w="100%" p="$2" jc="space-between" ai="center">
+      <XStack f={1} flexShrink={1} jc="flex-start" ai="center" gap="$3">
+        <Avatar circular size="$4">
+          <Avatar.Image src={member.user_photourl} />
+          <Avatar.Fallback bc="$color5" />
+        </Avatar>
+        <Text
+          f={1}
+          numberOfLines={1}
+          flexShrink={1}
+          textOverflow="ellipsis"
+          fos="$3"
+        >
+          {member.username}
+        </Text>
+      </XStack>
 
-          <AntDesign
-            name="deleteuser"
-            size={25}
-            color={theme.gleam12.val}
-            onPress={() => setDeleteModal(true)}
-          />
-          <ActionDialog
-            open={deleteModal}
-            onOpenChange={setDeleteModal}
-            title={`Remove "${name}"`}
-            description="*this action cannot be undone*"
-          />
-        </XStack>
-      )}
+      <MemberActions member={member} />
     </XStack>
   );
 };
@@ -79,22 +115,17 @@ const params = z.object({
 });
 
 export default function MemberScreen() {
-  const { id: hiveId } = params.parse(useLocalSearchParams<{ id: string }>());
+  const { id: hiveId } = params.parse(useLocalSearchParams());
 
   const { width } = useWindowDimensions();
 
-  const userListQuery = useQuery<
-    AxiosResponse,
-    AxiosError<{ message: string }>
-  >({
-    queryKey: ["userList", hiveId],
-    queryFn: async () => {
-      return await axios.get("/group_v1/groupmembers", {
-        baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-        params: { group_id: hiveId },
-      });
-    },
-  });
+  const hiveMemberListInfiniteQuery = useHiveMemberListInfiniteQuery(hiveId);
+
+  const flattenedHiveMemberList = useMemo(
+    () =>
+      hiveMemberListInfiniteQuery.data?.pages.flatMap(({ data }) => data) ?? [],
+    [hiveMemberListInfiniteQuery.data],
+  );
 
   return (
     <PageContainer>
@@ -107,29 +138,15 @@ export default function MemberScreen() {
       />
       <View f={1} w={width - 16} $gtSm={{ maw: 290 }}>
         <VerticalList
-          data={userListQuery.data?.data ?? []}
+          data={flattenedHiveMemberList}
           numColumns={1}
           ItemSeparatorComponent={() => (
             <Separator w={width} $gtSm={{ maw: "$20" }} boc="$gleam12" />
           )}
-          estimatedItemSize={width}
-          renderItem={({
-            item,
-            index,
-          }: {
-            item: MEMBERLIST | number;
-            index: number;
-          }) => (
-            <View f={1} px="$1.5">
-              <MemberInList
-                name={
-                  typeof item === "number"
-                    ? item.toString()
-                    : item.member_id.toString()
-                }
-                role={typeof item === "number" ? "member" : item.role}
-                key={index}
-              />
+          estimatedItemSize={58}
+          renderItem={({ item }) => (
+            <View w="100%" jc="center" ai="center" $gtSm={{ maw: "$20" }}>
+              <Member member={item} />
             </View>
           )}
         />

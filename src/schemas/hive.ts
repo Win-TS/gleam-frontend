@@ -33,6 +33,17 @@ export const hiveWithMemberInfo_ = z.object({
   status: z.string(),
 });
 
+export const hiveMember_ = z.object({
+  group_id: z.coerce.number(),
+  member_id: z.coerce.number(),
+  role: z.string(),
+  created_at: z.string(),
+  user_id: z.coerce.number(),
+  username: z.string(),
+  user_photourl: z.string(),
+});
+
 export type Hive = z.infer<typeof hive_>;
 export type ExtendedHive = z.infer<typeof extendedHive_>;
 export type HiveWithMemberInfo = z.infer<typeof hiveWithMemberInfo_>;
+export type HiveMember = z.infer<typeof hiveMember_>;
