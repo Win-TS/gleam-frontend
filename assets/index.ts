@@ -4,6 +4,12 @@ export const fonts = {
   Olyford: require("./fonts/Olyford/Fontspring-DEMO-olyford-extrabold.otf"),
 };
 
+export const icons = {
+  crown: require("@/assets/icons/crown.png"),
+  crown_gray: require("@/assets/icons/crown_gray.png"),
+  remove_member: require("@/assets/icons/remove_member.png"),
+};
+
 export const reactions = {
   default: {
     heart: require("@/assets/reactions/default/heart.png"),

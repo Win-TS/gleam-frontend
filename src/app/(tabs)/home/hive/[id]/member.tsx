@@ -1,4 +1,4 @@
-import { FontAwesome6, AntDesign } from "@expo/vector-icons";
+import { Image as ExpoImage } from "expo-image";
 import { useLocalSearchParams } from "expo-router";
 import { useMemo, useState } from "react";
 import {
@@ -8,12 +8,12 @@ import {
   Avatar,
   Text,
   View,
-  useTheme,
   useWindowDimensions,
   Button,
 } from "tamagui";
 import z from "zod";
 
+import { icons } from "@/assets";
 import ActionDialog from "@/src/components/ActionDialog";
 import PageContainer from "@/src/components/PageContainer";
 import VerticalList from "@/src/components/VerticalList";
@@ -27,8 +27,6 @@ import { HiveMember } from "@/src/schemas/hive";
 import { useUserId } from "@/src/stores/user";
 
 const MemberActions = ({ member }: { member: HiveMember }) => {
-  const theme = useTheme();
-
   const userId = useUserId();
   const hiveQuery = useHiveQuery(member.group_id);
 
@@ -47,6 +45,7 @@ const MemberActions = ({ member }: { member: HiveMember }) => {
   const rankConversion = member.role === "member" ? "Promote" : "Demote";
 
   if (member.member_id === userId) return <Text fos="$3">(You)</Text>;
+  if (member.role === "creator") return <Text fos="$3">(Creator)</Text>;
   if (
     hiveQuery.data?.status !== "creator" &&
     hiveQuery.data?.status !== "co-leader"
@@ -55,7 +54,12 @@ const MemberActions = ({ member }: { member: HiveMember }) => {
   return (
     <XStack jc="flex-start" ai="center" gap="$1.5">
       <Button p="$2" chromeless onPress={() => setPromoteModal(true)}>
-        <FontAwesome6 name="crown" size={25} color={theme.gleam12.val} />
+        <View w="$2.5" h="$2.5" jc="center" ai="center">
+          <ExpoImage
+            source={member.role === "member" ? icons.crown_gray : icons.crown}
+            style={{ width: 24, height: 24 }}
+          />
+        </View>
       </Button>
       <ActionDialog
         open={promoteModal}
@@ -69,7 +73,12 @@ const MemberActions = ({ member }: { member: HiveMember }) => {
         description="*this action cannot be undone*"
       />
       <Button p="$2" chromeless onPress={() => setDeleteModal(true)}>
-        <AntDesign name="deleteuser" size={25} color={theme.gleam12.val} />
+        <View w="$2.5" h="$2.5" jc="center" ai="center">
+          <ExpoImage
+            source={icons.remove_member}
+            style={{ width: 24, height: 24 }}
+          />
+        </View>
       </Button>
       <ActionDialog
         open={deleteModal}
