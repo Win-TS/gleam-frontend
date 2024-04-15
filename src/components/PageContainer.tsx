@@ -10,7 +10,7 @@ export default function ({
   children: React.ReactNode;
 }) {
   return (
-    <YStack f={1} pt="$4" bc="$color1" jc="flex-start" ai="center" ov="scroll">
+    <YStack f={1} py="$4" bc="$color1" jc="flex-start" ai="center" ov="scroll">
       <YStack
         f={1}
         w="100%"

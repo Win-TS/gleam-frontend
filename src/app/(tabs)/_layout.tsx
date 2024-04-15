@@ -1,22 +1,41 @@
-import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { Image as ExpoImage } from "expo-image";
 import { Tabs } from "expo-router";
 import React from "react";
-import { useTheme } from "tamagui";
+import { View } from "tamagui";
 
+import { nav } from "@/assets";
 import { useClientOnlyValue } from "@/src/components/useClientOnlyValue";
 import { useColorScheme } from "@/src/components/useColorScheme";
 import Colors from "@/src/constants/Colors";
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>["name"];
-  color: string;
+function TabBarIcon({
+  icon,
+  focused,
+  size,
+}: {
+  icon: React.ComponentProps<typeof ExpoImage>["source"];
+  focused: boolean;
+  size?: number;
 }) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
+  return (
+    <View
+      w="$3"
+      h="$3"
+      jc="center"
+      ai="center"
+      bc={focused ? "$color5" : undefined}
+      br="$3"
+    >
+      <ExpoImage
+        source={icon}
+        style={{ width: size ?? 24, height: size ?? 24 }}
+      />
+    </View>
+  );
 }
 
 export default function TabLayout() {
-  const theme = useTheme();
   const colorScheme = useColorScheme();
 
   return (
@@ -32,8 +51,8 @@ export default function TabLayout() {
         name="home"
         options={{
           headerShown: false,
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="home" color={theme.gleam12.val} />
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon icon={nav.home} focused={focused} />
           ),
           tabBarLabel: () => null,
         }}
@@ -42,8 +61,8 @@ export default function TabLayout() {
         name="search"
         options={{
           headerShown: false,
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="search" color={theme.gleam12.val} />
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon icon={nav.search} focused={focused} />
           ),
           tabBarLabel: () => null,
         }}
@@ -53,8 +72,8 @@ export default function TabLayout() {
         options={{
           title: "add streak",
           headerShown: false,
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="plus-circle" color={theme.gleam12.val} />
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon icon={nav.add_streak} size={36} focused={focused} />
           ),
           tabBarLabel: () => null,
         }}
@@ -63,8 +82,8 @@ export default function TabLayout() {
         name="notification"
         options={{
           headerShown: false,
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="bell" color={theme.gleam12.val} />
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon icon={nav.notification} focused={focused} />
           ),
           tabBarLabel: () => null,
         }}
@@ -77,8 +96,8 @@ export default function TabLayout() {
           headerTitleStyle: {
             fontWeight: "bold",
           },
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="user" color={theme.gleam12.val} />
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon icon={nav.profile} focused={focused} />
           ),
           tabBarLabel: () => null,
         }}

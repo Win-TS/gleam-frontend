@@ -15,8 +15,11 @@ export default function StackLayout() {
       <Stack.Screen
         name="index"
         options={{
-          title: "Home",
-          headerShown: false,
+          title: "GLEAM",
+          headerTitleAlign: "center",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
         }}
       />
       <Stack.Screen

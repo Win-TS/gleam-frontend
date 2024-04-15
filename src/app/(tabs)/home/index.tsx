@@ -388,7 +388,6 @@ export default function HomeScreen() {
 
   return (
     <PageContainer>
-      <View h="$0.5" />
       <XStack w="100%" bw="$1" br="$12" boc="$gleam12">
         <ModeButton
           mode="following"

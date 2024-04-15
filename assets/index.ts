@@ -12,6 +12,14 @@ export const icons = {
 
 export const logo = require("@/assets/logo/adaptive-icon.png");
 
+export const nav = {
+  home: require("@/assets/nav/home.png"),
+  search: require("@/assets/nav/search.png"),
+  add_streak: require("@/assets/nav/add_streak.png"),
+  notification: require("@/assets/nav/notification.png"),
+  profile: require("@/assets/nav/profile.png"),
+};
+
 export const reactions = {
   default: {
     heart: require("@/assets/reactions/default/heart.png"),
