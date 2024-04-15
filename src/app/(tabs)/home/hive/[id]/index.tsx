@@ -399,6 +399,7 @@ const HiveBody = ({ hiveId }: { hiveId: number }) => {
             numColumns={3}
             ItemSeparatorComponent={() => <View h="$0.75" />}
             estimatedItemSize={Math.min(width - 32, 290) / 3}
+            onEndReached={hivePostListInfiniteQuery.fetchNextPage}
             renderItem={({ item }) => (
               <View f={1} px="$1.5">
                 <Image

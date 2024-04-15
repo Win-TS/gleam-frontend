@@ -1,16 +1,22 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { z, ZodError } from "zod";
 
+import { FriendPair, friendPair_, friend_ } from "@/src/schemas/friend";
 import { User, user_ } from "@/src/schemas/user";
 import { userprofile_, Userprofile } from "@/src/schemas/userprofile";
 import { useUserId } from "@/src/stores/user";
 
 export const useUserQuery = () => {
-  const userId = useUserId();
+  const userId = useUserId({ throw: false });
 
   return useQuery<User, AxiosError<{ message: string }> | ZodError>({
-    queryKey: ["user", userId],
+    queryKey: ["user", userId, "info", "all"],
     queryFn: async () => {
       return await user_.parseAsync(
         (
@@ -21,12 +27,13 @@ export const useUserQuery = () => {
         ).data,
       );
     },
+    enabled: !!userId,
   });
 };
 
 export const useUserprofileQuery = (userId: number) => {
   return useQuery<Userprofile, AxiosError<{ message: string }> | ZodError>({
-    queryKey: ["user", userId, "profile"],
+    queryKey: ["user", userId, "info"],
     queryFn: async () => {
       return await userprofile_.parseAsync(
         (
@@ -115,7 +122,7 @@ export const useUserprofileMutation = () => {
     },
     onSettled: async () => {
       return await queryClient.invalidateQueries({
-        queryKey: ["user", userId],
+        queryKey: ["user", userId, "info"],
       });
     },
   });
@@ -145,7 +152,7 @@ export const useUsernameMutation = () => {
     },
     onSettled: async () => {
       return await queryClient.invalidateQueries({
-        queryKey: ["user", userId],
+        queryKey: ["user", userId, "info"],
       });
     },
   });
@@ -174,7 +181,77 @@ export const useUserPrivateMutation = () => {
     },
     onSettled: async () => {
       return await queryClient.invalidateQueries({
-        queryKey: ["user", userId],
+        queryKey: ["user", userId, "info"],
+      });
+    },
+  });
+};
+
+export const useFriendStatusQuery = (otherUserId: number) => {
+  const userId = useUserId();
+
+  return useQuery<FriendPair[], AxiosError<{ message: string }>>({
+    queryKey: ["user", userId, "friend", otherUserId],
+    queryFn: async () => {
+      try {
+        return await z.array(friendPair_).parseAsync(
+          await axios.get("/friend_v1/", {
+            baseURL: process.env.EXPO_PUBLIC_USER_API,
+            params: { user_id1: userId, user_id2: otherUserId },
+          }),
+        );
+      } catch {
+        // FIXME: no way to really tell if backend error or we do not have friends
+        return [];
+      }
+    },
+  });
+};
+
+export const useFriendListInfiniteQuery = (userId: number) => {
+  return useInfiniteQuery({
+    queryKey: ["user", userId, "friend", "list"],
+    queryFn: async ({ pageParam }) => {
+      const data = await z.array(friend_).parseAsync(
+        (
+          await axios.get("/friend_v1/list", {
+            params: { user_id: userId, limit: 12, offset: pageParam },
+            baseURL: process.env.EXPO_PUBLIC_GROUP_API,
+          })
+        ).data,
+      );
+      const calcPreviousOffset = Math.max(0, pageParam - 12);
+      const calcNextOffset = pageParam + data.length;
+      return {
+        data,
+        previousOffset:
+          calcPreviousOffset !== pageParam ? calcPreviousOffset : undefined,
+        nextOffset: calcNextOffset !== pageParam ? calcNextOffset : undefined,
+      };
+    },
+    initialPageParam: 0,
+    getPreviousPageParam: (firstPage) => firstPage.previousOffset ?? undefined,
+    getNextPageParam: (lastPage) => lastPage.nextOffset ?? undefined,
+  });
+};
+
+export const useAddFriendMutation = (otherUserId: number) => {
+  const userId = useUserId();
+  const queryClient = useQueryClient();
+
+  return useMutation<void, AxiosError<{ message: string }>>({
+    mutationFn: async () => {
+      return await axios.post(
+        "/friend_v1/add",
+        { user_id1: userId, user_id2: otherUserId },
+        {
+          baseURL: process.env.EXPO_PUBLIC_USER_API,
+        },
+      );
+    },
+    onSettled: async () => {
+      return await queryClient.invalidateQueries({
+        queryKey: ["user", userId, "friend", otherUserId],
       });
     },
   });

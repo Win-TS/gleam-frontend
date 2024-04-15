@@ -23,7 +23,7 @@ export const useHiveQuery = (hiveId: number) => {
     HiveWithMemberInfo,
     AxiosError<{ message: string }> | ZodError
   >({
-    queryKey: ["hive", hiveId, "data"],
+    queryKey: ["hive", hiveId, "data", "user", userId],
     queryFn: async () => {
       return await hiveWithMemberInfo_.parseAsync(
         (
@@ -176,7 +176,7 @@ export const useRequestHiveMutation = (hiveId: number) => {
     },
     onSettled: async () => {
       return await queryClient.invalidateQueries({
-        queryKey: ["hive", hiveId, "data"],
+        queryKey: ["hive", hiveId, "user", userId, "data"],
       });
     },
   });

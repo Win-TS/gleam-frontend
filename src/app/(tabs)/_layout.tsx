@@ -91,11 +91,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: "GLEAM",
-          headerTitleAlign: "center",
-          headerTitleStyle: {
-            fontWeight: "bold",
-          },
+          headerShown: false,
           tabBarIcon: ({ focused }) => (
             <TabBarIcon icon={nav.profile} focused={focused} />
           ),

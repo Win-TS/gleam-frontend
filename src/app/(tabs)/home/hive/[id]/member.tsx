@@ -167,6 +167,7 @@ export default function MemberScreen() {
             <Separator w={width} $gtSm={{ maw: "$20" }} boc="$gleam12" />
           )}
           estimatedItemSize={58}
+          onEndReached={hiveMemberListInfiniteQuery.fetchNextPage}
           renderItem={({ item }) => (
             <View w="100%" jc="center" ai="center" $gtSm={{ maw: "$20" }}>
               <Member member={item} />

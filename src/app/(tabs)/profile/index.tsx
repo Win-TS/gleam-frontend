@@ -1,7 +1,9 @@
 // import { ChevronRight } from "@tamagui/lucide-icons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useForm } from "@tanstack/react-form";
+import { router } from "expo-router";
 import React, { useState } from "react";
+import { Pressable } from "react-native";
 import {
   Text,
   View,
@@ -142,20 +144,23 @@ export default function ProfileScreen() {
         />
         {!isEditProfile && (
           <XStack gap="$3">
-            <YStack w="$5" jc="center" ai="center">
-              <Text col="$color11" fow="bold">
-                FRIEND
-              </Text>
-              <QueryPlaceholder
-                query={userprofileQuery}
-                spinnerSize="small"
-                renderData={(data) => (
-                  <Text col="$color11" fow="normal">
-                    {data.friends_count}
-                  </Text>
-                )}
-              />
-            </YStack>
+            <Pressable onPress={() => router.push("/(tabs)/profile/friend")}>
+              <YStack w="$5" jc="center" ai="center">
+                <Text col="$color11" fow="bold">
+                  FRIEND
+                </Text>
+
+                <QueryPlaceholder
+                  query={userprofileQuery}
+                  spinnerSize="small"
+                  renderData={(data) => (
+                    <Text col="$color11" fow="normal">
+                      {data.friends_count}
+                    </Text>
+                  )}
+                />
+              </YStack>
+            </Pressable>
             <Separator als="stretch" vertical boc="$gleam12" />
             <YStack w="$5" jc="center" ai="center">
               <Text col="$color11" fow="bold">

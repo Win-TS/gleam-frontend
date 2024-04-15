@@ -1,7 +1,7 @@
-// import { ChevronRight } from "@tamagui/lucide-icons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { router, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useMemo } from "react";
+import { Pressable } from "react-native";
 import {
   Text,
   View,
@@ -17,14 +17,20 @@ import {
 import { z } from "zod";
 
 import DangerBtn from "@/src/components/DangerBtn";
+import DullBtn from "@/src/components/DullBtn";
 import HeaderContainer from "@/src/components/HeaderContainer";
 import HiveBtn from "@/src/components/HiveBtn";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
 import ProfileHeader from "@/src/components/ProfileHeader";
 import QueryPlaceholder from "@/src/components/QueryPlaceholder";
+import SecondaryBtn from "@/src/components/SecondaryBtn";
 import VerticalList from "@/src/components/VerticalList";
 import { useHiveListInfiniteQuery } from "@/src/hooks/hive";
-import { useUserprofileQuery } from "@/src/hooks/user";
+import {
+  useAddFriendMutation,
+  useFriendStatusQuery,
+  useUserprofileQuery,
+} from "@/src/hooks/user";
 
 const ProfileOptionsPopover = ({ userId }: { userId: number }) => {
   const theme = useTheme();
@@ -84,6 +90,47 @@ const ProfileOptionsPopover = ({ userId }: { userId: number }) => {
   );
 };
 
+const FriendStatusButton = ({ userId }: { userId: number }) => {
+  const friendQuery = useFriendStatusQuery(userId);
+  const addFriendMutation = useAddFriendMutation(userId);
+
+  return (
+    <QueryPlaceholder
+      query={friendQuery}
+      renderData={(data) => {
+        switch (data[0]?.status.String) {
+          case "Accepted":
+            return (
+              <SecondaryBtn size="$2.5" w="$12">
+                FRIENDED
+              </SecondaryBtn>
+            );
+          case "Pending":
+            return (
+              <DullBtn size="$2.5" w="$12">
+                REQUESTED
+              </DullBtn>
+            );
+          default:
+            return (
+              <PrimaryBtn
+                size="$2.5"
+                w="$12"
+                onPress={async () => {
+                  try {
+                    await addFriendMutation.mutateAsync();
+                  } catch {}
+                }}
+              >
+                ADD FRIEND
+              </PrimaryBtn>
+            );
+        }
+      }}
+    />
+  );
+};
+
 const ProfileScreenNoHive = ({ userId }: { userId: number }) => {
   const userprofileQuery = useUserprofileQuery(userId);
 
@@ -98,28 +145,34 @@ const ProfileScreenNoHive = ({ userId }: { userId: number }) => {
           renderData={(data) => <ProfileHeader userprofile={data} />}
         />
         <XStack jc="center" ai="center" gap="$3">
-          <PrimaryBtn w="$10" size="$2.5">
-            FOLLOW
-          </PrimaryBtn>
-          <PrimaryBtn w="$10" size="$2.5">
-            MESSAGE
-          </PrimaryBtn>
+          <FriendStatusButton userId={userId} />
         </XStack>
         <XStack gap="$3">
-          <YStack w="$5" jc="center" ai="center">
-            <Text col="$color11" fow="bold">
-              FRIEND
-            </Text>
-            <QueryPlaceholder
-              query={userprofileQuery}
-              spinnerSize="small"
-              renderData={(data) => (
-                <Text col="$color11" fow="normal">
-                  {data.friends_count}
-                </Text>
-              )}
-            />
-          </YStack>
+          <Pressable
+            onPress={() =>
+              router.push({
+                pathname: "/(tabs)/home/profile/[id]/friend",
+                params: {
+                  id: userId,
+                },
+              })
+            }
+          >
+            <YStack w="$5" jc="center" ai="center">
+              <Text col="$color11" fow="bold">
+                FRIEND
+              </Text>
+              <QueryPlaceholder
+                query={userprofileQuery}
+                spinnerSize="small"
+                renderData={(data) => (
+                  <Text col="$color11" fow="normal">
+                    {data.friends_count}
+                  </Text>
+                )}
+              />
+            </YStack>
+          </Pressable>
           <Separator als="stretch" vertical boc="$gleam12" />
           <YStack w="$5" jc="center" ai="center">
             <Text col="$color11" fow="bold">
