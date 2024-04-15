@@ -113,7 +113,7 @@ export default function ProfileScreen() {
   const userprofileQuery = useUserprofileQuery(userId);
 
   return (
-    <PageContainer>
+    <PageContainer justifyContent="flex-start">
       <HeaderContainer>
         <QueryPlaceholder
           query={userprofileQuery}

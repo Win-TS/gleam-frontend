@@ -1,12 +1,14 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
+import { Image as ExpoImage } from "expo-image";
 import { Link } from "expo-router";
 import { FirebaseError } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import React from "react";
 import { Text, Checkbox, YStack, XStack } from "tamagui";
 
+import { logo } from "@/assets";
 import PageContainer from "@/src/components/PageContainer";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
 import SecondaryBtn from "@/src/components/SecondaryBtn";
@@ -40,6 +42,7 @@ export default function LoginScreen() {
   return (
     <PageContainer>
       <YStack f={1} w="100%" jc="center" ai="center" gap="$3">
+        <ExpoImage source={logo} style={{ width: 144, aspectRatio: 1 }} />
         <form.Provider>
           <form.Field
             name="email"

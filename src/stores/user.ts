@@ -35,9 +35,20 @@ if (mockUserId) {
     );
 }
 
-export const useUserId = () => {
+type UseUserIdOptions = { throw: boolean } | undefined;
+type UseUserIdReturnType<Opts extends UseUserIdOptions> = Opts extends {
+  throw: false;
+}
+  ? number | undefined
+  : number;
+
+export const useUserId = <Opts extends UseUserIdOptions>(
+  arg?: Opts,
+): UseUserIdReturnType<Opts> => {
   const [mock, userId] = useUserStore((state) => [state.mock, state.user?.id]);
   if (mock && mockUserId) return mockUserId;
-  if (userId === undefined) throw Error("user is not logged in");
+  if ((arg === undefined || arg.throw) && userId === undefined)
+    throw Error("user is not logged in");
+  // @ts-ignore
   return userId;
 };

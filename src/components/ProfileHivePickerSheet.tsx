@@ -17,7 +17,7 @@ export default function ({
   return (
     <Sheet
       forceRemoveScrollEnabled={open}
-      snapPoints={[70]}
+      snapPoints={[80]}
       modal
       open={open}
       onOpenChange={setOpen}

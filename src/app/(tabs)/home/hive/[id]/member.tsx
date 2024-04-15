@@ -1,5 +1,5 @@
 import { Image as ExpoImage } from "expo-image";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import {
   Input,
@@ -25,6 +25,7 @@ import {
 } from "@/src/hooks/hive";
 import { HiveMember } from "@/src/schemas/hive";
 import { useUserId } from "@/src/stores/user";
+import { Pressable } from "react-native";
 
 const MemberActions = ({ member }: { member: HiveMember }) => {
   const userId = useUserId();
@@ -96,23 +97,36 @@ const MemberActions = ({ member }: { member: HiveMember }) => {
 };
 
 const Member = ({ member }: { member: HiveMember }) => {
+  const router = useRouter();
+  const userId = useUserId();
+
   return (
     <XStack w="100%" p="$2" jc="space-between" ai="center">
-      <XStack f={1} flexShrink={1} jc="flex-start" ai="center" gap="$3">
-        <Avatar circular size="$4">
-          <Avatar.Image src={member.user_photourl} />
-          <Avatar.Fallback bc="$color5" />
-        </Avatar>
-        <Text
-          f={1}
-          numberOfLines={1}
-          flexShrink={1}
-          textOverflow="ellipsis"
-          fos="$3"
-        >
-          {member.username}
-        </Text>
-      </XStack>
+      <Pressable
+        onPress={() => {
+          if (member.member_id === userId) {
+            router.replace("/(tabs)/profile");
+          } else {
+            router.push({
+              pathname: "/(tabs)/home/profile/[id]/",
+              params: {
+                id: member.member_id,
+              },
+            });
+          }
+        }}
+        style={{ flex: 1, flexShrink: 1, flexDirection: "row" }}
+      >
+        <XStack f={1} fs={1} fd="row" jc="flex-start" ai="center" gap="$3">
+          <Avatar f={0} circular size="$4">
+            <Avatar.Image src={member.user_photourl} />
+            <Avatar.Fallback bc="$color5" />
+          </Avatar>
+          <Text f={1} fs={1} numberOfLines={1} textOverflow="ellipsis" fos="$3">
+            {member.username}
+          </Text>
+        </XStack>
+      </Pressable>
 
       <MemberActions member={member} />
     </XStack>

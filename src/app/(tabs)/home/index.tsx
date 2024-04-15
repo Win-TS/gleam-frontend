@@ -3,6 +3,7 @@ import { Image as ExpoImage } from "expo-image";
 import { useRouter } from "expo-router";
 import { countBy, filter } from "lodash";
 import React, { useMemo, useState } from "react";
+import { Pressable } from "react-native";
 import {
   Avatar,
   Button,
@@ -27,9 +28,9 @@ import VerticalList from "@/src/components/VerticalList";
 import {
   useOngoingPostListInfiniteQuery,
   useFollowingPostListInfiniteQuery,
-  usePostReactionsQuery,
   useCreatePostReactionMutation,
   useDeletePostReactionMutation,
+  usePostReactionCountsQuery,
 } from "@/src/hooks/post";
 import { FeedPost } from "@/src/schemas/post";
 import { useUserId } from "@/src/stores/user";
@@ -157,32 +158,27 @@ const ReactionSelectedButton = ({
 
 const ReactionList = ({ postId }: { postId: number }) => {
   const userId = useUserId();
-  const postReactionsQuery = usePostReactionsQuery(postId);
+  const postReactionCountsQuery = usePostReactionCountsQuery(postId);
 
   return (
     <QueryPlaceholder
-      query={postReactionsQuery}
+      query={postReactionCountsQuery}
       spinnerSize="small"
       renderData={(data) => {
+        /*
         const postReactionsCount = useMemo(
           () => countBy(data, (item) => item.reaction),
           [data],
         );
-        const postUserReactionsCount = useMemo(
-          () =>
-            countBy(
-              filter(data, (item) => item.member_id === userId),
-              (item) => item.reaction,
-            ),
-          [data],
-        );
+        */
 
         return (
           <XStack gap="$1.5" jc="flex-start" ai="center">
             {REACTIONS.map((reaction) => {
               return (
                 <XStack jc="center" ai="center" gap="$1" key={reaction}>
-                  {(postUserReactionsCount[reaction] ?? 0) > 0 ? (
+                  {
+                    "" /*(postUserReactionsCount[reaction] ?? 0) > 0 ? (
                     <ReactionSelectedButton
                       postId={postId}
                       reaction={reaction}
@@ -192,8 +188,9 @@ const ReactionList = ({ postId }: { postId: number }) => {
                       postId={postId}
                       reaction={reaction}
                     />
-                  )}
-                  <Text>{postReactionsCount[reaction] ?? 0}</Text>
+                  )*/
+                  }
+                  <Text>{data.data[reaction] ?? 0}</Text>
                 </XStack>
               );
             })}
@@ -205,14 +202,33 @@ const ReactionList = ({ postId }: { postId: number }) => {
 };
 
 const FeedPostComponent = ({ post }: { post: FeedPost }) => {
+  const router = useRouter();
+
+  const userId = useUserId();
+
   return (
-    <YStack w="100%" p="$2" gap="$3" br="$3" elevation="$4">
-      <XStack ai="center" gap="$1.5">
-        <Avatar circular size="$4">
-          <Avatar.Image src={post.poster_photo_url} />
-        </Avatar>
-        <Text>{post.poster_username}</Text>
-      </XStack>
+    <YStack w="100%" p="$2" gap="$3" bc="$color1" br="$3" elevation="$2">
+      <Pressable
+        onPress={() => {
+          if (post.member_id === userId) {
+            router.replace("/(tabs)/profile");
+          } else {
+            router.push({
+              pathname: "/(tabs)/home/profile/[id]/",
+              params: {
+                id: post.member_id,
+              },
+            });
+          }
+        }}
+      >
+        <XStack ai="center" gap="$1.5">
+          <Avatar circular size="$4">
+            <Avatar.Image src={post.poster_photo_url} />
+          </Avatar>
+          <Text>{post.poster_username}</Text>
+        </XStack>
+      </Pressable>
       <ZStack pos="relative" w="100%" pt="$2" aspectRatio={1} ai="center">
         <View w="100%" br="$8">
           <Image
@@ -221,21 +237,34 @@ const FeedPostComponent = ({ post }: { post: FeedPost }) => {
             source={{ uri: post.photo_url.String }}
           />
         </View>
-        <XStack
-          pos="absolute"
-          t="$-2"
-          h="$3"
-          px="$3"
-          bw="$1"
-          br="$12"
-          bc="$gleam12"
-          boc="$gleam12"
-          als="flex-start"
-          ai="center"
-          gap="$2"
+        <Pressable
+          onPress={() =>
+            router.push({
+              pathname: "/(tabs)/home/hive/[id]/",
+              params: {
+                id: post.group_id,
+              },
+            })
+          }
         >
-          <Text col="$gleam1">?? DAYS ON {post.group_name.toUpperCase()}</Text>
-        </XStack>
+          <XStack
+            pos="absolute"
+            t="$-2"
+            h="$3"
+            px="$3"
+            bw="$1"
+            br="$12"
+            bc="$gleam12"
+            boc="$gleam12"
+            als="flex-start"
+            ai="center"
+            gap="$2"
+          >
+            <Text col="$gleam1">
+              ?? DAYS ON {post.group_name.toUpperCase()}
+            </Text>
+          </XStack>
+        </Pressable>
       </ZStack>
       <ReactionList postId={post.post_id} />
       <PostOptionsPopover postId={post.post_id} />

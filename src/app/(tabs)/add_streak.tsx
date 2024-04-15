@@ -55,7 +55,7 @@ export default function TabTwoScreen() {
   return (
     <PageContainer>
       <form.Provider>
-        <YStack f={1} jc="center" ai="center" gap="$3">
+        <YStack w="100%" f={1} jc="center" ai="center" gap="$6">
           <View w="100%" p="$2" boc="$gleam12" bw="$1" br="$4">
             <form.Field
               name="image"
@@ -72,19 +72,21 @@ export default function TabTwoScreen() {
               }
             />
           </View>
-          <Text fow="bold">WHAT IS YOUR ACHIEVEMENT TODAY?</Text>
-          <form.Field
-            name="hive"
-            children={(field) => (
-              <SecondaryBtn
-                w="100%"
-                h="$3"
-                onPress={() => setProfileHivePickerOpen(true)}
-              >
-                {field.getValue()?.group_name ?? "CHOOSE YOUR HIVE"}
-              </SecondaryBtn>
-            )}
-          />
+          <YStack w="100%" jc="center" ai="center" gap="$3">
+            <Text fow="bold">WHAT IS YOUR ACHIEVEMENT TODAY??</Text>
+            <form.Field
+              name="hive"
+              children={(field) => (
+                <SecondaryBtn
+                  w="$18"
+                  h="$3"
+                  onPress={() => setProfileHivePickerOpen(true)}
+                >
+                  {field.getValue()?.group_name ?? "CHOOSE YOUR HIVE"}
+                </SecondaryBtn>
+              )}
+            />
+          </YStack>
         </YStack>
         <XStack w="100%" jc="space-between" ai="center">
           <SecondaryBtn

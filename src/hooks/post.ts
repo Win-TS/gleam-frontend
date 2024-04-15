@@ -8,8 +8,7 @@ import axios, { AxiosError } from "axios";
 import { ZodError, z } from "zod";
 
 import { post_, feedPost_ } from "@/src/schemas/post";
-import { reaction_, Reaction } from "@/src/schemas/reaction";
-import { useUserId, useUserStore } from "@/src/stores/user";
+import { useUserId } from "@/src/stores/user";
 
 export const useHivePostListInfiniteQuery = (hiveId: number) => {
   return useInfiniteQuery({
@@ -39,7 +38,7 @@ export const useHivePostListInfiniteQuery = (hiveId: number) => {
 };
 
 export const useOngoingPostListInfiniteQuery = () => {
-  const userId = useUserId();
+  const userId = useUserId({ throw: false });
 
   return useInfiniteQuery({
     queryKey: ["post", "user", userId, "ongoing", "list"],
@@ -68,11 +67,12 @@ export const useOngoingPostListInfiniteQuery = () => {
     initialPageParam: 0,
     getPreviousPageParam: (firstPage) => firstPage.previousOffset ?? undefined,
     getNextPageParam: (lastPage) => lastPage.nextOffset ?? undefined,
+    enabled: !!userId,
   });
 };
 
 export const useFollowingPostListInfiniteQuery = () => {
-  const userId = useUserId();
+  const userId = useUserId({ throw: false });
 
   return useInfiniteQuery({
     queryKey: ["post", "user", userId, "following", "list"],
@@ -101,16 +101,26 @@ export const useFollowingPostListInfiniteQuery = () => {
     initialPageParam: 0,
     getPreviousPageParam: (firstPage) => firstPage.previousOffset ?? undefined,
     getNextPageParam: (lastPage) => lastPage.nextOffset ?? undefined,
+    enabled: !!userId,
   });
 };
 
-export const usePostReactionsQuery = (postId: number) => {
-  return useQuery<Reaction[], AxiosError<{ message: string }> | ZodError>({
-    queryKey: ["post", postId, "reaction"],
+export const postReactionCountsResponse_ = z.object({
+  data: z.record(z.string(), z.coerce.number()),
+  total_reaction: z.coerce.number(),
+  post_id: z.coerce.number(),
+  success: z.boolean(),
+});
+export const usePostReactionCountsQuery = (postId: number) => {
+  return useQuery<
+    z.infer<typeof postReactionCountsResponse_>,
+    AxiosError<{ message: string }> | ZodError
+  >({
+    queryKey: ["post", postId, "reaction", "count"],
     queryFn: async () => {
-      return await z.array(reaction_).parseAsync(
+      return await postReactionCountsResponse_.parseAsync(
         (
-          await axios.get("/reaction_v1/postreactions", {
+          await axios.get("/reaction_v1/postreactioncount", {
             baseURL: process.env.EXPO_PUBLIC_GROUP_API,
             params: { post_id: postId },
           })

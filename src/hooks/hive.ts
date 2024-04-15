@@ -17,7 +17,7 @@ import {
 import { useUserId } from "@/src/stores/user";
 
 export const useHiveQuery = (hiveId: number) => {
-  const userId = useUserId();
+  const userId = useUserId({ throw: false });
 
   return useQuery<
     HiveWithMemberInfo,
@@ -34,6 +34,7 @@ export const useHiveQuery = (hiveId: number) => {
         ).data,
       );
     },
+    enabled: !!userId,
   });
 };
 

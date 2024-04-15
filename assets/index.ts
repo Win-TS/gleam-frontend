@@ -10,6 +10,8 @@ export const icons = {
   remove_member: require("@/assets/icons/remove_member.png"),
 };
 
+export const logo = require("@/assets/logo/adaptive-icon.png");
+
 export const reactions = {
   default: {
     heart: require("@/assets/reactions/default/heart.png"),

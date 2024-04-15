@@ -31,11 +31,6 @@ export {
 
 // setupNativeSheet("ios", ModalView);
 
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: "(tabs)",
-};
-
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -89,6 +84,7 @@ function RootLayoutNav() {
           value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
         >
           <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen
               name="(modal)"
               options={{
@@ -96,7 +92,7 @@ function RootLayoutNav() {
                 presentation: "fullScreenModal",
               }}
             />
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="index" options={{ headerShown: false }} />
           </Stack>
         </ThemeProvider>
       </TamaguiProvider>
