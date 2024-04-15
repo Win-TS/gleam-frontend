@@ -99,19 +99,19 @@ const HiveRequestSheet = ({ hiveId }: { hiveId: number }) => {
   );
 };
 
-const HiveNonMemberBtn = ({ hive }: { hive: HiveWithMemberInfo }) => {
-  return hive.status === "non-member" ? (
-    <HiveRequestBtn />
-  ) : hive.status === "requested" ? (
-    <SecondaryBtn size="$2.5" w="$12" disabled>
-      REQUESTED
-    </SecondaryBtn>
-  ) : null;
-};
-
 const HiveHeaderBtn = ({ hive }: { hive: HiveWithMemberInfo }) => {
-  if (hive.status === "non-member") return <HiveNonMemberBtn hive={hive} />;
-  if (hive.status === "member")
+  if (hive.status === "non-member") return <HiveRequestBtn />;
+  if (hive.status === "requested")
+    return (
+      <SecondaryBtn size="$2.5" w="$12" disabled>
+        REQUESTED
+      </SecondaryBtn>
+    );
+  if (
+    hive.status === "member" ||
+    hive.status === "co-leader" ||
+    hive.status === "creator"
+  )
     return (
       <SecondaryBtn size="$2.5" w="$8" disabled>
         JOINED
