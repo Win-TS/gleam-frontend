@@ -100,11 +100,9 @@ const HiveRequestSheet = ({ hiveId }: { hiveId: number }) => {
 };
 
 const HiveNonMemberBtn = ({ hive }: { hive: HiveWithMemberInfo }) => {
-  const [state, setState] = useState<"none" | "requested">("none");
-
-  return state === "none" ? (
+  return hive.status === "non-member" ? (
     <HiveRequestBtn />
-  ) : state === "requested" ? (
+  ) : hive.status === "requested" ? (
     <SecondaryBtn size="$2.5" w="$12" disabled>
       REQUESTED
     </SecondaryBtn>
