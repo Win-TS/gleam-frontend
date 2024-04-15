@@ -3,7 +3,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { Link, router } from "expo-router";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Platform } from "react-native";
 import { Text, Select, YStack, XStack, useTheme, Separator } from "tamagui";
@@ -15,6 +15,7 @@ import SecondaryInput from "@/src/components/SecondaryInput";
 
 export default function SignupFormScreen() {
   const theme = useTheme();
+  const router = useRouter();
 
   const genderItems = ["Male", "Female", "Unspecified"] as const;
   const nationalityItems = ["Thai"] as const;
@@ -412,16 +413,15 @@ export default function SignupFormScreen() {
             <Text col="#b8ab8c" fos="$2" fow="bold">
               Already have an account?
             </Text>
-            <Link href="/login" replace>
-              <Text
-                col="$gleam12"
-                fos="$2"
-                fow="bold"
-                textDecorationLine="underline"
-              >
-                Log in
-              </Text>
-            </Link>
+            <Text
+              col="$gleam12"
+              fos="$2"
+              fow="bold"
+              textDecorationLine="underline"
+              onPress={() => router.replace("/login")}
+            >
+              Log in
+            </Text>
           </XStack>
         </YStack>
       </form.Provider>

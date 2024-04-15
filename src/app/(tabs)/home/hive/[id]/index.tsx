@@ -84,7 +84,7 @@ const HiveRequestSheet = ({ hiveId }: { hiveId: number }) => {
                 w="100%"
                 placeholder="Anything you want to tell the league owner?"
                 multiline
-                value={field.getValue()}
+                value={field.state.value}
                 onBlur={field.handleBlur}
                 onChangeText={field.handleChange}
               />

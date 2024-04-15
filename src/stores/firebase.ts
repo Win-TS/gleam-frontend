@@ -4,7 +4,8 @@ import { initializeApp, FirebaseApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { create } from "zustand";
 
-import { useUserStore } from "./user";
+import { user_ } from "@/src/schemas/user";
+import { useUserStore } from "@/src/stores/user";
 
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
@@ -39,14 +40,16 @@ export const useFirebaseStore = create<FirebaseState>((set) => ({
             baseURL: process.env.EXPO_PUBLIC_AUTH_API,
           });
           */
-          const user = (
-            await axios.get("/user_v1/userinfobyemail", {
-              params: { email: authUser.email },
-              baseURL: process.env.EXPO_PUBLIC_USER_API,
-            })
-          ).data;
+          const user = await user_.parseAsync(
+            (
+              await axios.get("/user_v1/userinfobyemail", {
+                params: { email: authUser.email },
+                baseURL: process.env.EXPO_PUBLIC_USER_API,
+              })
+            ).data,
+          );
           useUserStore.setState({
-            user,
+            userId: user.id,
           });
           if (
             process.env.EXPO_PUBLIC_NO_AUTH_NAVIGATION === undefined ||

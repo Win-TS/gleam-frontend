@@ -39,10 +39,10 @@ export default function <TData = unknown, TError = DefaultError>({
     return renderSpinner ? (
       renderData({
         data: undefined,
-        spinner: () => <Spinner size={spinnerSize} color="$red1" />,
+        spinner: () => <Spinner size={spinnerSize} color="$red10" />,
       })
     ) : (
-      <Spinner size={spinnerSize} color="$red1" />
+      <Spinner size={spinnerSize} color="$red10" />
     );
   if (data)
     return renderSpinner

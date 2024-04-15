@@ -1,6 +1,7 @@
 import { Image as ExpoImage } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useMemo, useState } from "react";
+import { Pressable } from "react-native";
 import {
   Input,
   XStack,
@@ -25,7 +26,6 @@ import {
 } from "@/src/hooks/hive";
 import { HiveMember } from "@/src/schemas/hive";
 import { useUserId } from "@/src/stores/user";
-import { Pressable } from "react-native";
 
 const MemberActions = ({ member }: { member: HiveMember }) => {
   const userId = useUserId();

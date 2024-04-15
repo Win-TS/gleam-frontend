@@ -1,6 +1,6 @@
 // import { ChevronRight } from "@tamagui/lucide-icons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Link, useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useMemo } from "react";
 import {
   Text,
@@ -28,6 +28,7 @@ import { useUserprofileQuery } from "@/src/hooks/user";
 
 const ProfileOptionsPopover = ({ userId }: { userId: number }) => {
   const theme = useTheme();
+  const router = useRouter();
 
   return (
     <Popover placement="bottom-end" allowFlip offset={4}>
@@ -51,19 +52,21 @@ const ProfileOptionsPopover = ({ userId }: { userId: number }) => {
         borderColor="$color4"
       >
         <View w="100%" gap="$2">
-          <Link
-            href={{
-              pathname: "/(tabs)/home/profile/[id]/report",
-              params: {
-                id: userId,
-              },
-            }}
-            asChild
+          <DangerBtn
+            size="$2.5"
+            w="100%"
+            borderRadius="$4"
+            onPress={() =>
+              router.push({
+                pathname: "/(tabs)/home/profile/[id]/report",
+                params: {
+                  id: userId,
+                },
+              })
+            }
           >
-            <DangerBtn size="$2.5" w="100%" borderRadius="$4">
-              Report
-            </DangerBtn>
-          </Link>
+            Report
+          </DangerBtn>
         </View>
       </Popover.Content>
 
@@ -231,7 +234,7 @@ export default function ProfileScreen() {
                 <HiveBtn
                   hive={item}
                   onPress={() =>
-                    router.replace({
+                    router.push({
                       pathname: "/(tabs)/home/hive/[id]/",
                       params: { id: item.group_id },
                     })

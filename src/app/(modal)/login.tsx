@@ -2,7 +2,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { Image as ExpoImage } from "expo-image";
-import { Link } from "expo-router";
+import { useRouter } from "expo-router";
 import { FirebaseError } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import React from "react";
@@ -15,6 +15,8 @@ import SecondaryBtn from "@/src/components/SecondaryBtn";
 import SecondaryInput from "@/src/components/SecondaryInput";
 
 export default function LoginScreen() {
+  const router = useRouter();
+
   type FormFields = {
     email: string;
     password: string;
@@ -85,11 +87,13 @@ export default function LoginScreen() {
           <PrimaryBtn size="$4" w="100%" onPress={form.handleSubmit}>
             LOG IN
           </PrimaryBtn>
-          <Link href="/signup/form" replace asChild>
-            <SecondaryBtn size="$4" w="100%">
-              SIGN UP
-            </SecondaryBtn>
-          </Link>
+          <SecondaryBtn
+            size="$4"
+            w="100%"
+            onPress={() => router.replace("/signup/form")}
+          >
+            SIGN UP
+          </SecondaryBtn>
         </form.Provider>
       </YStack>
       <Text h="$4" col="#b8ab8c" fos="$2" fow="bold">

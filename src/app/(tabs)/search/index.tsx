@@ -1,8 +1,8 @@
 import { FontAwesome } from "@expo/vector-icons";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
+import { Pressable } from "react-native";
 import {
-  Button,
   Input,
   Text,
   View,
@@ -38,16 +38,14 @@ const ExploreHiveList = () => {
         <Text>CREATE NEW HIVE</Text>
       </YStack>
       <YStack w="100%">
-        <Link href="/(tabs)/search/create" asChild>
-          <Button w="$10" aspectRatio={1} unstyled>
-            <ZStack w="100%" aspectRatio={1} jc="center" ai="center">
-              <View w="100%" aspectRatio={1} br="$4" bc="#bbbbbb"></View>
-              <View w="100%" aspectRatio={1} jc="center" ai="center">
-                <FontAwesome name="plus" color={theme.color1.val} size={48} />
-              </View>
-            </ZStack>
-          </Button>
-        </Link>
+        <Pressable onPress={() => router.push("/(tabs)/search/create")}>
+          <ZStack w="$10" aspectRatio={1} jc="center" ai="center">
+            <View w="100%" aspectRatio={1} br="$4" bc="#bbbbbb"></View>
+            <View w="100%" aspectRatio={1} jc="center" ai="center">
+              <FontAwesome name="plus" color={theme.color1.val} size={48} />
+            </View>
+          </ZStack>
+        </Pressable>
       </YStack>
       <YStack w="100%">
         <Text>EXPLORE</Text>

@@ -26,6 +26,13 @@ export default function ModalLayout() {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="setting"
+        options={{
+          title: "Setting",
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 }

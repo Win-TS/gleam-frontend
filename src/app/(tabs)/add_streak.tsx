@@ -60,11 +60,11 @@ export default function TabTwoScreen() {
             <form.Field
               name="image"
               children={(field) =>
-                z.string().url().safeParse(field.getValue()).success ? (
+                z.string().url().safeParse(field.state.value).success ? (
                   <Image
                     w="100%"
                     aspectRatio={1}
-                    source={{ uri: field.getValue() }}
+                    source={{ uri: field.state.value }}
                   />
                 ) : (
                   <View w="100%" aspectRatio={1} bc="$color5" />
@@ -82,7 +82,7 @@ export default function TabTwoScreen() {
                   h="$3"
                   onPress={() => setProfileHivePickerOpen(true)}
                 >
-                  {field.getValue()?.group_name ?? "CHOOSE YOUR HIVE"}
+                  {field.state.value?.group_name ?? "CHOOSE YOUR HIVE"}
                 </SecondaryBtn>
               )}
             />

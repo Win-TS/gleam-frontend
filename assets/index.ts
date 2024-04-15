@@ -8,6 +8,8 @@ export const icons = {
   crown: require("@/assets/icons/crown.png"),
   crown_gray: require("@/assets/icons/crown_gray.png"),
   remove_member: require("@/assets/icons/remove_member.png"),
+  chevron_left: require("@/assets/icons/chevron_left.png"),
+  gear: require("@/assets/icons/gear.png"),
 };
 
 export const logo = require("@/assets/logo/adaptive-icon.png");

@@ -2,12 +2,31 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { z, ZodError } from "zod";
 
+import { User, user_ } from "@/src/schemas/user";
 import { userprofile_, Userprofile } from "@/src/schemas/userprofile";
 import { useUserId } from "@/src/stores/user";
 
+export const useUserQuery = () => {
+  const userId = useUserId();
+
+  return useQuery<User, AxiosError<{ message: string }> | ZodError>({
+    queryKey: ["user", userId],
+    queryFn: async () => {
+      return await user_.parseAsync(
+        (
+          await axios.get("/user_v1/userinfo", {
+            baseURL: process.env.EXPO_PUBLIC_USER_API,
+            params: { user_id: userId },
+          })
+        ).data,
+      );
+    },
+  });
+};
+
 export const useUserprofileQuery = (userId: number) => {
   return useQuery<Userprofile, AxiosError<{ message: string }> | ZodError>({
-    queryKey: ["userprofile", userId],
+    queryKey: ["user", userId, "profile"],
     queryFn: async () => {
       return await userprofile_.parseAsync(
         (
@@ -96,20 +115,22 @@ export const useUserprofileMutation = () => {
     },
     onSettled: async () => {
       return await queryClient.invalidateQueries({
-        queryKey: ["userprofile", userId],
+        queryKey: ["user", userId],
       });
     },
   });
 };
 
-export const useUsernameMutation = (userId: number) => {
+export const useUsernameMutation = () => {
+  const userId = useUserId();
   const queryClient = useQueryClient();
+
   return useMutation<
     void,
     AxiosError<{ message: string }>,
     { username: string }
   >({
-    mutationFn: async ({ username }: { username: string }) => {
+    mutationFn: async ({ username }) => {
       return await axios.patch(
         "/user_v1/editusername",
         {},
@@ -124,7 +145,36 @@ export const useUsernameMutation = (userId: number) => {
     },
     onSettled: async () => {
       return await queryClient.invalidateQueries({
-        queryKey: ["userprofile", userId],
+        queryKey: ["user", userId],
+      });
+    },
+  });
+};
+
+export const useUserPrivateMutation = () => {
+  const userId = useUserId();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    void,
+    AxiosError<{ message: string }>,
+    { privateAccount: boolean }
+  >({
+    mutationFn: async ({ privateAccount }) => {
+      const userPrivateFormData = new FormData();
+      userPrivateFormData.append("private_account", `${privateAccount}`);
+      return await axios.patch(
+        "/user_v1/editprivateaccount",
+        userPrivateFormData,
+        {
+          baseURL: process.env.EXPO_PUBLIC_USER_API,
+          params: { user_id: userId },
+        },
+      );
+    },
+    onSettled: async () => {
+      return await queryClient.invalidateQueries({
+        queryKey: ["user", userId],
       });
     },
   });

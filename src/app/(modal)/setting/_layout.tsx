@@ -1,11 +1,10 @@
 import { Stack } from "expo-router";
 import React from "react";
 
-import BackBtn from "@/src/components/BackBtn";
 import { useClientOnlyValue } from "@/src/components/useClientOnlyValue";
-import { gleamTitle } from "@/src/constants/gleamTitle";
+import BackBtn from "@/src/components/BackBtn";
 
-export default function StackLayout() {
+export default function ModalLayout() {
   return (
     <Stack
       screenOptions={{
@@ -14,11 +13,10 @@ export default function StackLayout() {
         headerShown: useClientOnlyValue(false, true),
       }}
     >
-      <Stack.Screen name="index" options={gleamTitle.withBackBtn} />
       <Stack.Screen
-        name="report"
+        name="index"
         options={{
-          title: "Report",
+          title: "SETTING",
           headerTitleAlign: "center",
           headerTitleStyle: {
             fontWeight: "bold",
@@ -26,11 +24,21 @@ export default function StackLayout() {
           headerLeft: () => <BackBtn />,
         }}
       />
-      <Stack.Screen name="member" options={gleamTitle.withBackBtn} />
       <Stack.Screen
-        name="setting"
+        name="account"
         options={{
-          title: "Setting",
+          title: "ACCOUNT CENTER",
+          headerTitleAlign: "center",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+          headerLeft: () => <BackBtn />,
+        }}
+      />
+      <Stack.Screen
+        name="notification"
+        options={{
+          title: "NOTIFICATION",
           headerTitleAlign: "center",
           headerTitleStyle: {
             fontWeight: "bold",
