@@ -29,7 +29,6 @@ export const useFirebaseStore = create<FirebaseState>((set) => ({
     const auth = getAuth();
 
     auth.onAuthStateChanged(async (authUser) => {
-      console.log(authUser);
       if (authUser) {
         try {
           /*
@@ -49,6 +48,7 @@ export const useFirebaseStore = create<FirebaseState>((set) => ({
             ).data,
           );
           useUserStore.setState({
+            mock: false,
             userId: user.id,
           });
           if (
@@ -65,6 +65,11 @@ export const useFirebaseStore = create<FirebaseState>((set) => ({
           await auth.signOut();
         }
       } else {
+        const { mock, userId } = useUserStore.getState();
+        useUserStore.setState({
+          mock,
+          userId: mock ? userId : undefined,
+        });
         if (
           process.env.EXPO_PUBLIC_NO_AUTH_NAVIGATION === undefined ||
           !JSON.parse(
