@@ -5,7 +5,8 @@ import { Image as ExpoImage } from "expo-image";
 import { useRouter } from "expo-router";
 import { FirebaseError } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import React from "react";
+import React, { useEffect, useCallback } from "react";
+import { BackHandler } from "react-native";
 import { Text, Checkbox, YStack, XStack } from "tamagui";
 
 import { logo } from "@/assets";
@@ -16,6 +17,20 @@ import SecondaryInput from "@/src/components/SecondaryInput";
 
 export default function LoginScreen() {
   const router = useRouter();
+
+  const preventBackCallback = useCallback(() => true, []);
+
+  const removeCallback = useCallback(
+    () =>
+      BackHandler.removeEventListener("hardwareBackPress", preventBackCallback),
+    [],
+  );
+
+  useEffect(() => {
+    BackHandler.addEventListener("hardwareBackPress", preventBackCallback);
+
+    return removeCallback;
+  }, []);
 
   type FormFields = {
     email: string;
@@ -90,7 +105,10 @@ export default function LoginScreen() {
           <SecondaryBtn
             size="$4"
             w="100%"
-            onPress={() => router.replace("/signup/form")}
+            onPress={() => {
+              removeCallback();
+              router.replace("/signup/form");
+            }}
           >
             SIGN UP
           </SecondaryBtn>

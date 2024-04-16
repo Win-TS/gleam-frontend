@@ -1,9 +1,24 @@
 import { Stack } from "expo-router";
-import React from "react";
+import React, { useCallback, useEffect } from "react";
+import { BackHandler } from "react-native";
 
 import { useClientOnlyValue } from "@/src/components/useClientOnlyValue";
 
 export default function ModalLayout() {
+  const preventBackCallback = useCallback(() => true, []);
+
+  const removeCallback = useCallback(
+    () =>
+      BackHandler.removeEventListener("hardwareBackPress", preventBackCallback),
+    [],
+  );
+
+  useEffect(() => {
+    BackHandler.addEventListener("hardwareBackPress", preventBackCallback);
+
+    return removeCallback;
+  }, []);
+
   return (
     <Stack
       screenOptions={{
