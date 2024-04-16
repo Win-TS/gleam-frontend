@@ -13,10 +13,9 @@ export default function StackLayout() {
         headerShown: useClientOnlyValue(false, true),
       }}
     >
-      <Stack.Screen name="index" options={gleamTitle.withoutBackBtn} />
-      <Stack.Screen name="friend" options={gleamTitle.withBackBtn} />
+      <Stack.Screen name="index" options={gleamTitle.withBackBtn} />
       <Stack.Screen
-        name="hive"
+        name="[id]"
         options={{
           title: "Hive",
           headerShown: false,

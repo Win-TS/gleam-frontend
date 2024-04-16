@@ -1,47 +1,44 @@
 import { useRouter } from "expo-router";
 import { getAuth } from "firebase/auth";
 import React from "react";
-import { Pressable } from "react-native";
-import { Separator, Text, View, useWindowDimensions } from "tamagui";
+import { Text, View } from "tamagui";
 
 import PageContainer from "@/src/components/PageContainer";
+import PressableSection from "@/src/components/PressableSection";
 
 export default function SettingScreen() {
   const router = useRouter();
-  const { width } = useWindowDimensions();
 
   return (
     <PageContainer justifyContent="flex-start">
-      <Pressable
-        onPress={() => router.push("/(modal)/setting/account")}
-        style={{ width: "100%" }}
-      >
+      <PressableSection onPress={() => router.push("/(modal)/setting/account")}>
         <View w="100%" p="$3">
-          <Text fos="$5">ACCOUNT CENTER</Text>
+          <Text fos="$5" fow="bold">
+            ACCOUNT CENTER
+          </Text>
         </View>
-      </Pressable>
-      <Separator w={width} $gtSm={{ maw: "$20" }} boc="$gleam12" />
-      <Pressable
+      </PressableSection>
+      <PressableSection
         onPress={() => router.push("/(modal)/setting/notification")}
-        style={{ width: "100%" }}
       >
         <View w="100%" p="$3">
-          <Text fos="$5">NOTIFICATION SETTING</Text>
+          <Text fos="$5" fow="bold">
+            NOTIFICATION SETTING
+          </Text>
         </View>
-      </Pressable>
-      <Separator w={width} $gtSm={{ maw: "$20" }} boc="$gleam12" />
-      <Pressable
+      </PressableSection>
+      <PressableSection
         onPress={async () => {
           const auth = getAuth();
           await auth.signOut();
         }}
-        style={{ width: "100%" }}
       >
         <View w="100%" p="$3">
-          <Text fos="$5">LOGOUT</Text>
+          <Text fos="$5" fow="bold">
+            LOGOUT
+          </Text>
         </View>
-      </Pressable>
-      <Separator w={width} $gtSm={{ maw: "$20" }} boc="$gleam12" />
+      </PressableSection>
     </PageContainer>
   );
 }

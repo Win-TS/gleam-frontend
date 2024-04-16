@@ -16,7 +16,7 @@ import {
   useWindowDimensions,
 } from "tamagui";
 
-import HeaderContainer from "@/src/components/HeaderContainer";
+import GleamContainer from "@/src/components/GleamContainer";
 import ImagePicker from "@/src/components/ImagePicker";
 import PageContainer from "@/src/components/PageContainer";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
@@ -116,7 +116,7 @@ export default function ProfileScreen() {
 
   return (
     <PageContainer justifyContent="flex-start">
-      <HeaderContainer>
+      <GleamContainer>
         <QueryPlaceholder
           query={userprofileQuery}
           spinnerSize="large"
@@ -172,7 +172,7 @@ export default function ProfileScreen() {
             </YStack>
           </XStack>
         )}
-      </HeaderContainer>
+      </GleamContainer>
       <XStack
         w="100%"
         br="$8"

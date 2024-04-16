@@ -18,7 +18,7 @@ import { z } from "zod";
 
 import DangerBtn from "@/src/components/DangerBtn";
 import DullBtn from "@/src/components/DullBtn";
-import HeaderContainer from "@/src/components/HeaderContainer";
+import HeaderContainer from "@/src/components/GleamContainer";
 import HiveBtn from "@/src/components/HiveBtn";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
 import ProfileHeader from "@/src/components/ProfileHeader";

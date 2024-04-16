@@ -47,7 +47,7 @@ export const useUserId = <Opts extends UseUserIdOptions>(
 ): UseUserIdReturnType<Opts> => {
   const [mock, userId] = useUserStore((state) => [state.mock, state.userId]);
   if (mock && mockUserId) return mockUserId;
-  if ((arg === undefined || arg.throw) && userId === undefined)
+  if (!(arg?.throw === false) && userId === undefined)
     throw Error("user is not logged in");
   // @ts-ignore
   return userId;

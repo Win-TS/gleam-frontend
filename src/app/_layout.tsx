@@ -15,9 +15,8 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
 import { AppState, AppStateStatus, Platform } from "react-native";
-// @ts-expect-error
-import { ModalView } from "react-native-ios-modal";
-import { TamaguiProvider, setupNativeSheet } from "tamagui";
+// import { ModalView } from "react-native-ios-modal";
+import { TamaguiProvider /*, setupNativeSheet*/ } from "tamagui";
 
 import { fonts } from "@/assets";
 import { useColorScheme } from "@/src/components/useColorScheme";

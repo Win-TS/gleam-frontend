@@ -21,7 +21,7 @@ import z from "zod";
 
 import ActionDialog from "@/src/components/ActionDialog";
 import DangerBtn from "@/src/components/DangerBtn";
-import HeaderContainer from "@/src/components/HeaderContainer";
+import HeaderContainer from "@/src/components/GleamContainer";
 import ImagePicker from "@/src/components/ImagePicker";
 import PageContainer from "@/src/components/PageContainer";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
