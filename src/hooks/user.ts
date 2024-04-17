@@ -256,3 +256,62 @@ export const useAddFriendMutation = (otherUserId: number) => {
     },
   });
 };
+
+export const useAcceptFriendMutation = (otherUserId: number) => {
+  const userId = useUserId();
+  const queryClient = useQueryClient();
+
+  return useMutation<void, AxiosError<{ message: string }>>({
+    mutationFn: async () => {
+      return await axios.patch(
+        "/friend_v1/accept",
+        { user_id1: userId, user_id2: otherUserId },
+        {
+          baseURL: process.env.EXPO_PUBLIC_USER_API,
+        },
+      );
+    },
+    onSettled: async () => {
+      return await queryClient.invalidateQueries({
+        queryKey: ["user", userId, "requested"],
+      });
+    },
+  });
+};
+
+export const useDeclineFriendMutation = (otherUserId: number) => {
+  const userId = useUserId();
+  const queryClient = useQueryClient();
+
+  return useMutation<void, AxiosError<{ message: string }>>({
+    mutationFn: async () => {
+      return await axios.delete("/friend_v1/decline", {
+        data: { user_id1: userId, user_id2: otherUserId },
+        baseURL: process.env.EXPO_PUBLIC_USER_API,
+      });
+    },
+    onSettled: async () => {
+      return await queryClient.invalidateQueries({
+        queryKey: ["user", userId, "requested"],
+      });
+    },
+  });
+};
+
+export const useFriendRequestedQuery = () => {
+  const userId = useUserId();
+
+  return useQuery<any, AxiosError<{ message: string }>>({
+    queryKey: ["user", userId, "requested"],
+    queryFn: async () => {
+      try {
+        return await axios.get("/friend_v1/requested", {
+          baseURL: process.env.EXPO_PUBLIC_USER_API,
+          params: { user_id: userId.toString(), limit: 10, offset: 0 },
+        });
+      } catch {
+        return [];
+      }
+    },
+  });
+};

@@ -14,6 +14,7 @@ export default function StackLayout() {
       }}
     >
       <Stack.Screen name="index" options={gleamTitle.withBackBtn} />
+      <Stack.Screen name="request" options={gleamTitle.withBackBtn} />
     </Stack>
   );
 }
