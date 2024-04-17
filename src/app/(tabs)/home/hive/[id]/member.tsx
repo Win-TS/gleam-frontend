@@ -1,4 +1,3 @@
-import { Image as ExpoImage } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import { Pressable } from "react-native";
@@ -14,7 +13,7 @@ import {
 } from "tamagui";
 import z from "zod";
 
-import { icons } from "@/assets";
+import { Icon } from "@/assets";
 import ActionDialog from "@/src/components/ActionDialog";
 import PageContainer from "@/src/components/PageContainer";
 import VerticalList from "@/src/components/VerticalList";
@@ -34,7 +33,7 @@ const MemberActions = ({ member }: { member: HiveMember }) => {
   const editMemberRoleMutation = useEditMemberRoleMutation(
     member.group_id,
     member.member_id,
-    member.role === "member" ? "co-leader" : "member",
+    member.role === "member" ? "co_leader" : "member",
   );
   const deleteHiveMemberMutation = useDeleteHiveMemberMutation(
     member.group_id,
@@ -49,17 +48,14 @@ const MemberActions = ({ member }: { member: HiveMember }) => {
   if (member.role === "creator") return <Text fos="$3">(Creator)</Text>;
   if (
     hiveQuery.data?.status !== "creator" &&
-    hiveQuery.data?.status !== "co-leader"
+    hiveQuery.data?.status !== "co_leader"
   )
     return <XStack />;
   return (
     <XStack jc="flex-start" ai="center" gap="$1.5">
       <Button p="$2" chromeless onPress={() => setPromoteModal(true)}>
         <View w="$2.5" h="$2.5" jc="center" ai="center">
-          <ExpoImage
-            source={member.role === "member" ? icons.crown_gray : icons.crown}
-            style={{ width: 24, height: 24 }}
-          />
+          <Icon name={member.role === "member" ? "crown_gray" : "crown"} />
         </View>
       </Button>
       <ActionDialog
@@ -75,10 +71,7 @@ const MemberActions = ({ member }: { member: HiveMember }) => {
       />
       <Button p="$2" chromeless onPress={() => setDeleteModal(true)}>
         <View w="$2.5" h="$2.5" jc="center" ai="center">
-          <ExpoImage
-            source={icons.remove_member}
-            style={{ width: 24, height: 24 }}
-          />
+          <Icon name="remove_member" />
         </View>
       </Button>
       <ActionDialog

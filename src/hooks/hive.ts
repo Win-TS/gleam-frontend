@@ -1,6 +1,7 @@
 import {
   useInfiniteQuery,
   useMutation,
+  useQueries,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
@@ -16,6 +17,17 @@ import {
 } from "@/src/schemas/hive";
 import { useUserId } from "@/src/stores/user";
 
+const getHive = async (hiveId: number, userId: number) => {
+  return await hiveWithMemberInfo_.parseAsync(
+    (
+      await axios.get("/group_v1/group", {
+        baseURL: process.env.EXPO_PUBLIC_GROUP_API,
+        params: { group_id: hiveId, user_id: userId },
+      })
+    ).data,
+  );
+};
+
 export const useHiveQuery = (hiveId: number) => {
   const userId = useUserId({ throw: false });
 
@@ -24,17 +36,24 @@ export const useHiveQuery = (hiveId: number) => {
     AxiosError<{ message: string }> | ZodError
   >({
     queryKey: ["hive", hiveId, "data", "user", userId],
-    queryFn: async () => {
-      return await hiveWithMemberInfo_.parseAsync(
-        (
-          await axios.get("/group_v1/group", {
-            baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-            params: { group_id: hiveId, user_id: userId },
-          })
-        ).data,
-      );
-    },
+    queryFn: () => getHive(hiveId, userId!),
     enabled: !!userId,
+  });
+};
+
+export const useHiveQueries = (hiveIds: number[]) => {
+  const userId = useUserId({ throw: false });
+
+  return useQueries({
+    queries:
+      !!userId && hiveIds
+        ? hiveIds.map((hiveId) => {
+            return {
+              queryKey: ["hive", hiveId, "data", "user", userId],
+              queryFn: () => getHive(hiveId, userId),
+            };
+          })
+        : [],
   });
 };
 
