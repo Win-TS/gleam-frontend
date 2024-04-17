@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Pressable } from "react-native";
-import { View, ZStack, useTheme, Avatar, SizeTokens } from "tamagui";
+import { View, ZStack, Avatar, SizeTokens } from "tamagui";
 
-import Pencil from "@/assets/icons/pencil.svg";
+import { Icon } from "@/assets";
 import ImagePickerSheet from "@/src/components/ImagePickerSheet";
 
 export default function ({
@@ -14,8 +14,6 @@ export default function ({
   image?: string;
   setImage: (image: string) => void;
 }) {
-  const theme = useTheme();
-
   const [open, setOpen] = useState(false);
 
   return (
@@ -27,7 +25,7 @@ export default function ({
             <Avatar.Fallback bc="$color5" />
           </Avatar>
           <View w={size} h={size} jc="center" ai="center" zi="$1">
-            <Pencil fill={theme.gleam12.val} />
+            <Icon name="pencil" size="50%" />
           </View>
         </ZStack>
       </Pressable>

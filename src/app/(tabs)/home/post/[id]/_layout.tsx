@@ -1,13 +1,10 @@
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Stack, router } from "expo-router";
+import { Stack } from "expo-router";
 import React from "react";
-import { Button, useTheme } from "tamagui";
 
+import BackBtn from "@/src/components/BackBtn";
 import { useClientOnlyValue } from "@/src/components/useClientOnlyValue";
 
 export default function StackLayout() {
-  const theme = useTheme();
-
   return (
     <Stack
       screenOptions={{
@@ -24,15 +21,7 @@ export default function StackLayout() {
           headerTitleStyle: {
             fontWeight: "bold",
           },
-          headerLeft: () => (
-            <Button chromeless onPress={() => router.back()}>
-              <FontAwesome
-                size={14}
-                color={theme.gleam12.val}
-                name="chevron-left"
-              />
-            </Button>
-          ),
+          headerLeft: () => <BackBtn />,
         }}
       />
     </Stack>

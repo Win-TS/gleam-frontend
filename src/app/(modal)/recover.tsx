@@ -1,12 +1,10 @@
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
+import axios, { AxiosError } from "axios";
 import { useRouter } from "expo-router";
-import { FirebaseError } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import React, { useEffect, useCallback } from "react";
 import { BackHandler } from "react-native";
-import { Text, Checkbox, YStack, XStack } from "tamagui";
+import { Text, YStack } from "tamagui";
 
 import { LogoIcon } from "@/assets";
 import PageContainer from "@/src/components/PageContainer";
@@ -14,7 +12,7 @@ import PrimaryBtn from "@/src/components/PrimaryBtn";
 import SecondaryBtn from "@/src/components/SecondaryBtn";
 import SecondaryInput from "@/src/components/SecondaryInput";
 
-export default function LoginScreen() {
+export default function RecoverScreen() {
   const router = useRouter();
 
   const preventBackCallback = useCallback(() => true, []);
@@ -33,24 +31,38 @@ export default function LoginScreen() {
 
   type FormFields = {
     email: string;
+    confirmationCode: string;
     password: string;
   };
 
-  const loginMutation = useMutation<undefined, FirebaseError, FormFields>({
+  const recoverMutation = useMutation<undefined, AxiosError, FormFields>({
     mutationFn: async ({ email, password }: FormFields) => {
-      const auth = getAuth();
-      await signInWithEmailAndPassword(auth, email, password);
+      const user = (
+        await axios.get("/auth_v1/find/email", {
+          params: { email },
+          baseURL: process.env.EXPO_PUBLIC_AUTH_API,
+        })
+      ).data;
+      await axios.put(
+        "/auth_v1/update-password",
+        { uid: user.rawId, password },
+        {
+          baseURL: process.env.EXPO_PUBLIC_AUTH_API,
+          headers: { "content-type": "application/x-www-form-urlencoded" },
+        },
+      );
     },
   });
 
   const form = useForm({
     defaultValues: {
       email: "",
+      confirmationCode: "",
       password: "",
     },
     onSubmit: async ({ value }) => {
       try {
-        await loginMutation.mutateAsync(value);
+        await recoverMutation.mutateAsync(value);
       } catch {}
     },
   });
@@ -72,56 +84,51 @@ export default function LoginScreen() {
               />
             )}
           />
+          <PrimaryBtn size="$4" w="100%">
+            GET CONFIRMATION CODE
+          </PrimaryBtn>
           <form.Field
-            name="password"
+            name="confirmationCode"
             children={(field) => (
               <SecondaryInput
                 w="100%"
-                password
-                placeholder="Password"
+                placeholder="Confirmation code"
                 value={field.state.value}
                 onBlur={field.handleBlur}
                 onChangeText={field.handleChange}
               />
             )}
           />
-          <XStack h="$1" w="100%" als="flex-start" gap="$2">
-            <Checkbox size="$3">
-              <Checkbox.Indicator>
-                <FontAwesome name="check" />
-              </Checkbox.Indicator>
-            </Checkbox>
-            <Text col="#b8ab8c" fos="$3" fow="bold">
-              remember me
-            </Text>
-          </XStack>
+          <form.Field
+            name="password"
+            children={(field) => (
+              <SecondaryInput
+                w="100%"
+                password
+                placeholder="Enter your new password"
+                value={field.state.value}
+                onBlur={field.handleBlur}
+                onChangeText={field.handleChange}
+              />
+            )}
+          />
           <Text h="$4" w="100%" col="#ff0000" fos="$2" fow="bold">
-            {loginMutation.error?.message ?? ""}
+            {""}
           </Text>
           <PrimaryBtn size="$4" w="100%" onPress={form.handleSubmit}>
-            LOG IN
+            RESET PASSWORD
           </PrimaryBtn>
           <SecondaryBtn
             size="$4"
             w="100%"
             onPress={() => {
-              removeCallback();
-              router.replace("/signup/form");
+              router.replace("/login");
             }}
           >
-            SIGN UP
+            BACK TO LOGIN
           </SecondaryBtn>
         </form.Provider>
       </YStack>
-      <Text
-        h="$4"
-        col="#b8ab8c"
-        fos="$2"
-        fow="bold"
-        onPress={() => router.replace("/recover")}
-      >
-        Forgot password?
-      </Text>
     </PageContainer>
   );
 }

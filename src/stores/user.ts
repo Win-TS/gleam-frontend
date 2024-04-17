@@ -27,17 +27,19 @@ export const useUserStore = create<UserState>((set, get) => ({
 }));
 
 type UseUserIdOptions = { throw: boolean } | undefined;
-type UseUserIdReturnType<Opts extends UseUserIdOptions> = Opts extends {
-  throw: false;
-}
-  ? number | undefined
-  : number;
+type UseUserIdThrowOptions = { throw: false };
+type UseUserIdReturnType<Opts extends UseUserIdOptions> =
+  Opts extends UseUserIdThrowOptions ? number | undefined : number;
+
+const isOptsThrow = (opts: UseUserIdOptions): opts is UseUserIdThrowOptions => {
+  return opts?.throw === false;
+};
 
 export const useUserId = <Opts extends UseUserIdOptions>(
-  arg?: Opts,
+  opts?: Opts,
 ): UseUserIdReturnType<Opts> => {
   const [userId] = useUserStore((state) => [state.userId]);
-  if (typeof userId === "number") return userId;
-  if (!(arg?.throw === false)) throw Error("user is not logged in");
+  if (userId !== undefined) return userId;
+  if (!isOptsThrow(opts)) throw Error("user is not logged in");
   return undefined as UseUserIdReturnType<Opts>;
 };

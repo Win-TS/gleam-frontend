@@ -20,7 +20,6 @@ const FriendList = ({
   const router = useRouter();
 
   return (
-    // ทำทางเข้าไปหน้า profile คนอื่น
     <Pressable
       onPress={() =>
         router.push({
@@ -34,7 +33,7 @@ const FriendList = ({
       <XStack w="100%" alignItems="center" gap="$2.5" my="$2" mx="$2.5">
         <Avatar circular size="$4">
           <Avatar.Image src={url} />
-          <Avatar.Fallback bc="grey" />
+          <Avatar.Fallback bc="$color5" />
         </Avatar>
         <Text>{name}</Text>
       </XStack>

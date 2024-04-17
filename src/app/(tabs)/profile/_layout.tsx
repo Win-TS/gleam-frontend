@@ -15,6 +15,7 @@ export default function StackLayout() {
     >
       <Stack.Screen name="index" options={gleamTitle.withoutBackBtn} />
       <Stack.Screen name="friend" options={gleamTitle.withBackBtn} />
+      <Stack.Screen name="hive" options={gleamTitle.withBackBtn} />
     </Stack>
   );
 }

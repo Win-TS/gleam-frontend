@@ -21,7 +21,7 @@ import z from "zod";
 
 import ActionDialog from "@/src/components/ActionDialog";
 import DangerBtn from "@/src/components/DangerBtn";
-import HeaderContainer from "@/src/components/GleamContainer";
+import GleamContainer from "@/src/components/GleamContainer";
 import ImagePicker from "@/src/components/ImagePicker";
 import PageContainer from "@/src/components/PageContainer";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
@@ -109,7 +109,7 @@ const HiveHeaderBtn = ({ hive }: { hive: HiveWithMemberInfo }) => {
     );
   if (
     hive.status === "member" ||
-    hive.status === "co-leader" ||
+    hive.status === "co_leader" ||
     hive.status === "creator"
   )
     return (
@@ -170,7 +170,7 @@ const HiveOptionsPopover = ({
         </Popover.Trigger>
         <Popover.Content p="$2" w="$12" bc="$color1" bw="$1" boc="$color4">
           <View w="100%" gap="$2">
-            {hive.status === "member" || hive.status === "co-leader" ? (
+            {hive.status === "member" || hive.status === "co_leader" ? (
               <HiveLeaveBtn
                 onPress={() => {
                   setOpenPopover(false);
@@ -192,7 +192,7 @@ const HiveOptionsPopover = ({
                   w="100%"
                   br="$4"
                   onPress={() =>
-                    router.navigate({
+                    router.push({
                       pathname: "/(tabs)/home/hive/[id]/setting",
                       params: {
                         id: hive.group_info.group_id,
@@ -209,7 +209,7 @@ const HiveOptionsPopover = ({
               w="100%"
               br="$4"
               onPress={() =>
-                router.navigate({
+                router.push({
                   pathname: "/(tabs)/home/hive/[id]/report",
                   params: {
                     id: hive.group_info.group_id,
@@ -349,7 +349,7 @@ const HiveMemberBtn = ({ hiveId }: { hiveId: number }) => {
       jc="center"
       ai="center"
       onPress={() =>
-        router.navigate({
+        router.push({
           pathname: "/(tabs)/home/hive/[id]/member",
           params: {
             id: hiveId,
@@ -434,7 +434,7 @@ export default function HiveScreen() {
   return (
     <PortalProvider>
       <PageContainer>
-        <HeaderContainer>
+        <GleamContainer>
           <QueryPlaceholder
             query={hiveQuery}
             spinnerSize="large"
@@ -446,7 +446,7 @@ export default function HiveScreen() {
               )
             }
           />
-        </HeaderContainer>
+        </GleamContainer>
         <HiveMemberBtn hiveId={hiveId} />
         <View f={1} w={width - 16} $gtSm={{ maw: 290 }}>
           <HiveBody hiveId={hiveId} />

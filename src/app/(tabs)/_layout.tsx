@@ -1,22 +1,21 @@
-import { Image as ExpoImage } from "expo-image";
 import { Tabs } from "expo-router";
 import React from "react";
+import { DimensionValue } from "react-native";
 import { View } from "tamagui";
 
-import { nav } from "@/assets";
+import { NavIcon, NavIconName } from "@/assets";
 import { useClientOnlyValue } from "@/src/components/useClientOnlyValue";
 import { useColorScheme } from "@/src/components/useColorScheme";
 import Colors from "@/src/constants/Colors";
 
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon({
-  icon,
+  name,
   focused,
   size,
 }: {
-  icon: React.ComponentProps<typeof ExpoImage>["source"];
+  name: NavIconName;
   focused: boolean;
-  size?: number;
+  size?: DimensionValue;
 }) {
   return (
     <View
@@ -27,10 +26,7 @@ function TabBarIcon({
       bc={focused ? "$color5" : undefined}
       br="$3"
     >
-      <ExpoImage
-        source={icon}
-        style={{ width: size ?? 24, height: size ?? 24 }}
-      />
+      <NavIcon name={name} size={size} />
     </View>
   );
 }
@@ -52,7 +48,7 @@ export default function TabLayout() {
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon icon={nav.home} focused={focused} />
+            <TabBarIcon name="home" focused={focused} />
           ),
           tabBarLabel: () => null,
         }}
@@ -62,7 +58,7 @@ export default function TabLayout() {
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon icon={nav.search} focused={focused} />
+            <TabBarIcon name="search" focused={focused} />
           ),
           tabBarLabel: () => null,
         }}
@@ -73,7 +69,7 @@ export default function TabLayout() {
           title: "add streak",
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon icon={nav.add_streak} size={36} focused={focused} />
+            <TabBarIcon name="add_streak" size={36} focused={focused} />
           ),
           tabBarLabel: () => null,
         }}
@@ -83,7 +79,7 @@ export default function TabLayout() {
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon icon={nav.notification} focused={focused} />
+            <TabBarIcon name="notification" focused={focused} />
           ),
           tabBarLabel: () => null,
         }}
@@ -93,7 +89,7 @@ export default function TabLayout() {
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon icon={nav.profile} focused={focused} />
+            <TabBarIcon name="profile" focused={focused} />
           ),
           tabBarLabel: () => null,
         }}

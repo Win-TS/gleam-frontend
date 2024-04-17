@@ -1,26 +1,25 @@
-// import { ChevronRight } from "@tamagui/lucide-icons";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useForm } from "@tanstack/react-form";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { Pressable } from "react-native";
 import {
   Text,
-  View,
   Separator,
   XStack,
   YStack,
   Input,
-  useTheme,
   useWindowDimensions,
 } from "tamagui";
 
+import { Icon } from "@/assets";
 import GleamContainer from "@/src/components/GleamContainer";
 import ImagePicker from "@/src/components/ImagePicker";
 import PageContainer from "@/src/components/PageContainer";
+import PressableSection from "@/src/components/PressableSection";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
 import ProfileHeader from "@/src/components/ProfileHeader";
 import QueryPlaceholder from "@/src/components/QueryPlaceholder";
+import Section from "@/src/components/Section";
 import SwitchWithLabel from "@/src/components/SwitchWithLabel";
 import { useUserprofileMutation, useUserprofileQuery } from "@/src/hooks/user";
 import { Userprofile } from "@/src/schemas/userprofile";
@@ -104,7 +103,6 @@ const ProfileFormHeader = ({
 };
 
 export default function ProfileScreen() {
-  const theme = useTheme();
   const { width } = useWindowDimensions();
 
   const userId = useUserId();
@@ -183,30 +181,25 @@ export default function ProfileScreen() {
         </Text>
       </XStack>
 
+      <Separator w={width} $gtSm={{ maw: "$20" }} boc="$gleam12" />
       {isEditProfile ? (
-        <XStack w="100%" gap="$3">
-          <Text f={1} col="$color11">
-            MY HIVE
-          </Text>
-          <SwitchWithLabel label="show in profile" />
-        </XStack>
-      ) : (
-        <>
-          <Separator w={width} $gtSm={{ maw: "$20" }} boc="$gleam12" />
-          <XStack w="100%" ai="center" gap="$3">
+        <Section>
+          <XStack w="100%" jc="space-between" ai="center" px="$3" py="$1">
             <Text f={1} col="$color11">
               MY HIVE
             </Text>
-            <View p="$2">
-              <FontAwesome
-                size={14}
-                color={theme.gleam12.val}
-                name="chevron-right"
-              />
-            </View>
+            <SwitchWithLabel label="show in profile" />
           </XStack>
-          <Separator w={width} $gtSm={{ maw: "$20" }} boc="$gleam12" />
-        </>
+        </Section>
+      ) : (
+        <PressableSection onPress={() => router.push("/(tabs)/profile/hive")}>
+          <XStack w="100%" jc="space-between" ai="center" px="$3" py="$1">
+            <Text f={1} col="$color11">
+              MY HIVE
+            </Text>
+            <Icon name="chevron_right" />
+          </XStack>
+        </PressableSection>
       )}
     </PageContainer>
   );

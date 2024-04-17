@@ -27,6 +27,13 @@ export default function ModalLayout() {
         }}
       />
       <Stack.Screen
+        name="recover"
+        options={{
+          title: "Recover",
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
         name="setting"
         options={{
           title: "Setting",

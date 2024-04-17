@@ -2,6 +2,7 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { XStack, YStack, Text } from "tamagui";
 
+import { Icon } from "@/assets";
 import PageContainer from "@/src/components/PageContainer";
 import PressableSection from "@/src/components/PressableSection";
 
@@ -14,9 +15,9 @@ export default function NotificationScreen() {
         <PressableSection
           onPress={() => router.push("/(tabs)/notification/friend")}
         >
-          <XStack w="100%" px="$3" py="$3" jc="space-between">
-            <XStack gap="$3">
-              <Text>icon</Text>
+          <XStack w="100%" px="$3" py="$3" jc="space-between" ai="center">
+            <XStack gap="$3" jc="center" ai="center">
+              <Icon name="friend" />
               <YStack>
                 <Text fos="$5" fow="bold">
                   Friend Request
@@ -24,15 +25,15 @@ export default function NotificationScreen() {
                 <Text fos="$2">?? and ?? others</Text>
               </YStack>
             </XStack>
-            <Text>icon</Text>
+            <Icon name="chevron_right" />
           </XStack>
         </PressableSection>
         <PressableSection
           onPress={() => router.push("/(tabs)/notification/hive/")}
         >
-          <XStack w="100%" px="$3" py="$3" jc="space-between">
-            <XStack gap="$3">
-              <Text>icon</Text>
+          <XStack w="100%" px="$3" py="$3" jc="space-between" ai="center">
+            <XStack gap="$3" jc="center" ai="center">
+              <Icon name="hive" />
               <YStack>
                 <Text fos="$5" fow="bold">
                   Hive Request
@@ -40,7 +41,7 @@ export default function NotificationScreen() {
                 <Text fos="$2">?? requests are waiting</Text>
               </YStack>
             </XStack>
-            <Text>icon</Text>
+            <Icon name="chevron_right" />
           </XStack>
         </PressableSection>
       </YStack>
