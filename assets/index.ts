@@ -10,6 +10,8 @@ export const icons = {
   remove_member: require("@/assets/icons/remove_member.png"),
   chevron_left: require("@/assets/icons/chevron_left.png"),
   gear: require("@/assets/icons/gear.png"),
+  accept: require("@/assets/icons/accept.png"),
+  reject: require("@/assets/icons/reject.png"),
 };
 
 export const logo = require("@/assets/logo/adaptive-icon.png");

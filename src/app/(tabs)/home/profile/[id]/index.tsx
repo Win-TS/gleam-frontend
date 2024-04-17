@@ -5,8 +5,6 @@ import { Pressable } from "react-native";
 import {
   Text,
   View,
-  Separator,
-  Avatar,
   XStack,
   YStack,
   useTheme,
@@ -134,8 +132,6 @@ const FriendStatusButton = ({ userId }: { userId: number }) => {
 const ProfileScreenNoHive = ({ userId }: { userId: number }) => {
   const userprofileQuery = useUserprofileQuery(userId);
 
-  const showBadge = true;
-
   return (
     <YStack w="100%" gap="$3" $gtSm={{ maw: "$20" }}>
       <HeaderContainer>
@@ -173,15 +169,6 @@ const ProfileScreenNoHive = ({ userId }: { userId: number }) => {
               />
             </YStack>
           </Pressable>
-          <Separator als="stretch" vertical boc="$gleam12" />
-          <YStack w="$5" jc="center" ai="center">
-            <Text col="$color11" fow="bold">
-              LEVEL
-            </Text>
-            <Text col="$color11" fow="normal">
-              130
-            </Text>
-          </YStack>
         </XStack>
         <ProfileOptionsPopover userId={userId} />
       </HeaderContainer>
@@ -204,21 +191,6 @@ const ProfileScreenNoHive = ({ userId }: { userId: number }) => {
           DAYS
         </Text>
       </XStack>
-
-      {showBadge ? (
-        <YStack w="100%" gap="$3">
-          <Text f={1} col="$color11">
-            BADGES
-          </Text>
-
-          <XStack>
-            {/* TODO:  */}
-            <Avatar circular size="$6">
-              <Avatar.Fallback bc="grey" />
-            </Avatar>
-          </XStack>
-        </YStack>
-      ) : null}
     </YStack>
   );
 };

@@ -8,7 +8,6 @@ import {
   Text,
   View,
   Separator,
-  Avatar,
   XStack,
   YStack,
   Input,
@@ -161,15 +160,6 @@ export default function ProfileScreen() {
                 />
               </YStack>
             </Pressable>
-            <Separator als="stretch" vertical boc="$gleam12" />
-            <YStack w="$5" jc="center" ai="center">
-              <Text col="$color11" fow="bold">
-                LEVEL
-              </Text>
-              <Text col="$color11" fow="normal">
-                130
-              </Text>
-            </YStack>
           </XStack>
         )}
       </GleamContainer>
@@ -192,22 +182,6 @@ export default function ProfileScreen() {
           DAYS
         </Text>
       </XStack>
-
-      <YStack w="100%" gap="$3">
-        <XStack>
-          <Text f={1} col="$color11">
-            BADGES
-          </Text>
-          {isEditProfile && <SwitchWithLabel label="show in profile" />}
-        </XStack>
-
-        <XStack>
-          {/* TODO:  */}
-          <Avatar circular size="$6">
-            <Avatar.Fallback bc="grey" />
-          </Avatar>
-        </XStack>
-      </YStack>
 
       {isEditProfile ? (
         <XStack w="100%" gap="$3">

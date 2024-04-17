@@ -304,3 +304,62 @@ export const useHiveInfoMutation = (hiveId: number) => {
     },
   });
 };
+
+export const useHiveRequestQuery = (hiveId: number) => {
+  return useQuery<any, AxiosError<{ message: string }>>({
+    queryKey: ["hive", hiveId, "request"],
+    queryFn: async () => {
+      return await axios.get("/group_v1/grouprequests", {
+        baseURL: process.env.EXPO_PUBLIC_GROUP_API,
+        params: { group_id: hiveId, limit: 10, offset: 0 },
+      });
+    },
+  });
+};
+
+export const useAcceptHiveRequestMutation = (
+  hiveId: number,
+  memberId: number,
+) => {
+  const userId = useUserId();
+  const queryClient = useQueryClient();
+
+  return useMutation<void, AxiosError<{ message: string }>>({
+    mutationFn: async () => {
+      return await axios.post(
+        "/group_v1/acceptrequest",
+        { group_id: hiveId, member_id: memberId, acceptor_id: userId },
+        {
+          baseURL: process.env.EXPO_PUBLIC_GROUP_API,
+        },
+      );
+    },
+    onSettled: async () => {
+      return await queryClient.invalidateQueries({
+        queryKey: ["hive", hiveId, "request"],
+      });
+    },
+  });
+};
+
+export const useDeclineHiveRequestMutation = (
+  hiveId: number,
+  memberId: number,
+) => {
+  const userId = useUserId();
+  const queryClient = useQueryClient();
+
+  return useMutation<void, AxiosError<{ message: string }>>({
+    mutationFn: async () => {
+      return await axios.delete("/group_v1/declinerequest", {
+        baseURL: process.env.EXPO_PUBLIC_GROUP_API,
+        params: { group_id: hiveId, member_id: memberId, decliner_id: userId },
+      });
+    },
+    onSettled: async () => {
+      return await queryClient.invalidateQueries({
+        queryKey: ["hive", hiveId, "request"],
+      });
+    },
+  });
+};
