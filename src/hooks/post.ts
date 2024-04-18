@@ -109,7 +109,7 @@ export const postReactionCountsResponse_ = z.object({
   data: z.record(z.string(), z.coerce.number()),
   total_reaction: z.coerce.number(),
   post_id: z.coerce.number(),
-  success: z.boolean(),
+  success: z.coerce.boolean(),
 });
 export const usePostReactionCountsQuery = (postId: number) => {
   return useQuery<

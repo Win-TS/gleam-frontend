@@ -48,7 +48,7 @@ export const useUserprofileQuery = (userId: number) => {
 };
 
 export const uploadUserPhotoResponse_ = z.object({
-  success: z.boolean(),
+  success: z.coerce.boolean(),
   message: z.string(),
   url: z.string(),
 });
@@ -265,16 +265,21 @@ export const useAcceptFriendMutation = (otherUserId: number) => {
     mutationFn: async () => {
       return await axios.patch(
         "/friend_v1/accept",
-        { user_id1: userId, user_id2: otherUserId },
+        { user_id1: otherUserId, user_id2: userId },
         {
           baseURL: process.env.EXPO_PUBLIC_USER_API,
         },
       );
     },
     onSettled: async () => {
-      return await queryClient.invalidateQueries({
-        queryKey: ["user", userId, "friend"],
-      });
+      return await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["user", userId],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["user", otherUserId],
+        }),
+      ]);
     },
   });
 };
@@ -286,13 +291,13 @@ export const useDeclineFriendMutation = (otherUserId: number) => {
   return useMutation<void, AxiosError<{ message: string }>>({
     mutationFn: async () => {
       return await axios.delete("/friend_v1/decline", {
-        data: { user_id1: userId, user_id2: otherUserId },
+        data: { user_id1: otherUserId, user_id2: userId },
         baseURL: process.env.EXPO_PUBLIC_USER_API,
       });
     },
     onSettled: async () => {
       return await queryClient.invalidateQueries({
-        queryKey: ["user", userId, "friend"],
+        queryKey: ["user", userId, "friend", "pending"],
       });
     },
   });
@@ -306,7 +311,7 @@ export const useFriendRequestListInfiniteQuery = () => {
     queryFn: async ({ pageParam }) => {
       const data = await z.array(user_).parseAsync(
         (
-          await axios.get("/friend_v1/requested", {
+          await axios.get("/friend_v1/pending", {
             params: { user_id: userId, limit: 12, offset: pageParam },
             baseURL: process.env.EXPO_PUBLIC_USER_API,
           })
@@ -324,5 +329,23 @@ export const useFriendRequestListInfiniteQuery = () => {
     initialPageParam: 0,
     getPreviousPageParam: (firstPage) => firstPage.previousOffset ?? undefined,
     getNextPageParam: (lastPage) => lastPage.nextOffset ?? undefined,
+  });
+};
+
+export const useFriendRequestCountQuery = () => {
+  const userId = useUserId();
+
+  return useQuery<number, AxiosError<{ message: string }>>({
+    queryKey: ["user", userId, "friend", "pending", "count"],
+    queryFn: async () => {
+      return await z.coerce.number().parseAsync(
+        (
+          await axios.get("/friend_v1/requestcount", {
+            baseURL: process.env.EXPO_PUBLIC_USER_API,
+            params: { user_id: userId },
+          })
+        ).data,
+      );
+    },
   });
 };

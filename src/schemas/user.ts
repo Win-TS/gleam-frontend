@@ -7,13 +7,13 @@ export const user_ = z.object({
   firstname: z.string(),
   lastname: z.string(),
   phone_no: z.string(),
-  private_account: z.boolean(),
+  private_account: z.coerce.boolean(),
   nationality: z.string(),
   birthday: z.string().datetime(),
   gender: z.string(),
   photourl: z.object({
     String: z.string(),
-    Valid: z.boolean(),
+    Valid: z.coerce.boolean(),
   }),
   created_at: z.string().datetime(),
 });

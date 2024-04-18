@@ -5,7 +5,7 @@ export const hive_ = z.object({
   group_name: z.string(),
   photo_url: z.object({
     String: z.string(),
-    Valid: z.boolean(),
+    Valid: z.coerce.boolean(),
   }),
   group_type: z.string(),
 });
@@ -14,16 +14,16 @@ export const extendedHive_ = hive_.extend({
   group_creator_id: z.coerce.number(),
   description: z.object({
     String: z.string(),
-    Valid: z.boolean(),
+    Valid: z.coerce.boolean(),
   }),
   tag_name: z.string(),
   frequency: z.object({
     Int32: z.coerce.number(),
-    Valid: z.boolean(),
+    Valid: z.coerce.boolean(),
   }),
   max_members: z.coerce.number(),
   total_member: z.coerce.number(),
-  visibility: z.boolean(),
+  visibility: z.coerce.boolean(),
   created_at: z.string().datetime(),
 });
 

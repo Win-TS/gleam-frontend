@@ -6,8 +6,54 @@ import { Icon } from "@/assets";
 import PageContainer from "@/src/components/PageContainer";
 import PressableSection from "@/src/components/PressableSection";
 import VerticalList from "@/src/components/VerticalList";
-import { useHiveQueries, useUserHiveListQuery } from "@/src/hooks/hive";
+import {
+  useHiveQueries,
+  useHiveRequestCountQuery,
+  useUserHiveListQuery,
+} from "@/src/hooks/hive";
 import { useUserId } from "@/src/stores/user";
+import { HiveWithMemberInfo } from "@/src/schemas/hive";
+import QueryPlaceholder from "@/src/components/QueryPlaceholder";
+
+const HiveRequestSection = ({ hive }: { hive: HiveWithMemberInfo }) => {
+  const hiveRequestCountQuery = useHiveRequestCountQuery(
+    hive.group_info.group_id,
+  );
+
+  return (
+    <PressableSection
+      onPress={() =>
+        router.push({
+          pathname: "/(tabs)/notification/hive/[id]/",
+          params: { id: hive.group_info.group_id },
+        })
+      }
+    >
+      <XStack w="100%" jc="space-between" ai="center" p="$3">
+        <XStack jc="center" ai="center" gap="$3">
+          <Avatar>
+            <Avatar circular size="$4">
+              <Avatar.Image src={hive.group_info.photo_url.String} />
+              <Avatar.Fallback bc="$color5" />
+            </Avatar>
+          </Avatar>
+          <YStack>
+            <Text fos="$5" fow="bold">
+              {hive.group_info.group_name}
+            </Text>
+            <QueryPlaceholder
+              query={hiveRequestCountQuery}
+              renderData={(data) => (
+                <Text fos="$2">{data} requests pending</Text>
+              )}
+            />
+          </YStack>
+        </XStack>
+        <Icon name="chevron_right" />
+      </XStack>
+    </PressableSection>
+  );
+};
 
 export default function HiveNotificationScreen() {
   const userId = useUserId();
@@ -40,34 +86,7 @@ export default function HiveNotificationScreen() {
           data={flattenedUserAdminHiveList}
           numColumns={1}
           estimatedItemSize={74}
-          renderItem={({ item }) => (
-            <PressableSection
-              onPress={() =>
-                router.push({
-                  pathname: "/(tabs)/notification/hive/[id]/",
-                  params: { id: item.group_info.group_id },
-                })
-              }
-            >
-              <XStack w="100%" jc="space-between" ai="center" p="$3">
-                <XStack jc="center" ai="center" gap="$3">
-                  <Avatar>
-                    <Avatar circular size="$4">
-                      <Avatar.Image src={item.group_info.photo_url.String} />
-                      <Avatar.Fallback bc="$color5" />
-                    </Avatar>
-                  </Avatar>
-                  <YStack>
-                    <Text fos="$5" fow="bold">
-                      {item.group_info.group_name}
-                    </Text>
-                    <Text fos="$2">?? requests are waiting</Text>
-                  </YStack>
-                </XStack>
-                <Icon name="chevron_right" />
-              </XStack>
-            </PressableSection>
-          )}
+          renderItem={({ item }) => <HiveRequestSection hive={item} />}
         />
       </View>
     </PageContainer>

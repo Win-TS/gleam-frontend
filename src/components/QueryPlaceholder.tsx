@@ -44,8 +44,7 @@ export default function <TData = unknown, TError = DefaultError>({
     ) : (
       <Spinner size={spinnerSize} color="$red10" />
     );
-  if (data)
-    return renderSpinner
-      ? renderData({ data, spinner: undefined })
-      : renderData(data);
+  return renderSpinner
+    ? renderData({ data, spinner: undefined })
+    : renderData(data);
 }
