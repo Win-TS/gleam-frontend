@@ -325,7 +325,7 @@ export const useHiveInfoMutation = (hiveId: number) => {
 
 export const useHiveRequestQuery = (hiveId: number) => {
   return useQuery<any, AxiosError<{ message: string }>>({
-    queryKey: ["hive", hiveId, "request"],
+    queryKey: ["hive", hiveId, "request", "list"],
     queryFn: async () => {
       return await axios.get("/group_v1/grouprequests", {
         baseURL: process.env.EXPO_PUBLIC_GROUP_API,
@@ -353,9 +353,14 @@ export const useAcceptHiveRequestMutation = (
       );
     },
     onSettled: async () => {
-      return await queryClient.invalidateQueries({
-        queryKey: ["hive", hiveId, "request"],
-      });
+      return await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["hive", hiveId, "request"],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["hive", "user", userId, "request"],
+        }),
+      ]);
     },
   });
 };
@@ -375,9 +380,53 @@ export const useDeclineHiveRequestMutation = (
       });
     },
     onSettled: async () => {
-      return await queryClient.invalidateQueries({
-        queryKey: ["hive", hiveId, "request"],
-      });
+      return await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["hive", hiveId, "request"],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["hive", "user", userId, "request"],
+        }),
+      ]);
+    },
+  });
+};
+
+export const useHiveRequestCountQuery = (hiveId: number) => {
+  return useQuery<number, AxiosError<{ message: string }> | ZodError>({
+    queryKey: ["hive", hiveId, "request", "count"],
+    queryFn: async () => {
+      return await z.coerce.number().parseAsync(
+        (
+          await axios.get("/group_v1/grouprequestscount", {
+            baseURL: process.env.EXPO_PUBLIC_GROUP_API,
+            params: { group_id: hiveId },
+          })
+        ).data,
+      );
+    },
+  });
+};
+
+export const useUserAdminHiveRequestCountQuery = () => {
+  const userId = useUserId();
+
+  return useQuery<number, AxiosError<{ message: string }> | ZodError>({
+    queryKey: ["hive", "user", userId, "request", "count"],
+    queryFn: async () => {
+      try {
+        return await z.coerce.number().parseAsync(
+          (
+            await axios.get("/group_v1/acceptorrequestscount", {
+              baseURL: process.env.EXPO_PUBLIC_GROUP_API,
+              params: { user_id: userId },
+            })
+          ).data,
+        );
+      } catch {
+        // FIXME: no way to really tell if backend error or we do not have requests
+        return 0;
+      }
     },
   });
 };
