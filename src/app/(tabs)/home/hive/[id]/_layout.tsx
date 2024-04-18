@@ -26,6 +26,13 @@ export default function StackLayout() {
           headerLeft: () => <BackBtn />,
         }}
       />
+      <Stack.Screen
+        name="post"
+        options={{
+          title: "Post",
+          headerShown: false,
+        }}
+      />
       <Stack.Screen name="member" options={gleamTitle.withBackBtn} />
       <Stack.Screen
         name="setting"

@@ -61,7 +61,7 @@ const JoinHiveList = () => {
               <HiveBtn
                 hive={item}
                 onPress={() =>
-                  router.replace({
+                  router.push({
                     pathname: "/(tabs)/home/hive/[id]/",
                     params: { id: item.group_id },
                   })

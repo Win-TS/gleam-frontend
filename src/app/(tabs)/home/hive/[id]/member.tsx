@@ -98,7 +98,7 @@ const Member = ({ member }: { member: HiveMember }) => {
       <Pressable
         onPress={() => {
           if (member.member_id === userId) {
-            router.replace("/(tabs)/profile");
+            router.push("/(tabs)/profile");
           } else {
             router.push({
               pathname: "/(tabs)/home/profile/[id]/",
