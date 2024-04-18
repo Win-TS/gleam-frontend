@@ -273,7 +273,7 @@ export const useAcceptFriendMutation = (otherUserId: number) => {
     },
     onSettled: async () => {
       return await queryClient.invalidateQueries({
-        queryKey: ["user", userId, "requested"],
+        queryKey: ["user", userId, "friend"],
       });
     },
   });
@@ -292,26 +292,37 @@ export const useDeclineFriendMutation = (otherUserId: number) => {
     },
     onSettled: async () => {
       return await queryClient.invalidateQueries({
-        queryKey: ["user", userId, "requested"],
+        queryKey: ["user", userId, "friend"],
       });
     },
   });
 };
 
-export const useFriendRequestedQuery = () => {
+export const useFriendRequestListInfiniteQuery = () => {
   const userId = useUserId();
 
-  return useQuery<any, AxiosError<{ message: string }>>({
-    queryKey: ["user", userId, "requested"],
-    queryFn: async () => {
-      try {
-        return await axios.get("/friend_v1/requested", {
-          baseURL: process.env.EXPO_PUBLIC_USER_API,
-          params: { user_id: userId.toString(), limit: 10, offset: 0 },
-        });
-      } catch {
-        return [];
-      }
+  return useInfiniteQuery({
+    queryKey: ["user", userId, "friend", "pending", "list"],
+    queryFn: async ({ pageParam }) => {
+      const data = await z.array(user_).parseAsync(
+        (
+          await axios.get("/friend_v1/requested", {
+            params: { user_id: userId, limit: 12, offset: pageParam },
+            baseURL: process.env.EXPO_PUBLIC_USER_API,
+          })
+        ).data,
+      );
+      const calcPreviousOffset = Math.max(0, pageParam - 12);
+      const calcNextOffset = pageParam + data.length;
+      return {
+        data,
+        previousOffset:
+          calcPreviousOffset !== pageParam ? calcPreviousOffset : undefined,
+        nextOffset: calcNextOffset !== pageParam ? calcNextOffset : undefined,
+      };
     },
+    initialPageParam: 0,
+    getPreviousPageParam: (firstPage) => firstPage.previousOffset ?? undefined,
+    getNextPageParam: (lastPage) => lastPage.nextOffset ?? undefined,
   });
 };
