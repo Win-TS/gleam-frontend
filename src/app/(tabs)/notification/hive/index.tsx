@@ -5,15 +5,15 @@ import { Avatar, Text, View, XStack, YStack } from "tamagui";
 import { Icon } from "@/assets";
 import PageContainer from "@/src/components/PageContainer";
 import PressableSection from "@/src/components/PressableSection";
+import QueryPlaceholder from "@/src/components/QueryPlaceholder";
 import VerticalList from "@/src/components/VerticalList";
 import {
   useHiveQueries,
   useHiveRequestCountQuery,
   useUserHiveListQuery,
 } from "@/src/hooks/hive";
-import { useUserId } from "@/src/stores/user";
 import { HiveWithMemberInfo } from "@/src/schemas/hive";
-import QueryPlaceholder from "@/src/components/QueryPlaceholder";
+import { useUserId } from "@/src/stores/user";
 
 const HiveRequestSection = ({ hive }: { hive: HiveWithMemberInfo }) => {
   const hiveRequestCountQuery = useHiveRequestCountQuery(
