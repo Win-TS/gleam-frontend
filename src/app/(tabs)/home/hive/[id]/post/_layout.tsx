@@ -13,7 +13,7 @@ export default function StackLayout() {
       }}
     >
       <Stack.Screen
-        name="[id]"
+        name="[postId]"
         options={{
           title: "Post",
           headerShown: false,

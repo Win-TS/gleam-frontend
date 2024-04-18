@@ -13,7 +13,7 @@ export default function ProfileHiveScreen() {
       <ProfileHivePicker
         userId={userId}
         onPress={(hive) =>
-          router.replace({
+          router.push({
             pathname: "/(tabs)/home/hive/[id]/",
             params: { id: hive.group_id },
           })

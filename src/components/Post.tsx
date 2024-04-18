@@ -26,7 +26,7 @@ import {
 import { FeedPost } from "@/src/schemas/post";
 import { useUserId } from "@/src/stores/user";
 
-const PostOptionsPopover = ({ postId }: { postId: number }) => {
+const PostOptionsPopover = ({ post }: { post: FeedPost }) => {
   const theme = useTheme();
   const router = useRouter();
 
@@ -58,9 +58,10 @@ const PostOptionsPopover = ({ postId }: { postId: number }) => {
               br="$4"
               onPress={() =>
                 router.push({
-                  pathname: "/(tabs)/home/post/[id]/report",
+                  pathname: "/(tabs)/home/hive/[id]/post/[postId]/report",
                   params: {
-                    id: postId,
+                    id: post.group_id,
+                    postId: post.post_id,
                   },
                 })
               }
@@ -196,7 +197,7 @@ export default ({ post }: { post: FeedPost }) => {
       <Pressable
         onPress={() => {
           if (post.member_id === userId) {
-            router.replace("/(tabs)/profile");
+            router.push("/(tabs)/profile");
           } else {
             router.push({
               pathname: "/(tabs)/home/profile/[id]/",
@@ -252,7 +253,7 @@ export default ({ post }: { post: FeedPost }) => {
         </Pressable>
       </ZStack>
       <ReactionList postId={post.post_id} />
-      <PostOptionsPopover postId={post.post_id} />
+      <PostOptionsPopover post={post} />
     </YStack>
   );
 };

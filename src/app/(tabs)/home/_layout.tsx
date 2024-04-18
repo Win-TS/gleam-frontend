@@ -22,13 +22,6 @@ export default function StackLayout() {
         }}
       />
       <Stack.Screen
-        name="post"
-        options={{
-          title: "Post",
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
         name="profile"
         options={{
           title: "Profile",
