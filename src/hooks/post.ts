@@ -7,8 +7,27 @@ import {
 import axios, { AxiosError } from "axios";
 import { ZodError, z } from "zod";
 
-import { post_, feedPost_ } from "@/src/schemas/post";
+import { post_, feedPost_, Post } from "@/src/schemas/post";
 import { useUserId } from "@/src/stores/user";
+
+export const usePostQuery = (postId: number) => {
+  const userId = useUserId({ throw: false });
+
+  return useQuery<Post, AxiosError<{ message: string }> | ZodError>({
+    queryKey: ["post", postId, "info"],
+    queryFn: async () => {
+      return await post_.parseAsync(
+        (
+          await axios.get("/post_v1/post", {
+            baseURL: process.env.EXPO_PUBLIC_GROUP_API,
+            params: { user_id: userId, post_id: postId },
+          })
+        ).data,
+      );
+    },
+    enabled: !!userId,
+  });
+};
 
 export const useHivePostListInfiniteQuery = (hiveId: number) => {
   return useInfiniteQuery({
@@ -179,9 +198,14 @@ export const useCreatePostReactionMutation = (
       );
     },
     onSettled: async () => {
-      return await queryClient.invalidateQueries({
-        queryKey: ["post", postId, "reaction"],
-      });
+      return await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["post", postId],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["post", "user", userId],
+        }),
+      ]);
     },
   });
 };
@@ -197,7 +221,7 @@ export const useDeletePostReactionMutation = (
     mutationFn: async () => {
       return await axios.delete("/reaction_v1/reaction", {
         baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-        params: {
+        data: {
           post_id: postId,
           member_id: userId,
           reaction,
@@ -205,9 +229,14 @@ export const useDeletePostReactionMutation = (
       });
     },
     onSettled: async () => {
-      return await queryClient.invalidateQueries({
-        queryKey: ["post", postId, "reaction"],
-      });
+      return await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["post", postId],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["post", "user", userId],
+        }),
+      ]);
     },
   });
 };

@@ -18,15 +18,17 @@ import {
 import { ReactionIcon } from "@/assets";
 import DangerBtn from "@/src/components/DangerBtn";
 import QueryPlaceholder from "@/src/components/QueryPlaceholder";
+import { useHiveQuery } from "@/src/hooks/hive";
 import {
   useCreatePostReactionMutation,
   useDeletePostReactionMutation,
+  usePostQuery,
   usePostReactionCountsQuery,
 } from "@/src/hooks/post";
-import { FeedPost } from "@/src/schemas/post";
+import { BasePost, Post } from "@/src/schemas/post";
 import { useUserId } from "@/src/stores/user";
 
-const PostOptionsPopover = ({ post }: { post: FeedPost }) => {
+const PostOptionsPopover = ({ post }: { post: BasePost }) => {
   const theme = useTheme();
   const router = useRouter();
 
@@ -89,16 +91,21 @@ const PostOptionsPopover = ({ post }: { post: FeedPost }) => {
 const REACTIONS = ["heart", "sob", "angry", "joy"] as const;
 
 const ReactionDefaultButton = ({
-  postId,
+  post,
   reaction,
 }: {
-  postId: number;
+  post: Post;
   reaction: (typeof REACTIONS)[number];
 }) => {
-  const createPostReactionMutation = useCreatePostReactionMutation(
-    postId,
+  const deletePostReactionMutation = useDeletePostReactionMutation(
+    post.data.post_id,
     reaction,
   );
+  const createPostReactionMutation = useCreatePostReactionMutation(
+    post.data.post_id,
+    reaction,
+  );
+
   return (
     <Button
       chromeless
@@ -106,6 +113,7 @@ const ReactionDefaultButton = ({
       h="$2"
       onPress={async () => {
         try {
+          if (post.reaction) await deletePostReactionMutation.mutateAsync();
           await createPostReactionMutation.mutateAsync();
         } catch {}
       }}
@@ -142,40 +150,27 @@ const ReactionSelectedButton = ({
   );
 };
 
-const ReactionList = ({ postId }: { postId: number }) => {
-  const userId = useUserId();
-  const postReactionCountsQuery = usePostReactionCountsQuery(postId);
+const ReactionList = ({ post }: { post: Post }) => {
+  const postReactionCountsQuery = usePostReactionCountsQuery(post.data.post_id);
 
   return (
     <QueryPlaceholder
       query={postReactionCountsQuery}
       spinnerSize="small"
       renderData={(data) => {
-        /*
-        const postReactionsCount = useMemo(
-          () => countBy(data, (item) => item.reaction),
-          [data],
-        );
-        */
-
         return (
           <XStack gap="$1.5" jc="flex-start" ai="center">
             {REACTIONS.map((reaction) => {
               return (
                 <XStack jc="center" ai="center" gap="$1" key={reaction}>
-                  {
-                    "" /*(postUserReactionsCount[reaction] ?? 0) > 0 ? (
+                  {reaction === post.reaction?.reaction ? (
                     <ReactionSelectedButton
-                      postId={postId}
+                      postId={post.data.post_id}
                       reaction={reaction}
                     />
                   ) : (
-                    <ReactionDefaultButton
-                      postId={postId}
-                      reaction={reaction}
-                    />
-                  )*/
-                  }
+                    <ReactionDefaultButton post={post} reaction={reaction} />
+                  )}
                   <Text>{data.data[reaction] ?? 0}</Text>
                 </XStack>
               );
@@ -187,10 +182,12 @@ const ReactionList = ({ postId }: { postId: number }) => {
   );
 };
 
-export default ({ post }: { post: FeedPost }) => {
+export default ({ post }: { post: BasePost }) => {
   const router = useRouter();
 
   const userId = useUserId();
+  const postQuery = usePostQuery(post.post_id);
+  const hiveQuery = useHiveQuery(post.group_id);
 
   return (
     <YStack w="100%" p="$2" gap="$3" bc="$color1" br="$3" elevation="$2">
@@ -208,12 +205,17 @@ export default ({ post }: { post: FeedPost }) => {
           }
         }}
       >
-        <XStack ai="center" gap="$1.5">
-          <Avatar circular size="$4">
-            <Avatar.Image src={post.poster_photo_url} />
-          </Avatar>
-          <Text>{post.poster_username}</Text>
-        </XStack>
+        <QueryPlaceholder
+          query={postQuery}
+          renderData={(data) => (
+            <XStack ai="center" gap="$1.5">
+              <Avatar circular size="$4">
+                <Avatar.Image src={data.member.photourl} />
+              </Avatar>
+              <Text>{data.member.username}</Text>
+            </XStack>
+          )}
+        />
       </Pressable>
       <ZStack pos="relative" w="100%" pt="$2" aspectRatio={1} ai="center">
         <View w="100%" br="$8">
@@ -246,13 +248,21 @@ export default ({ post }: { post: FeedPost }) => {
             ai="center"
             gap="$2"
           >
-            <Text col="$gleam1">
-              ?? DAYS ON {post.group_name.toUpperCase()}
-            </Text>
+            <QueryPlaceholder
+              query={hiveQuery}
+              renderData={(data) => (
+                <Text col="$gleam1">
+                  2 DAYS ON {data.group_info.group_name.toUpperCase()}
+                </Text>
+              )}
+            />
           </XStack>
         </Pressable>
       </ZStack>
-      <ReactionList postId={post.post_id} />
+      <QueryPlaceholder
+        query={postQuery}
+        renderData={(data) => <ReactionList post={data} />}
+      />
       <PostOptionsPopover post={post} />
     </YStack>
   );
