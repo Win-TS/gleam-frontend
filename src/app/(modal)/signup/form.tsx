@@ -299,9 +299,12 @@ export default function SignupFormScreen() {
                     als="flex-end"
                   >
                     <XStack jc="center" ai="center" gap="$3">
-                      <FontAwesome color={theme.color9.val} name="caret-down" />
+                      <FontAwesome
+                        color={theme.color10.val}
+                        name="caret-down"
+                      />
                       <Select.Value
-                        col={field.state.value ? "$color12" : theme.color9.val}
+                        col={field.state.value ? "$color12" : theme.color10.val}
                         size="$3"
                         placeholder="Gender"
                       />
@@ -358,9 +361,9 @@ export default function SignupFormScreen() {
                   bc="$color3"
                 >
                   <XStack fd="row" jc="center" ai="center" gap="$3">
-                    <FontAwesome color={theme.color9.val} name="caret-down" />
+                    <FontAwesome color={theme.color10.val} name="caret-down" />
                     <Select.Value
-                      col={field.state.value ? "$color12" : theme.color9.val}
+                      col={field.state.value ? "$color12" : theme.color10.val}
                       size="$3"
                       placeholder="Nationality"
                     />

@@ -1,8 +1,9 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useForm } from "@tanstack/react-form";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { router, useLocalSearchParams, useRouter } from "expo-router";
 import { atom, useAtom, useSetAtom } from "jotai";
 import React, { useMemo, useState } from "react";
+import { Pressable } from "react-native";
 import {
   Avatar,
   Button,
@@ -14,6 +15,7 @@ import {
   Text,
   View,
   XStack,
+  YStack,
   useTheme,
   useWindowDimensions,
 } from "tamagui";
@@ -375,6 +377,7 @@ const HiveMemberBtn = ({ hiveId }: { hiveId: number }) => {
 };
 
 const HiveBody = ({ hiveId }: { hiveId: number }) => {
+  const theme = useTheme();
   const { width } = useWindowDimensions();
 
   const hiveQuery = useHiveQuery(hiveId);
@@ -392,7 +395,12 @@ const HiveBody = ({ hiveId }: { hiveId: number }) => {
       spinnerSize="large"
       renderData={(data) =>
         !data.group_info.visibility && data.status === "non-member" ? (
-          <Text>This hive is only visible to its member</Text>
+          <YStack w="100%" jc="center" ai="center" py="$8">
+            <Text col="$color10" ta="center" fow="bold">
+              This hive is only visible to its member
+            </Text>
+            <FontAwesome size={64} color={theme.color10.val} name="eye-slash" />
+          </YStack>
         ) : (
           <VerticalList
             data={flattenedHivePostList}
@@ -402,12 +410,21 @@ const HiveBody = ({ hiveId }: { hiveId: number }) => {
             onEndReached={hivePostListInfiniteQuery.fetchNextPage}
             renderItem={({ item }) => (
               <View f={1} px="$1.5">
-                <Image
-                  source={{ uri: item.photo_url.String }}
-                  w="100%"
-                  aspectRatio={1}
-                  br="$4"
-                />
+                <Pressable
+                  onPress={() =>
+                    router.push({
+                      pathname: "/(tabs)/home/hive/[id]/post/[postId]/",
+                      params: { id: hiveId, postId: item.post_id },
+                    })
+                  }
+                >
+                  <Image
+                    source={{ uri: item.photo_url.String }}
+                    w="100%"
+                    aspectRatio={1}
+                    br="$4"
+                  />
+                </Pressable>
               </View>
             )}
           />

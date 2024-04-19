@@ -52,7 +52,7 @@ const PasswordInput = forwardRef<Input, ComponentPropsWithoutRef<typeof Input>>(
             chromeless
             onPress={() => setVisible(!visible)}
           >
-            <FontAwesome size={16} color={theme.color9.val} name="eye-slash" />
+            <FontAwesome size={16} color={theme.color10.val} name="eye-slash" />
           </Button>
         </View>
       </View>
