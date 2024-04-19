@@ -32,6 +32,12 @@ export const post_ = z.object({
   success: z.coerce.boolean(),
 });
 
+export const hivePost_ = basePost_.extend({
+  user_id: z.coerce.number(),
+  username: z.string(),
+  user_photourl: z.string(),
+});
+
 export const feedPost_ = basePost_.extend({
   group_name: z.string(),
   group_photo_url: z.object({
@@ -47,4 +53,5 @@ export const feedPost_ = basePost_.extend({
 
 export type BasePost = z.infer<typeof basePost_>;
 export type Post = z.infer<typeof post_>;
+export type HivePost = z.infer<typeof hivePost_>;
 export type FeedPost = z.infer<typeof feedPost_>;

@@ -7,7 +7,7 @@ import {
 import axios, { AxiosError } from "axios";
 import { ZodError, z } from "zod";
 
-import { post_, feedPost_, Post } from "@/src/schemas/post";
+import { post_, feedPost_, Post, hivePost_ } from "@/src/schemas/post";
 import { useUserId } from "@/src/stores/user";
 
 export const usePostQuery = (postId: number) => {
@@ -33,7 +33,7 @@ export const useHivePostListInfiniteQuery = (hiveId: number) => {
   return useInfiniteQuery({
     queryKey: ["post", "hive", hiveId, "list"],
     queryFn: async ({ pageParam }) => {
-      const data = await z.array(post_).parseAsync(
+      const data = await z.array(hivePost_).parseAsync(
         (
           await axios.get("/post_v1/groupposts", {
             params: { group_id: hiveId, limit: 24, offset: pageParam },
