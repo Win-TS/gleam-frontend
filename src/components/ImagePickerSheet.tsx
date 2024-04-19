@@ -15,6 +15,9 @@ export default function ({
 }) {
   const theme = useTheme();
 
+  const [cameraStatus, requestCameraPermission] =
+    ImagePicker.useCameraPermissions();
+
   return (
     <Sheet
       forceRemoveScrollEnabled={open}
@@ -52,16 +55,33 @@ export default function ({
               f={1}
               fb={0}
               onPress={async () => {
-                const result = await ImagePicker.launchCameraAsync({
-                  mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                  allowsEditing: true,
-                  aspect: [1, 1],
-                  quality: 1,
-                });
+                if (cameraStatus) {
+                  if (
+                    cameraStatus.status ===
+                      ImagePicker.PermissionStatus.UNDETERMINED ||
+                    (cameraStatus.status ===
+                      ImagePicker.PermissionStatus.DENIED &&
+                      cameraStatus.canAskAgain)
+                  ) {
+                    await requestCameraPermission();
+                  }
+                  if (
+                    cameraStatus.status === ImagePicker.PermissionStatus.DENIED
+                  ) {
+                    return;
+                  }
 
-                if (!result.canceled) {
-                  setImage(result.assets[0].uri);
-                  setOpen(false);
+                  const result = await ImagePicker.launchCameraAsync({
+                    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                    allowsEditing: true,
+                    aspect: [1, 1],
+                    quality: 1,
+                  });
+
+                  if (!result.canceled) {
+                    setImage(result.assets[0].uri);
+                    setOpen(false);
+                  }
                 }
               }}
             >
