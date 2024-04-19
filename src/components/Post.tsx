@@ -99,7 +99,6 @@ const ReactionDefaultButton = ({
 }) => {
   const deletePostReactionMutation = useDeletePostReactionMutation(
     post.data.post_id,
-    reaction,
   );
   const createPostReactionMutation = useCreatePostReactionMutation(
     post.data.post_id,
@@ -130,10 +129,7 @@ const ReactionSelectedButton = ({
   postId: number;
   reaction: (typeof REACTIONS)[number];
 }) => {
-  const deletePostReactionMutation = useDeletePostReactionMutation(
-    postId,
-    reaction,
-  );
+  const deletePostReactionMutation = useDeletePostReactionMutation(postId);
   return (
     <Button
       chromeless
