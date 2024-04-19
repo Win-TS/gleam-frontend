@@ -17,10 +17,7 @@ export const extendedHive_ = hive_.extend({
     Valid: z.coerce.boolean(),
   }),
   tag_name: z.string(),
-  frequency: z.object({
-    Int32: z.coerce.number(),
-    Valid: z.coerce.boolean(),
-  }),
+  frequency: z.coerce.number(),
   max_members: z.coerce.number(),
   total_member: z.coerce.number(),
   visibility: z.coerce.boolean(),
