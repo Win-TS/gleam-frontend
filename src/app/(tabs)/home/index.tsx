@@ -29,7 +29,7 @@ const Feed = ({
       onEndReached={() => onEndReached?.()}
       renderItem={({ item }) => (
         <View px="$4">
-          <Post post={item} />
+          <Post post={item} streak={item.total_streak_count} />
         </View>
       )}
     />

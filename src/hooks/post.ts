@@ -53,6 +53,7 @@ export const useHivePostListInfiniteQuery = (hiveId: number) => {
     initialPageParam: 0,
     getPreviousPageParam: (firstPage) => firstPage.previousOffset ?? undefined,
     getNextPageParam: (lastPage) => lastPage.nextOffset ?? undefined,
+    gcTime: 5,
   });
 };
 
@@ -87,6 +88,7 @@ export const useOngoingPostListInfiniteQuery = () => {
     getPreviousPageParam: (firstPage) => firstPage.previousOffset ?? undefined,
     getNextPageParam: (lastPage) => lastPage.nextOffset ?? undefined,
     enabled: !!userId,
+    gcTime: 5,
   });
 };
 
@@ -121,6 +123,7 @@ export const useFollowingPostListInfiniteQuery = () => {
     getPreviousPageParam: (firstPage) => firstPage.previousOffset ?? undefined,
     getNextPageParam: (lastPage) => lastPage.nextOffset ?? undefined,
     enabled: !!userId,
+    gcTime: 5,
   });
 };
 
@@ -210,12 +213,11 @@ export const useCreatePostReactionMutation = (
   });
 };
 
-export const useDeletePostReactionMutation = (
-  postId: number,
-  reaction: string,
-) => {
+export const useDeletePostReactionMutation = (postId: number) => {
   const userId = useUserId();
   const queryClient = useQueryClient();
+
+  const postQuery = usePostQuery(postId);
 
   return useMutation<void, AxiosError<{ message: string }>>({
     mutationFn: async () => {
@@ -224,7 +226,7 @@ export const useDeletePostReactionMutation = (
         data: {
           post_id: postId,
           member_id: userId,
-          reaction,
+          reaction: postQuery.data?.reaction?.reaction, // FIXME: maybe backend can just delete the reaction
         },
       });
     },

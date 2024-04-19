@@ -182,7 +182,7 @@ const ReactionList = ({ post }: { post: Post }) => {
   );
 };
 
-export default ({ post }: { post: BasePost }) => {
+export default ({ post, streak }: { post: BasePost; streak?: number }) => {
   const router = useRouter();
 
   const userId = useUserId();
@@ -252,7 +252,8 @@ export default ({ post }: { post: BasePost }) => {
               query={hiveQuery}
               renderData={(data) => (
                 <Text col="$gleam1">
-                  2 DAYS ON {data.group_info.group_name.toUpperCase()}
+                  {streak ?? 2} DAYS ON{" "}
+                  {data.group_info.group_name.toUpperCase()}
                 </Text>
               )}
             />

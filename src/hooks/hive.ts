@@ -81,6 +81,7 @@ export const useHiveListInfiniteQuery = () => {
     initialPageParam: 0,
     getPreviousPageParam: (firstPage) => firstPage.previousOffset ?? undefined,
     getNextPageParam: (lastPage) => lastPage.nextOffset ?? undefined,
+    gcTime: 5,
   });
 };
 
@@ -108,6 +109,7 @@ export const useSearchHiveListInfiniteQuery = (search: string) => {
     initialPageParam: 0,
     getPreviousPageParam: (firstPage) => firstPage.previousOffset ?? undefined,
     getNextPageParam: (lastPage) => lastPage.nextOffset ?? undefined,
+    gcTime: 5,
   });
 };
 
@@ -135,6 +137,7 @@ export const useHiveMemberListInfiniteQuery = (hiveId: number) => {
     initialPageParam: 0,
     getPreviousPageParam: (firstPage) => firstPage.previousOffset ?? undefined,
     getNextPageParam: (lastPage) => lastPage.nextOffset ?? undefined,
+    gcTime: 5,
   });
 };
 
@@ -196,7 +199,7 @@ export const useRequestHiveMutation = (hiveId: number) => {
     },
     onSettled: async () => {
       return await queryClient.invalidateQueries({
-        queryKey: ["hive", hiveId, "user", userId, "data"],
+        queryKey: ["hive", hiveId, "data", "user", userId],
       });
     },
   });
