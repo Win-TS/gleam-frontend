@@ -1,5 +1,4 @@
 import { FontAwesome } from "@expo/vector-icons";
-import { SpaceMono_400Regular } from "@expo-google-fonts/space-mono";
 import {
   DarkTheme,
   DefaultTheme,
@@ -10,7 +9,9 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
+import * as Device from "expo-device";
 import { useFonts } from "expo-font";
+import * as Notifications from "expo-notifications";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
@@ -23,10 +24,19 @@ import { useColorScheme } from "@/src/components/useColorScheme";
 import { useFirebaseStore } from "@/src/stores/firebase";
 import { config } from "@/tamagui.config";
 
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from "expo-router";
+export { ErrorBoundary } from "expo-router";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+
+Notifications.addNotificationReceivedListener((notification) => {
+  console.log(notification);
+});
 
 // setupNativeSheet("ios", ModalView);
 
@@ -35,8 +45,43 @@ SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient();
 
+async function registerForPushNotificationsAsync() {
+  if (Platform.OS === "android") {
+    await Notifications.setNotificationChannelAsync("default", {
+      name: "default",
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: "#FF231F7C",
+    });
+  }
+
+  if (Device.isDevice) {
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== "granted") {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== "granted") {
+      alert("Failed to get push token for push notification!");
+      return;
+    }
+
+    const token = (await Notifications.getDevicePushTokenAsync()).data;
+    console.log(`notification token: ${token}`);
+    return token;
+  } else {
+    console.error("must use physical device for Push Notifications");
+  }
+}
+
 export default function RootLayout() {
   const firebaseStore = useFirebaseStore();
+
+  useEffect(() => {
+    registerForPushNotificationsAsync();
+  }, []);
 
   const onAppStateChange = (status: AppStateStatus) => {
     if (Platform.OS !== "web") {
@@ -52,7 +97,6 @@ export default function RootLayout() {
 
   const [loaded, error] = useFonts({
     ...fonts,
-    SpaceMono: SpaceMono_400Regular,
     ...FontAwesome.font,
   });
 

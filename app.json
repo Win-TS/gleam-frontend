@@ -22,7 +22,8 @@
         "backgroundColor": "#ffffff"
       },
       "permissions": ["android.permission.RECORD_AUDIO"],
-      "package": "com.theerapakg.gleamfrontend"
+      "package": "moe.theerapakg.gleam",
+      "googleServicesFile": "./config/android/google-services.json"
     },
     "web": {
       "bundler": "metro",
@@ -30,6 +31,7 @@
       "favicon": "./assets/logo/favicon.png"
     },
     "plugins": [
+      "@react-native-firebase/app",
       "expo-font",
       "expo-router",
       "expo-secure-store",
@@ -38,6 +40,14 @@
         {
           "photosPermission": "The app accesses your photos and camera to let you share the picture with your hive.",
           "cameraPermission": "The app accesses your photos and camera to let you share the picture with your hive."
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
         }
       ]
     ],
