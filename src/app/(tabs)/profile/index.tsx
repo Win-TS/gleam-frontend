@@ -142,7 +142,7 @@ export default function ProfileScreen() {
         {!isEditProfile && (
           <XStack gap="$3">
             <Pressable onPress={() => router.push("/(tabs)/profile/friend")}>
-              <YStack w="$5" jc="center" ai="center">
+              <YStack w="$6" jc="center" ai="center">
                 <Text col="$color11" fow="bold">
                   FRIEND
                 </Text>
@@ -173,9 +173,15 @@ export default function ProfileScreen() {
         <Text col="$color1" fos="$4" fow="bold">
           HIGHEST STREAKS
         </Text>
-        <Text col="$color1" fos="$10" fow="bold">
-          81
-        </Text>
+        <QueryPlaceholder
+          query={userprofileQuery}
+          spinnerSize="large"
+          renderData={(data) => (
+            <Text col="$color1" fos="$10" fow="bold">
+              {data.max_streak}
+            </Text>
+          )}
+        />
         <Text col="$color1" fos="$4" fow="bold">
           DAYS
         </Text>

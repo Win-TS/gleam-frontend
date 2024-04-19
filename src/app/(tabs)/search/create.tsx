@@ -37,6 +37,7 @@ const JoinHiveList = () => {
     initialPageParam: 0,
     getPreviousPageParam: (firstPage) => firstPage.previousOffset ?? undefined,
     getNextPageParam: (lastPage) => lastPage.nextOffset ?? undefined,
+    gcTime: 5,
   });
 
   const flattenedPublicHives = useMemo(

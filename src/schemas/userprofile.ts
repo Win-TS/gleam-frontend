@@ -6,6 +6,7 @@ export const userprofile_ = z.object({
   lastname: z.string(),
   friends_count: z.coerce.number(),
   photo_url: z.string(),
+  max_streak: z.coerce.number(),
 });
 
 export type Userprofile = z.infer<typeof userprofile_>;

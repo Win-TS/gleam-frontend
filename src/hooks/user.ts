@@ -232,6 +232,7 @@ export const useFriendListInfiniteQuery = (userId: number) => {
     initialPageParam: 0,
     getPreviousPageParam: (firstPage) => firstPage.previousOffset ?? undefined,
     getNextPageParam: (lastPage) => lastPage.nextOffset ?? undefined,
+    gcTime: 5,
   });
 };
 
@@ -329,6 +330,7 @@ export const useFriendRequestListInfiniteQuery = () => {
     initialPageParam: 0,
     getPreviousPageParam: (firstPage) => firstPage.previousOffset ?? undefined,
     getNextPageParam: (lastPage) => lastPage.nextOffset ?? undefined,
+    gcTime: 5,
   });
 };
 
