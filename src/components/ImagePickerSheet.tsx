@@ -30,7 +30,7 @@ export default function ({
       <Sheet.Frame p="$4" jc="center" ai="center">
         <YStack gap="$1.5" jc="center" ai="center">
           <Text fow="bold">SELECT AN IMAGE FROM...</Text>
-          <XStack gap="$1.5">
+          <XStack gap="$3">
             <PrimaryBtn
               f={1}
               fb={0}

@@ -1,42 +1,31 @@
-import {
-  useInfiniteQuery,
-  useMutation,
-  useQueries,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { z, ZodError } from "zod";
 
 import {
+  useLoggingGetInfiniteQuery,
+  useLoggingGetQueries,
+  useLoggingGetQuery,
+} from "@/src/hooks/query";
+import {
   hive_,
   extendedHive_,
   hiveWithMemberInfo_,
-  HiveWithMemberInfo,
   hiveMember_,
 } from "@/src/schemas/hive";
 import { useUserId } from "@/src/stores/user";
 
-const getHive = async (hiveId: number, userId: number) => {
-  return await hiveWithMemberInfo_.parseAsync(
-    (
-      await axios.get("/group_v1/group", {
-        baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-        params: { group_id: hiveId, user_id: userId },
-      })
-    ).data,
-  );
-};
-
 export const useHiveQuery = (hiveId: number) => {
   const userId = useUserId({ throw: false });
 
-  return useQuery<
-    HiveWithMemberInfo,
-    AxiosError<{ message: string }> | ZodError
-  >({
+  return useLoggingGetQuery({
+    url: "/group_v1/group",
+    data: { group_id: hiveId, user_id: userId },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_GROUP_API,
+    },
     queryKey: ["hive", hiveId, "data", "user", userId],
-    queryFn: () => getHive(hiveId, userId!),
+    validator: hiveWithMemberInfo_,
     enabled: !!userId,
   });
 };
@@ -44,100 +33,54 @@ export const useHiveQuery = (hiveId: number) => {
 export const useHiveQueries = (hiveIds: number[]) => {
   const userId = useUserId({ throw: false });
 
-  return useQueries({
-    queries:
-      !!userId && hiveIds
-        ? hiveIds.map((hiveId) => {
-            return {
-              queryKey: ["hive", hiveId, "data", "user", userId],
-              queryFn: () => getHive(hiveId, userId),
-            };
-          })
-        : [],
+  return useLoggingGetQueries({
+    url: "/group_v1/group",
+    data: userId
+      ? hiveIds.map((hiveId) => {
+          return { group_id: hiveId, user_id: userId };
+        })
+      : [],
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_GROUP_API,
+    },
+    queryKey: ({ group_id }) => ["hive", group_id, "data", "user", userId],
+    validator: hiveWithMemberInfo_,
   });
 };
 
 export const useHiveListInfiniteQuery = () => {
-  return useInfiniteQuery({
-    queryKey: ["hive", "list"],
-    queryFn: async ({ pageParam }) => {
-      const data = await z.array(extendedHive_).parseAsync(
-        (
-          await axios.get("/group_v1/listgroups", {
-            params: { limit: 12, offset: pageParam },
-            baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-          })
-        ).data,
-      );
-      const calcPreviousOffset = Math.max(0, pageParam - 12);
-      const calcNextOffset = pageParam + data.length;
-      return {
-        data,
-        previousOffset:
-          calcPreviousOffset !== pageParam ? calcPreviousOffset : undefined,
-        nextOffset: calcNextOffset !== pageParam ? calcNextOffset : undefined,
-      };
+  return useLoggingGetInfiniteQuery({
+    url: "/group_v1/listgroups",
+    data: {},
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_GROUP_API,
     },
-    initialPageParam: 0,
-    getPreviousPageParam: (firstPage) => firstPage.previousOffset ?? undefined,
-    getNextPageParam: (lastPage) => lastPage.nextOffset ?? undefined,
-    gcTime: 5,
+    queryKey: ["hive", "list"],
+    validator: z.array(extendedHive_),
   });
 };
 
 export const useSearchHiveListInfiniteQuery = (search: string) => {
-  return useInfiniteQuery({
-    queryKey: ["hive", "search", search, "list"],
-    queryFn: async ({ pageParam }) => {
-      const data = await z.array(hive_).parseAsync(
-        (
-          await axios.get("/group_v1/search", {
-            params: { limit: 12, offset: pageParam, groupname: search },
-            baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-          })
-        ).data,
-      );
-      const calcPreviousOffset = Math.max(0, pageParam - 12);
-      const calcNextOffset = pageParam + data.length;
-      return {
-        data,
-        previousOffset:
-          calcPreviousOffset !== pageParam ? calcPreviousOffset : undefined,
-        nextOffset: calcNextOffset !== pageParam ? calcNextOffset : undefined,
-      };
+  return useLoggingGetInfiniteQuery({
+    url: "/group_v1/search",
+    data: { groupname: search },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_GROUP_API,
     },
-    initialPageParam: 0,
-    getPreviousPageParam: (firstPage) => firstPage.previousOffset ?? undefined,
-    getNextPageParam: (lastPage) => lastPage.nextOffset ?? undefined,
-    gcTime: 5,
+    queryKey: ["hive", "search", search, "list"],
+    validator: z.array(hive_),
   });
 };
 
 export const useHiveMemberListInfiniteQuery = (hiveId: number) => {
-  return useInfiniteQuery({
-    queryKey: ["hive", hiveId, "member", "list"],
-    queryFn: async ({ pageParam }) => {
-      const data = await z.array(hiveMember_).parseAsync(
-        (
-          await axios.get("/group_v1/groupmembers", {
-            params: { group_id: hiveId, limit: 12, offset: pageParam },
-            baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-          })
-        ).data,
-      );
-      const calcPreviousOffset = Math.max(0, pageParam - 12);
-      const calcNextOffset = pageParam + data.length;
-      return {
-        data,
-        previousOffset:
-          calcPreviousOffset !== pageParam ? calcPreviousOffset : undefined,
-        nextOffset: calcNextOffset !== pageParam ? calcNextOffset : undefined,
-      };
+  return useLoggingGetInfiniteQuery({
+    url: "/group_v1/search",
+    data: { group_id: hiveId },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_GROUP_API,
     },
-    initialPageParam: 0,
-    getPreviousPageParam: (firstPage) => firstPage.previousOffset ?? undefined,
-    getNextPageParam: (lastPage) => lastPage.nextOffset ?? undefined,
-    gcTime: 5,
+    queryKey: ["hive", hiveId, "member", "list"],
+    validator: z.array(hiveMember_),
   });
 };
 
@@ -147,21 +90,14 @@ const userHiveList_ = z.object({
 });
 
 export const useUserHiveListQuery = (userId: number) => {
-  return useQuery<
-    z.infer<typeof userHiveList_>,
-    AxiosError<{ message: string }> | ZodError
-  >({
-    queryKey: ["hive", "user", userId, "list"],
-    queryFn: async () => {
-      return await userHiveList_.parseAsync(
-        (
-          await axios.get("/group_v1/usergroups", {
-            baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-            params: { user_id: userId },
-          })
-        ).data,
-      );
+  return useLoggingGetQuery({
+    url: "/group_v1/usergroups",
+    data: { user_id: userId },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_GROUP_API,
     },
+    queryKey: ["hive", "user", userId, "list"],
+    validator: userHiveList_,
   });
 };
 
@@ -327,14 +263,14 @@ export const useHiveInfoMutation = (hiveId: number) => {
 };
 
 export const useHiveRequestQuery = (hiveId: number) => {
-  return useQuery<any, AxiosError<{ message: string }>>({
-    queryKey: ["hive", hiveId, "request", "list"],
-    queryFn: async () => {
-      return await axios.get("/group_v1/grouprequests", {
-        baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-        params: { group_id: hiveId, limit: 10, offset: 0 },
-      });
+  return useLoggingGetQuery({
+    url: "/group_v1/grouprequests",
+    data: { group_id: hiveId, limit: 10, offset: 0 },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_GROUP_API,
     },
+    queryKey: ["hive", hiveId, "request", "list"],
+    validator: z.any(),
   });
 };
 
@@ -396,40 +332,29 @@ export const useDeclineHiveRequestMutation = (
 };
 
 export const useHiveRequestCountQuery = (hiveId: number) => {
-  return useQuery<number, AxiosError<{ message: string }> | ZodError>({
-    queryKey: ["hive", hiveId, "request", "count"],
-    queryFn: async () => {
-      return await z.coerce.number().parseAsync(
-        (
-          await axios.get("/group_v1/grouprequestscount", {
-            baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-            params: { group_id: hiveId },
-          })
-        ).data,
-      );
+  return useLoggingGetQuery({
+    url: "/group_v1/grouprequestscount",
+    data: { group_id: hiveId },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_GROUP_API,
     },
+    queryKey: ["hive", hiveId, "request", "count"],
+    validator: z.coerce.number(),
   });
 };
 
 export const useUserAdminHiveRequestCountQuery = () => {
-  const userId = useUserId();
+  const userId = useUserId({ throw: false });
 
-  return useQuery<number, AxiosError<{ message: string }> | ZodError>({
-    queryKey: ["hive", "user", userId, "request", "count"],
-    queryFn: async () => {
-      try {
-        return await z.coerce.number().parseAsync(
-          (
-            await axios.get("/group_v1/acceptorrequestscount", {
-              baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-              params: { user_id: userId },
-            })
-          ).data,
-        );
-      } catch {
-        // FIXME: no way to really tell if backend error or we do not have requests
-        return 0;
-      }
+  return useLoggingGetQuery({
+    url: "/group_v1/acceptorrequestscount",
+    data: { user_id: userId },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_GROUP_API,
     },
+    queryKey: ["hive", "user", userId, "request", "count"],
+    validator: z.coerce.number(),
+    default: 0, // FIXME: no way to really tell if backend error or we do not have requests
+    enabled: !!userId,
   });
 };

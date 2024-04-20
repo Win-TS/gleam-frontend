@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useMemo, useState } from "react";
 import { Pressable, useWindowDimensions } from "react-native";
 import { Avatar, Input, Separator, View, XStack, YStack, Text } from "tamagui";
@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import PageContainer from "@/src/components/PageContainer";
 import VerticalList from "@/src/components/VerticalList";
+import { useRouteToProfile } from "@/src/hooks/useRouteToProfile";
 import { useFriendListInfiniteQuery } from "@/src/hooks/user";
 
 const FriendList = ({
@@ -15,21 +16,12 @@ const FriendList = ({
 }: {
   name: string;
   url: string;
-  userId: string;
+  userId: number;
 }) => {
-  const router = useRouter();
+  const routeToProfile = useRouteToProfile(userId);
 
   return (
-    <Pressable
-      onPress={() =>
-        router.push({
-          pathname: "/(tabs)/home/profile/[id]/",
-          params: {
-            id: userId,
-          },
-        })
-      }
-    >
+    <Pressable onPress={routeToProfile}>
       <XStack w="100%" alignItems="center" gap="$2.5" my="$2" mx="$2.5">
         <Avatar circular size="$4">
           <Avatar.Image src={url} />
@@ -71,29 +63,29 @@ export default function FriendListScreen() {
           onChangeText={setSearch}
         />
       </YStack>
-
-      <VerticalList
-        data={flattenedFriendList}
-        numColumns={1}
-        ItemSeparatorComponent={() => (
-          <Separator
-            w={width}
-            $gtSm={{ maxWidth: "$20" }}
-            borderColor="$gleam12"
-          />
-        )}
-        onEndReached={friendListInfiniteQuery.fetchNextPage}
-        renderItem={({ item, index }: { item: any; index: number }) => (
-          <View flex={1} paddingHorizontal="$1.5">
-            <FriendList
-              name={item.username}
-              url={item.photourl.String}
-              userId={item.id}
-              key={index}
+      <YStack f={1} w="100%">
+        <VerticalList
+          data={flattenedFriendList}
+          numColumns={1}
+          ItemSeparatorComponent={() => (
+            <Separator
+              w={width}
+              $gtSm={{ maxWidth: "$20" }}
+              borderColor="$gleam12"
             />
-          </View>
-        )}
-      />
+          )}
+          onEndReached={friendListInfiniteQuery.fetchNextPage}
+          renderItem={({ item }) => (
+            <View flex={1} paddingHorizontal="$1.5">
+              <FriendList
+                name={item.username}
+                url={item.photourl.String}
+                userId={item.id}
+              />
+            </View>
+          )}
+        />
+      </YStack>
     </PageContainer>
   );
 }

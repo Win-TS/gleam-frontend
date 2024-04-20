@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useMemo, useState } from "react";
 import { Pressable } from "react-native";
 import {
@@ -23,6 +23,7 @@ import {
   useHiveMemberListInfiniteQuery,
   useHiveQuery,
 } from "@/src/hooks/hive";
+import { useRouteToProfile } from "@/src/hooks/useRouteToProfile";
 import { HiveMember } from "@/src/schemas/hive";
 import { useUserId } from "@/src/stores/user";
 
@@ -90,24 +91,12 @@ const MemberActions = ({ member }: { member: HiveMember }) => {
 };
 
 const Member = ({ member }: { member: HiveMember }) => {
-  const router = useRouter();
-  const userId = useUserId();
+  const routeToProfile = useRouteToProfile(member.member_id);
 
   return (
     <XStack w="100%" p="$2" jc="space-between" ai="center">
       <Pressable
-        onPress={() => {
-          if (member.member_id === userId) {
-            router.push("/(tabs)/profile");
-          } else {
-            router.push({
-              pathname: "/(tabs)/home/profile/[id]/",
-              params: {
-                id: member.member_id,
-              },
-            });
-          }
-        }}
+        onPress={routeToProfile}
         style={{ flex: 1, flexShrink: 1, flexDirection: "row" }}
       >
         <XStack f={1} fs={1} fd="row" jc="flex-start" ai="center" gap="$3">

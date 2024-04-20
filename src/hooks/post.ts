@@ -1,129 +1,68 @@
-import {
-  useInfiniteQuery,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
-import { ZodError, z } from "zod";
+import { z } from "zod";
 
-import { post_, feedPost_, Post, hivePost_ } from "@/src/schemas/post";
+import {
+  useLoggingGetInfiniteQuery,
+  useLoggingGetQuery,
+} from "@/src/hooks/query";
+import { post_, feedPost_, hivePost_ } from "@/src/schemas/post";
 import { useUserId } from "@/src/stores/user";
 
 export const usePostQuery = (postId: number) => {
   const userId = useUserId({ throw: false });
 
-  return useQuery<Post, AxiosError<{ message: string }> | ZodError>({
-    queryKey: ["post", postId, "info"],
-    queryFn: async () => {
-      return await post_.parseAsync(
-        (
-          await axios.get("/post_v1/post", {
-            baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-            params: { user_id: userId, post_id: postId },
-          })
-        ).data,
-      );
+  return useLoggingGetQuery({
+    url: "/post_v1/post",
+    data: { post_id: postId, user_id: userId },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_GROUP_API,
     },
+    queryKey: ["post", postId, "data", "user", userId],
+    validator: post_,
     enabled: !!userId,
   });
 };
 
 export const useHivePostListInfiniteQuery = (hiveId: number) => {
-  return useInfiniteQuery({
-    queryKey: ["post", "hive", hiveId, "list"],
-    queryFn: async ({ pageParam }) => {
-      const data = await z.array(hivePost_).parseAsync(
-        (
-          await axios.get("/post_v1/groupposts", {
-            params: { group_id: hiveId, limit: 24, offset: pageParam },
-            baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-          })
-        ).data,
-      );
-      const calcPreviousOffset = Math.max(0, pageParam - 24);
-      const calcNextOffset = pageParam + data.length;
-      return {
-        data,
-        previousOffset:
-          calcPreviousOffset !== pageParam ? calcPreviousOffset : undefined,
-        nextOffset: calcNextOffset !== pageParam ? calcNextOffset : undefined,
-      };
+  return useLoggingGetInfiniteQuery({
+    url: "/post_v1/groupposts",
+    data: { group_id: hiveId },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_GROUP_API,
     },
-    initialPageParam: 0,
-    getPreviousPageParam: (firstPage) => firstPage.previousOffset ?? undefined,
-    getNextPageParam: (lastPage) => lastPage.nextOffset ?? undefined,
-    gcTime: 5,
+    queryKey: ["post", "hive", hiveId, "list"],
+    validator: z.array(hivePost_),
   });
 };
 
 export const useOngoingPostListInfiniteQuery = () => {
   const userId = useUserId({ throw: false });
 
-  return useInfiniteQuery({
-    queryKey: ["post", "user", userId, "ongoing", "list"],
-    queryFn: async ({ pageParam }) => {
-      const data = await z.array(feedPost_).parseAsync(
-        (
-          await axios.get("/post_v1/ongoingfeed", {
-            params: {
-              user_id: userId,
-              limit: 24,
-              offset: pageParam,
-            },
-            baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-          })
-        ).data,
-      );
-      const calcPreviousOffset = Math.max(0, pageParam - 24);
-      const calcNextOffset = pageParam + data.length;
-      return {
-        data,
-        previousOffset:
-          calcPreviousOffset !== pageParam ? calcPreviousOffset : undefined,
-        nextOffset: calcNextOffset !== pageParam ? calcNextOffset : undefined,
-      };
+  return useLoggingGetInfiniteQuery({
+    url: "/post_v1/ongoingfeed",
+    data: { user_id: userId },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_GROUP_API,
     },
-    initialPageParam: 0,
-    getPreviousPageParam: (firstPage) => firstPage.previousOffset ?? undefined,
-    getNextPageParam: (lastPage) => lastPage.nextOffset ?? undefined,
+    queryKey: ["post", "user", userId, "ongoing", "list"],
+    validator: z.array(feedPost_),
     enabled: !!userId,
-    gcTime: 5,
   });
 };
 
 export const useFollowingPostListInfiniteQuery = () => {
   const userId = useUserId({ throw: false });
 
-  return useInfiniteQuery({
-    queryKey: ["post", "user", userId, "following", "list"],
-    queryFn: async ({ pageParam }) => {
-      const data = await z.array(feedPost_).parseAsync(
-        (
-          await axios.get("/post_v1/followingfeed", {
-            params: {
-              user_id: userId,
-              limit: 24,
-              offset: pageParam,
-            },
-            baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-          })
-        ).data,
-      );
-      const calcPreviousOffset = Math.max(0, pageParam - 24);
-      const calcNextOffset = pageParam + data.length;
-      return {
-        data,
-        previousOffset:
-          calcPreviousOffset !== pageParam ? calcPreviousOffset : undefined,
-        nextOffset: calcNextOffset !== pageParam ? calcNextOffset : undefined,
-      };
+  return useLoggingGetInfiniteQuery({
+    url: "/post_v1/followingfeed",
+    data: { user_id: userId },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_GROUP_API,
     },
-    initialPageParam: 0,
-    getPreviousPageParam: (firstPage) => firstPage.previousOffset ?? undefined,
-    getNextPageParam: (lastPage) => lastPage.nextOffset ?? undefined,
+    queryKey: ["post", "user", userId, "following", "list"],
+    validator: z.array(feedPost_),
     enabled: !!userId,
-    gcTime: 5,
   });
 };
 
@@ -134,21 +73,14 @@ export const postReactionCountsResponse_ = z.object({
   success: z.coerce.boolean(),
 });
 export const usePostReactionCountsQuery = (postId: number) => {
-  return useQuery<
-    z.infer<typeof postReactionCountsResponse_>,
-    AxiosError<{ message: string }> | ZodError
-  >({
-    queryKey: ["post", postId, "reaction", "count"],
-    queryFn: async () => {
-      return await postReactionCountsResponse_.parseAsync(
-        (
-          await axios.get("/reaction_v1/postreactioncount", {
-            baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-            params: { post_id: postId },
-          })
-        ).data,
-      );
+  return useLoggingGetQuery({
+    url: "/reaction_v1/postreactioncount",
+    data: { post_id: postId },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_GROUP_API,
     },
+    queryKey: ["post", postId, "reaction", "count"],
+    validator: postReactionCountsResponse_,
   });
 };
 
