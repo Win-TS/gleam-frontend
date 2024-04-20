@@ -1,49 +1,40 @@
-import {
-  useInfiniteQuery,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { z, ZodError } from "zod";
 
-import { FriendPair, friendPair_, friend_ } from "@/src/schemas/friend";
-import { User, user_ } from "@/src/schemas/user";
-import { userprofile_, Userprofile } from "@/src/schemas/userprofile";
+import {
+  useLoggingGetInfiniteQuery,
+  useLoggingGetQuery,
+} from "@/src/hooks/query";
+import { friendPair_, friend_ } from "@/src/schemas/friend";
+import { user_ } from "@/src/schemas/user";
+import { userprofile_ } from "@/src/schemas/userprofile";
 import { useUserId } from "@/src/stores/user";
 
 export const useUserQuery = () => {
   const userId = useUserId({ throw: false });
 
-  return useQuery<User, AxiosError<{ message: string }> | ZodError>({
-    queryKey: ["user", userId, "info", "all"],
-    queryFn: async () => {
-      return await user_.parseAsync(
-        (
-          await axios.get("/user_v1/userinfo", {
-            baseURL: process.env.EXPO_PUBLIC_USER_API,
-            params: { user_id: userId },
-          })
-        ).data,
-      );
+  return useLoggingGetQuery({
+    url: "/user_v1/userinfo",
+    data: { user_id: userId },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_USER_API,
     },
+    queryKey: ["user", userId, "info", "all"],
+    validator: user_,
     enabled: !!userId,
   });
 };
 
 export const useUserprofileQuery = (userId: number) => {
-  return useQuery<Userprofile, AxiosError<{ message: string }> | ZodError>({
-    queryKey: ["user", userId, "info"],
-    queryFn: async () => {
-      return await userprofile_.parseAsync(
-        (
-          await axios.get("/user_v1/userprofile", {
-            baseURL: process.env.EXPO_PUBLIC_USER_API,
-            params: { user_id: userId },
-          })
-        ).data,
-      );
+  return useLoggingGetQuery({
+    url: "/user_v1/userprofile",
+    data: { user_id: userId },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_USER_API,
     },
+    queryKey: ["user", userId, "info"],
+    validator: userprofile_,
   });
 };
 
@@ -188,51 +179,30 @@ export const useUserPrivateMutation = () => {
 };
 
 export const useFriendStatusQuery = (otherUserId: number) => {
-  const userId = useUserId();
+  const userId = useUserId({ throw: false });
 
-  return useQuery<FriendPair[], AxiosError<{ message: string }>>({
-    queryKey: ["user", userId, "friend", otherUserId],
-    queryFn: async () => {
-      try {
-        return await z.array(friendPair_).parseAsync(
-          await axios.get("/friend_v1/", {
-            baseURL: process.env.EXPO_PUBLIC_USER_API,
-            params: { user_id1: userId, user_id2: otherUserId },
-          }),
-        );
-      } catch {
-        // FIXME: no way to really tell if backend error or we do not have friends
-        return [];
-      }
+  return useLoggingGetQuery({
+    url: "/friend_v1/",
+    data: { user_id1: userId, user_id2: otherUserId },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_USER_API,
     },
+    queryKey: ["user", userId, "friend", otherUserId],
+    validator: z.array(friendPair_),
+    default: [], // FIXME: no way to really tell if backend error or we do not have friends
+    enabled: !!userId,
   });
 };
 
 export const useFriendListInfiniteQuery = (userId: number) => {
-  return useInfiniteQuery({
-    queryKey: ["user", userId, "friend", "list"],
-    queryFn: async ({ pageParam }) => {
-      const data = await z.array(friend_).parseAsync(
-        (
-          await axios.get("/friend_v1/list", {
-            params: { user_id: userId, limit: 12, offset: pageParam },
-            baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-          })
-        ).data,
-      );
-      const calcPreviousOffset = Math.max(0, pageParam - 12);
-      const calcNextOffset = pageParam + data.length;
-      return {
-        data,
-        previousOffset:
-          calcPreviousOffset !== pageParam ? calcPreviousOffset : undefined,
-        nextOffset: calcNextOffset !== pageParam ? calcNextOffset : undefined,
-      };
+  return useLoggingGetInfiniteQuery({
+    url: "/friend_v1/list",
+    data: { user_id: userId },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_USER_API,
     },
-    initialPageParam: 0,
-    getPreviousPageParam: (firstPage) => firstPage.previousOffset ?? undefined,
-    getNextPageParam: (lastPage) => lastPage.nextOffset ?? undefined,
-    gcTime: 5,
+    queryKey: ["user", userId, "friend", "list"],
+    validator: z.array(friend_),
   });
 };
 
@@ -305,49 +275,31 @@ export const useDeclineFriendMutation = (otherUserId: number) => {
 };
 
 export const useFriendRequestListInfiniteQuery = () => {
-  const userId = useUserId();
+  const userId = useUserId({ throw: false });
 
-  return useInfiniteQuery({
-    queryKey: ["user", userId, "friend", "pending", "list"],
-    queryFn: async ({ pageParam }) => {
-      const data = await z.array(user_).parseAsync(
-        (
-          await axios.get("/friend_v1/pending", {
-            params: { user_id: userId, limit: 12, offset: pageParam },
-            baseURL: process.env.EXPO_PUBLIC_USER_API,
-          })
-        ).data,
-      );
-      const calcPreviousOffset = Math.max(0, pageParam - 12);
-      const calcNextOffset = pageParam + data.length;
-      return {
-        data,
-        previousOffset:
-          calcPreviousOffset !== pageParam ? calcPreviousOffset : undefined,
-        nextOffset: calcNextOffset !== pageParam ? calcNextOffset : undefined,
-      };
+  return useLoggingGetInfiniteQuery({
+    url: "/friend_v1/pending",
+    data: { user_id: userId },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_USER_API,
     },
-    initialPageParam: 0,
-    getPreviousPageParam: (firstPage) => firstPage.previousOffset ?? undefined,
-    getNextPageParam: (lastPage) => lastPage.nextOffset ?? undefined,
-    gcTime: 5,
+    queryKey: ["user", userId, "friend", "pending", "list"],
+    validator: z.array(user_),
+    enabled: !!userId,
   });
 };
 
 export const useFriendRequestCountQuery = () => {
-  const userId = useUserId();
+  const userId = useUserId({ throw: false });
 
-  return useQuery<number, AxiosError<{ message: string }>>({
-    queryKey: ["user", userId, "friend", "pending", "count"],
-    queryFn: async () => {
-      return await z.coerce.number().parseAsync(
-        (
-          await axios.get("/friend_v1/requestcount", {
-            baseURL: process.env.EXPO_PUBLIC_USER_API,
-            params: { user_id: userId },
-          })
-        ).data,
-      );
+  return useLoggingGetQuery({
+    url: "/friend_v1/requestcount",
+    data: { user_id: userId },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_USER_API,
     },
+    queryKey: ["user", userId, "friend", "pending", "count"],
+    validator: z.coerce.number(),
+    enabled: !!userId,
   });
 };

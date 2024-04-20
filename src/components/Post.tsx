@@ -25,8 +25,8 @@ import {
   usePostQuery,
   usePostReactionCountsQuery,
 } from "@/src/hooks/post";
+import { useRouteToProfile } from "@/src/hooks/useRouteToProfile";
 import { BasePost, Post } from "@/src/schemas/post";
-import { useUserId } from "@/src/stores/user";
 
 const PostOptionsPopover = ({ post }: { post: BasePost }) => {
   const theme = useTheme();
@@ -181,26 +181,14 @@ const ReactionList = ({ post }: { post: Post }) => {
 export default ({ post, streak }: { post: BasePost; streak?: number }) => {
   const router = useRouter();
 
-  const userId = useUserId();
   const postQuery = usePostQuery(post.post_id);
   const hiveQuery = useHiveQuery(post.group_id);
 
+  const routeToProfile = useRouteToProfile(post.member_id);
+
   return (
     <YStack w="100%" p="$2" gap="$3" bc="$color1" br="$3" elevation="$2">
-      <Pressable
-        onPress={() => {
-          if (post.member_id === userId) {
-            router.push("/(tabs)/profile");
-          } else {
-            router.push({
-              pathname: "/(tabs)/home/profile/[id]/",
-              params: {
-                id: post.member_id,
-              },
-            });
-          }
-        }}
-      >
+      <Pressable onPress={routeToProfile}>
         <QueryPlaceholder
           query={postQuery}
           renderData={(data) => (
