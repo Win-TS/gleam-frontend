@@ -2,7 +2,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { useForm } from "@tanstack/react-form";
 import { zodValidator } from "@tanstack/zod-form-adapter";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Image, Spinner, Text, View, XStack, YStack, useTheme } from "tamagui";
 import { z } from "zod";
 
@@ -49,8 +49,10 @@ export default function TabTwoScreen() {
     },
   });
 
-  const [imagePickerOpen, setImagePickerOpen] = useState(true);
+  const [imagePickerOpen, setImagePickerOpen] = useState(false);
   const [profileHivePickerOpen, setProfileHivePickerOpen] = useState(false);
+
+  useEffect(() => setImagePickerOpen(false), []);
 
   return (
     <PageContainer>
@@ -80,7 +82,9 @@ export default function TabTwoScreen() {
                 <SecondaryBtn
                   w="$18"
                   h="$3"
-                  onPress={() => setProfileHivePickerOpen(true)}
+                  onPress={() =>
+                    setProfileHivePickerOpen(!profileHivePickerOpen)
+                  }
                 >
                   {field.state.value?.group_name ?? "CHOOSE YOUR HIVE"}
                 </SecondaryBtn>
@@ -93,7 +97,7 @@ export default function TabTwoScreen() {
             h="$5"
             w="$5"
             p="$0"
-            onPress={() => setImagePickerOpen(true)}
+            onPress={() => setImagePickerOpen(!imagePickerOpen)}
           >
             <FontAwesome name="repeat" size={32} color={theme.gleam12.val} />
           </SecondaryBtn>
