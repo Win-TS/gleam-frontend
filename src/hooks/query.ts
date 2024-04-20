@@ -57,7 +57,7 @@ export const useLoggingQueryInternal = <
 };
 
 export const useLoggingQueriesInternal = <
-  Response extends unknown[],
+  ResponseItem extends unknown,
   Data extends unknown,
   Def extends ZodTypeDef,
 >({
@@ -77,8 +77,8 @@ export const useLoggingQueriesInternal = <
   url: string;
   data: Data[];
   config: AxiosRequestConfig<Data>;
-  validator: ZodType<Response[number], Def, unknown>;
-  default?: Response[number];
+  validator: ZodType<ResponseItem, Def, unknown>;
+  default?: ResponseItem;
   queryKey: (item: Data) => QueryKey;
 }) => {
   return useQueries({
@@ -199,15 +199,15 @@ export const useLoggingGetQuery = <
 };
 
 export const useLoggingGetQueries = <
-  Response extends unknown[],
+  ResponseItem extends unknown,
   Data extends unknown,
   Def extends ZodTypeDef,
 >(params: {
   url: string;
   data: Data[];
   config: AxiosRequestConfig<Data>;
-  validator: ZodType<Response[number], Def, unknown>;
-  default?: Response[number];
+  validator: ZodType<ResponseItem, Def, unknown>;
+  default?: ResponseItem;
   queryKey: (item: Data) => QueryKey;
 }) => {
   return useLoggingQueriesInternal({
