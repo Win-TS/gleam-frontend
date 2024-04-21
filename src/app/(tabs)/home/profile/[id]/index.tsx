@@ -23,7 +23,7 @@ import ProfileHeader from "@/src/components/ProfileHeader";
 import QueryPlaceholder from "@/src/components/QueryPlaceholder";
 import SecondaryBtn from "@/src/components/SecondaryBtn";
 import VerticalList from "@/src/components/VerticalList";
-import { useHiveListInfiniteQuery } from "@/src/hooks/hive";
+import { useUserHiveListQuery } from "@/src/hooks/hive";
 import {
   useAddFriendMutation,
   useFriendStatusQuery,
@@ -213,13 +213,16 @@ export default function ProfileScreen() {
   const router = useRouter();
 
   const userprofileQuery = useUserprofileQuery(userId);
-  const hiveListInfiniteQuery = useHiveListInfiniteQuery(); // TODO
+  const userHiveListQuery = useUserHiveListQuery(userId);
 
   const showHive = true;
 
   const flattenedHiveList = useMemo(
-    () => hiveListInfiniteQuery.data?.pages.flatMap(({ data }) => data) ?? [],
-    [hiveListInfiniteQuery.data],
+    () => [
+      ...(userHiveListQuery.data?.social_groups ?? []),
+      ...(userHiveListQuery.data?.personal_groups ?? []),
+    ],
+    [userHiveListQuery.data],
   );
 
   return (
@@ -259,7 +262,6 @@ export default function ProfileScreen() {
               </YStack>
             )}
             estimatedItemSize={Math.min(width - 32, 290) / 3 + 16}
-            onEndReached={hiveListInfiniteQuery.fetchNextPage}
             renderItem={({ item }) => (
               <View f={1} px="$1.5">
                 <HiveBtn
