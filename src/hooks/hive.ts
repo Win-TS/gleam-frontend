@@ -74,7 +74,7 @@ export const useSearchHiveListInfiniteQuery = (search: string) => {
 
 export const useHiveMemberListInfiniteQuery = (hiveId: number) => {
   return useLoggingGetInfiniteQuery({
-    url: "/group_v1/search",
+    url: "/group_v1/groupmembers",
     data: { group_id: hiveId },
     config: {
       baseURL: process.env.EXPO_PUBLIC_GROUP_API,
