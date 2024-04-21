@@ -70,7 +70,7 @@ export default function FriendListScreen() {
           )}
           estimatedItemSize={Dimensions.get("window").width}
           onEndReached={friendListInfiniteQuery.fetchNextPage}
-          renderItem={({ item, index }) => (
+          renderItem={({ item }) => (
             <View flex={1} paddingHorizontal="$1.5">
               <FriendList
                 name={item.username}

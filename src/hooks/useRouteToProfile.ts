@@ -13,7 +13,7 @@ export const useRouteToProfile = (toUserId: number) => {
       router.push({
         pathname: "/(tabs)/home/profile/[id]/",
         params: {
-          id: userId,
+          id: toUserId,
         },
       });
     }
