@@ -9,9 +9,11 @@ import {
 } from "@/src/hooks/query";
 import {
   hive_,
+  userHive_,
   extendedHive_,
   hiveWithMemberInfo_,
   hiveMember_,
+  hiveRequest_,
 } from "@/src/schemas/hive";
 import { useUserId } from "@/src/stores/user";
 
@@ -85,8 +87,8 @@ export const useHiveMemberListInfiniteQuery = (hiveId: number) => {
 };
 
 const userHiveList_ = z.object({
-  social_groups: z.array(hive_),
-  personal_groups: z.array(hive_),
+  social_groups: z.array(userHive_),
+  personal_groups: z.array(userHive_),
 });
 
 export const useUserHiveListQuery = (userId: number) => {
@@ -263,15 +265,15 @@ export const useHiveInfoMutation = (hiveId: number) => {
   });
 };
 
-export const useHiveRequestQuery = (hiveId: number) => {
-  return useLoggingGetQuery({
+export const useHiveRequestListInfiniteQuery = (hiveId: number) => {
+  return useLoggingGetInfiniteQuery({
     url: "/group_v1/grouprequests",
-    data: { group_id: hiveId, limit: 10, offset: 0 },
+    data: { group_id: hiveId },
     config: {
       baseURL: process.env.EXPO_PUBLIC_GROUP_API,
     },
     queryKey: ["hive", hiveId, "request", "list"],
-    validator: z.any(),
+    validator: z.array(hiveRequest_),
   });
 };
 

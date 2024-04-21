@@ -88,7 +88,7 @@ export default function FriendNotificationScreen() {
 
   return (
     <PageContainer>
-      <View f={1} w={width - 16} $gtSm={{ maw: 290 }}>
+      <View w="100%" h="100%">
         <VerticalList
           data={flattenedFriendRequestList}
           numColumns={1}
@@ -98,7 +98,7 @@ export default function FriendNotificationScreen() {
           estimatedItemSize={58}
           onEndReached={friendRequestListInfiniteQuery.fetchNextPage}
           renderItem={({ item }) => (
-            <View w="100%" jc="center" ai="center" $gtSm={{ maw: "$20" }}>
+            <View w="100%" jc="center" ai="center">
               <FriendRequest user={item} />
             </View>
           )}

@@ -10,6 +10,10 @@ export const hive_ = z.object({
   group_type: z.string(),
 });
 
+export const userHive_ = hive_.extend({
+  user_streak: z.coerce.number(),
+});
+
 export const extendedHive_ = hive_.extend({
   group_creator_id: z.coerce.number(),
   description: z.object({
@@ -40,7 +44,22 @@ export const hiveMember_ = z.object({
   user_photourl: z.string(),
 });
 
+export const hiveRequest_ = z.object({
+  group_id: z.coerce.number(),
+  member_id: z.coerce.number(),
+  description: z.object({
+    String: z.string(),
+    Valid: z.coerce.boolean(),
+  }),
+  created_at: z.string(),
+  user_id: z.coerce.number(),
+  username: z.string(),
+  user_photourl: z.string(),
+});
+
 export type Hive = z.infer<typeof hive_>;
+export type UserHive = z.infer<typeof userHive_>;
 export type ExtendedHive = z.infer<typeof extendedHive_>;
 export type HiveWithMemberInfo = z.infer<typeof hiveWithMemberInfo_>;
 export type HiveMember = z.infer<typeof hiveMember_>;
+export type HiveRequest = z.infer<typeof hiveRequest_>;

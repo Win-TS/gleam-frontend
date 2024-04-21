@@ -2,7 +2,7 @@ import { View, useWindowDimensions } from "tamagui";
 
 import HiveBtn from "@/src/components/HiveBtn";
 import VerticalList from "@/src/components/VerticalList";
-import { Hive } from "@/src/schemas/hive";
+import { UserHive } from "@/src/schemas/hive";
 
 export default function ({
   hiveList,
@@ -10,8 +10,8 @@ export default function ({
   onEndReached,
   spinner,
 }: {
-  hiveList: Hive[];
-  onPress?: (hive: Hive) => void;
+  hiveList: UserHive[];
+  onPress?: (hive: UserHive) => void;
   onEndReached?: () => void;
   spinner?: () => React.ReactNode;
 }) {
@@ -30,7 +30,11 @@ export default function ({
           onEndReached={onEndReached}
           renderItem={({ item }) => (
             <View f={1} paddingHorizontal="$1.5">
-              <HiveBtn hive={item} onPress={() => onPress?.(item)} />
+              <HiveBtn
+                hive={item}
+                onPress={() => onPress?.(item)}
+                overlay={`${item.user_streak}`}
+              />
             </View>
           )}
         />
