@@ -250,7 +250,7 @@ const HiveHeader = ({
     <>
       <View w="100%" jc="center" ai="center" gap="$3">
         <Avatar circular size="$8">
-          <Avatar.Image src={hive.group_info.photo_url.String} />
+          <Avatar.Image src={hive.group_info.photo_url.String || undefined} />
           <Avatar.Fallback bc="$color5" />
         </Avatar>
         <View w="100%" jc="center" ai="center">

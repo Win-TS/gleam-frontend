@@ -61,7 +61,7 @@ const FriendRequest = ({ user }: { user: User }) => {
     <XStack w="100%" p="$2" jc="space-between" ai="center">
       <XStack f={1} fs={1} fd="row" jc="flex-start" ai="center" gap="$3">
         <Avatar f={0} circular size="$4">
-          <Avatar.Image src={user.photourl.String} />
+          <Avatar.Image src={user.photourl.String || undefined} />
           <Avatar.Fallback bc="$color5" />
         </Avatar>
         <Text f={1} fs={1} numberOfLines={1} textOverflow="ellipsis" fos="$3">

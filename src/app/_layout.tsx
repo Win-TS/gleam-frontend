@@ -132,7 +132,6 @@ function RootLayoutNav() {
               name="(modal)"
               options={{
                 headerShown: false,
-                presentation: "fullScreenModal",
               }}
             />
             <Stack.Screen name="index" options={{ headerShown: false }} />

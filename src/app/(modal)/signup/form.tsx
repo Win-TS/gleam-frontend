@@ -54,22 +54,28 @@ export default function SignupFormScreen() {
       gender,
       nationality,
     }: FormFields) => {
-      return await axios.post(
-        "/user_v1/createuser",
-        {
-          photo,
-          firstname: firstName,
-          lastname: lastName,
-          username,
-          email,
-          phone_no: `+66${phoneNumber}`,
-          birthday: birthDate?.toISOString(),
-          gender,
-          nationality,
-          password,
-        },
-        { baseURL: process.env.EXPO_PUBLIC_USER_API },
+      const photoBlob = await (await fetch(photo)).blob();
+      const formData = new FormData();
+      formData.append(
+        "photo",
+        photoBlob,
+        `${username}_${Date.now()}.${photo.split(";")[0].split("/")[1]}`,
       );
+      formData.append("firstname", firstName);
+      formData.append("lastname", lastName);
+      formData.append("username", username);
+      formData.append("email", email);
+      formData.append("phone_no", `+66${phoneNumber}`);
+      formData.append(
+        "birthday",
+        birthDate?.toISOString()?.split("T")[0] ?? "",
+      );
+      formData.append("gender", gender ?? "");
+      formData.append("nationality", nationality ?? "");
+      formData.append("password", password);
+      return await axios.post("/user_v1/createuser", formData, {
+        baseURL: process.env.EXPO_PUBLIC_USER_API,
+      });
     },
     onSuccess: async (_, { email, password }) => {
       /*
@@ -408,7 +414,7 @@ export default function SignupFormScreen() {
         </YStack>
         <YStack h="$11" w="100%" jc="center" ai="center" gap="$3">
           <PrimaryBtn size="$4" w="100%" onPress={form.handleSubmit}>
-            Receive OTP
+            Sign up
           </PrimaryBtn>
           <XStack gap="$3">
             <Text col="#b8ab8c" fos="$2" fow="bold">

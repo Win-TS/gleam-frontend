@@ -52,7 +52,7 @@ export default function TabTwoScreen() {
   const [imagePickerOpen, setImagePickerOpen] = useState(false);
   const [profileHivePickerOpen, setProfileHivePickerOpen] = useState(false);
 
-  useEffect(() => setImagePickerOpen(false), []);
+  useEffect(() => setImagePickerOpen(true), []);
 
   return (
     <PageContainer>

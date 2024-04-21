@@ -101,7 +101,7 @@ const Member = ({ member }: { member: HiveMember }) => {
       >
         <XStack f={1} fs={1} fd="row" jc="flex-start" ai="center" gap="$3">
           <Avatar f={0} circular size="$4">
-            <Avatar.Image src={member.user_photourl} />
+            <Avatar.Image src={member.user_photourl || undefined} />
             <Avatar.Fallback bc="$color5" />
           </Avatar>
           <Text f={1} fs={1} numberOfLines={1} textOverflow="ellipsis" fos="$3">

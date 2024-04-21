@@ -194,7 +194,7 @@ export default ({ post, streak }: { post: BasePost; streak?: number }) => {
           renderData={(data) => (
             <XStack ai="center" gap="$1.5">
               <Avatar circular size="$4">
-                <Avatar.Image src={data.member.photourl} />
+                <Avatar.Image src={data.member.photourl || undefined} />
               </Avatar>
               <Text>{data.member.username}</Text>
             </XStack>

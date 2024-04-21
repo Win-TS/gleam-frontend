@@ -41,13 +41,6 @@ export default function ModalLayout() {
           headerShown: false,
         }}
       />
-      <Stack.Screen
-        name="tag"
-        options={{
-          title: "Tag",
-          headerShown: false,
-        }}
-      />
     </Stack>
   );
 }

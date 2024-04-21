@@ -33,7 +33,9 @@ const HiveRequestSection = ({ hive }: { hive: HiveWithMemberInfo }) => {
         <XStack jc="center" ai="center" gap="$3">
           <Avatar>
             <Avatar circular size="$4">
-              <Avatar.Image src={hive.group_info.photo_url.String} />
+              <Avatar.Image
+                src={hive.group_info.photo_url.String || undefined}
+              />
               <Avatar.Fallback bc="$color5" />
             </Avatar>
           </Avatar>

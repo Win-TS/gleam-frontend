@@ -23,7 +23,7 @@ const FriendList = ({
     <Pressable onPress={routeToProfile}>
       <XStack w="100%" alignItems="center" gap="$2.5" my="$2" mx="$2.5">
         <Avatar circular size="$4">
-          <Avatar.Image src={url} />
+          <Avatar.Image src={url || undefined} />
           <Avatar.Fallback bc="$color5" />
         </Avatar>
         <Text>{name}</Text>

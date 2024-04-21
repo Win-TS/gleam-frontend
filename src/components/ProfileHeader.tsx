@@ -6,7 +6,7 @@ export default ({ userprofile }: { userprofile: Userprofile }) => {
   return (
     <YStack w="100%" jc="center" ai="center" gap="$3">
       <Avatar circular size="$12" boc="$gleam12" bw="$1">
-        <Avatar.Image source={{ uri: userprofile.photo_url ?? "" }} />
+        <Avatar.Image src={userprofile.photo_url || undefined} />
         <Avatar.Fallback bc="$color5" />
       </Avatar>
       <YStack w="100%" jc="center" ai="center" gap="$1">
