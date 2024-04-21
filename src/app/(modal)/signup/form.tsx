@@ -4,6 +4,7 @@ import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { useRouter } from "expo-router";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import { Platform } from "react-native";
 import { Text, Select, YStack, XStack, useTheme, Separator } from "tamagui";
@@ -70,7 +71,8 @@ export default function SignupFormScreen() {
         { baseURL: process.env.EXPO_PUBLIC_USER_API },
       );
     },
-    onSuccess: (_, { email, password }) => {
+    onSuccess: async (_, { email, password }) => {
+      /*
       router.replace({
         pathname: "/signup/otp",
         params: {
@@ -78,6 +80,10 @@ export default function SignupFormScreen() {
           password,
         },
       });
+      */
+
+      const auth = getAuth();
+      await signInWithEmailAndPassword(auth, email, password);
     },
   });
 
