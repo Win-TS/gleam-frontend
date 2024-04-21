@@ -39,7 +39,7 @@ export const useUserId = <Opts extends UseUserIdOptions>(
   opts?: Opts,
 ): UseUserIdReturnType<Opts> => {
   const [userId] = useUserStore((state) => [state.userId]);
-  if (userId !== undefined) return 5;
+  if (userId !== undefined) return userId;
   if (!isOptsThrow(opts)) throw Error("user is not logged in");
   return undefined as UseUserIdReturnType<Opts>;
 };
