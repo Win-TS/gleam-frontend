@@ -13,7 +13,7 @@ const TagList = ({
 }: {
   categoryId: number;
   isFocused: boolean;
-  setTag: (tagId: number) => void;
+  setTag: (tagId: number, tagName: string) => void;
 }) => {
   const useTagByCatQuery = (categoryId: number) => {
     return useQuery<any, AxiosError<{ message: string }>>({
@@ -40,7 +40,7 @@ const TagList = ({
             size="$2"
             w="100%"
             onPress={() => {
-              setTag(item.tag_id);
+              setTag(item.tag_id, item.tag_name);
             }}
           >
             {item.tag_name}
