@@ -5,6 +5,7 @@ import { Sheet, View, Text, YStack } from "tamagui";
 
 import PrimaryBtn from "@/src/components/PrimaryBtn";
 import VerticalList from "@/src/components/VerticalList";
+import { Portal } from "@gorhom/portal";
 
 const TagList = ({
   categoryId,
@@ -71,32 +72,35 @@ export default function ({
   ];
 
   return (
-    <Sheet
-      forceRemoveScrollEnabled={open}
-      snapPoints={[80]}
-      modal
-      open={open}
-      onOpenChange={setOpen}
-    >
-      <Sheet.Overlay />
-      <Sheet.Frame p="$4" jc="center" ai="center" bc="$color1" gap="$3">
-        <YStack f={1} w="100%">
-          {tagCategories.map((title, index) => (
-            <YStack f={1} w="100%" jc="center" ai="center" gap="$3" key={index}>
-              <Text>{title}</Text>
-              <YStack f={1} w="100%" jc="center" ai="center">
-                <View w="100%" h="100%">
-                  <TagList
-                    categoryId={index}
-                    isFocused={open}
-                    setTag={setTag}
-                  />
-                </View>
+    <Portal>
+      <Sheet snapPoints={[80]} open={open} onOpenChange={setOpen}>
+        <Sheet.Overlay />
+        <Sheet.Frame p="$4" jc="center" ai="center" bc="$color1" gap="$3">
+          <YStack f={1} w="100%">
+            {tagCategories.map((title, index) => (
+              <YStack
+                f={1}
+                w="100%"
+                jc="center"
+                ai="center"
+                gap="$3"
+                key={index}
+              >
+                <Text>{title}</Text>
+                <YStack f={1} w="100%" jc="center" ai="center">
+                  <View w="100%" h="100%">
+                    <TagList
+                      categoryId={index}
+                      isFocused={open}
+                      setTag={setTag}
+                    />
+                  </View>
+                </YStack>
               </YStack>
-            </YStack>
-          ))}
-        </YStack>
-      </Sheet.Frame>
-    </Sheet>
+            ))}
+          </YStack>
+        </Sheet.Frame>
+      </Sheet>
+    </Portal>
   );
 }

@@ -14,8 +14,9 @@ import SecondaryBtn from "@/src/components/SecondaryBtn";
 import { useCreatePostMutation } from "@/src/hooks/post";
 import { Hive, hive_ } from "@/src/schemas/hive";
 import { useUserId } from "@/src/stores/user";
+import { Pressable } from "react-native";
 
-export default function TabTwoScreen() {
+export default function AddStreakScreen() {
   const theme = useTheme();
   const router = useRouter();
 
@@ -32,7 +33,7 @@ export default function TabTwoScreen() {
     validators: {
       onChange: z.object({
         hive: hive_,
-        image: z.string().url(),
+        image: z.string(),
       }),
     },
     validatorAdapter: zodValidator,
@@ -59,35 +60,48 @@ export default function TabTwoScreen() {
       <form.Provider>
         <YStack w="100%" f={1} jc="center" ai="center" gap="$6">
           <View w="100%" p="$2" boc="$gleam12" bw="$1" br="$4">
-            <form.Field
-              name="image"
-              children={(field) =>
-                z.string().url().safeParse(field.state.value).success ? (
-                  <Image
-                    w="100%"
-                    aspectRatio={1}
-                    source={{ uri: field.state.value }}
-                  />
-                ) : (
-                  <View w="100%" aspectRatio={1} bc="$color5" />
-                )
-              }
-            />
+            <Pressable onPress={() => setImagePickerOpen(!imagePickerOpen)}>
+              <form.Field
+                name="image"
+                children={(field) => (
+                  <>
+                    {field.state.value ? (
+                      <Image w="100%" aspectRatio={1} src={field.state.value} />
+                    ) : (
+                      <View w="100%" aspectRatio={1} bc="$color5" />
+                    )}
+                    <ImagePickerSheet
+                      open={imagePickerOpen}
+                      setOpen={setImagePickerOpen}
+                      setImage={field.handleChange}
+                    />
+                  </>
+                )}
+              />
+            </Pressable>
           </View>
           <YStack w="100%" jc="center" ai="center" gap="$3">
             <Text fow="bold">WHAT IS YOUR ACHIEVEMENT TODAY??</Text>
             <form.Field
               name="hive"
               children={(field) => (
-                <SecondaryBtn
-                  w="$18"
-                  h="$3"
-                  onPress={() =>
-                    setProfileHivePickerOpen(!profileHivePickerOpen)
-                  }
-                >
-                  {field.state.value?.group_name ?? "CHOOSE YOUR HIVE"}
-                </SecondaryBtn>
+                <>
+                  <SecondaryBtn
+                    w="$18"
+                    h="$3"
+                    onPress={() =>
+                      setProfileHivePickerOpen(!profileHivePickerOpen)
+                    }
+                  >
+                    {field.state.value?.group_name ?? "CHOOSE YOUR HIVE"}
+                  </SecondaryBtn>
+                  <ProfileHivePickerSheet
+                    open={profileHivePickerOpen}
+                    setOpen={setProfileHivePickerOpen}
+                    userId={userId}
+                    onPress={field.handleChange}
+                  />
+                </>
               )}
             />
           </YStack>
@@ -125,27 +139,6 @@ export default function TabTwoScreen() {
             }
           />
         </XStack>
-        <form.Field
-          name="image"
-          children={(field) => (
-            <ImagePickerSheet
-              open={imagePickerOpen}
-              setOpen={setImagePickerOpen}
-              setImage={field.handleChange}
-            />
-          )}
-        />
-        <form.Field
-          name="hive"
-          children={(field) => (
-            <ProfileHivePickerSheet
-              open={profileHivePickerOpen}
-              setOpen={setProfileHivePickerOpen}
-              userId={userId}
-              onPress={field.handleChange}
-            />
-          )}
-        />
       </form.Provider>
     </PageContainer>
   );

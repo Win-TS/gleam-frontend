@@ -19,6 +19,7 @@
     "@expo-google-fonts/silkscreen": "^0.2.3",
     "@expo-google-fonts/space-mono": "^0.2.3",
     "@expo/vector-icons": "^14.0.0",
+    "@gorhom/portal": "^1.0.14",
     "@react-native-async-storage/async-storage": "1.21.0",
     "@react-native-community/datetimepicker": "7.6.1",
     "@react-native-firebase/app": "^19.2.2",

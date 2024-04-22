@@ -37,6 +37,7 @@ import {
 } from "@/src/hooks/hive";
 import { useHivePostListInfiniteQuery } from "@/src/hooks/post";
 import { HiveWithMemberInfo } from "@/src/schemas/hive";
+import { Portal } from "@gorhom/portal";
 
 export const editAtom = atom(false);
 export const openLeaveDialogAtom = atom(false);
@@ -70,34 +71,36 @@ const HiveRequestSheet = ({ hiveId }: { hiveId: number }) => {
   });
 
   return (
-    <Sheet
-      open={openRequestSheet}
-      snapPointsMode="fit"
-      modal
-      onOpenChange={setOpenRequestSheet}
-    >
-      <Sheet.Frame p="$4" jc="center" ai="center" bc="$gleam12" gap="$3">
-        <form.Provider>
-          <form.Field
-            name="description"
-            children={(field) => (
-              <Input
-                h="$12"
-                w="100%"
-                placeholder="Anything you want to tell the league owner?"
-                multiline
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChangeText={field.handleChange}
-              />
-            )}
-          />
-        </form.Provider>
-        <SecondaryBtn w="100%" onPress={form.handleSubmit}>
-          REQUEST
-        </SecondaryBtn>
-      </Sheet.Frame>
-    </Sheet>
+    <Portal>
+      <Sheet
+        open={openRequestSheet}
+        snapPointsMode="fit"
+        modal
+        onOpenChange={setOpenRequestSheet}
+      >
+        <Sheet.Frame p="$4" jc="center" ai="center" bc="$gleam12" gap="$3">
+          <form.Provider>
+            <form.Field
+              name="description"
+              children={(field) => (
+                <Input
+                  h="$12"
+                  w="100%"
+                  placeholder="Anything you want to tell the league owner?"
+                  multiline
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChangeText={field.handleChange}
+                />
+              )}
+            />
+          </form.Provider>
+          <SecondaryBtn w="100%" onPress={form.handleSubmit}>
+            REQUEST
+          </SecondaryBtn>
+        </Sheet.Frame>
+      </Sheet>
+    </Portal>
   );
 };
 

@@ -1,4 +1,5 @@
 import { FontAwesome } from "@expo/vector-icons";
+import { PortalProvider } from "@gorhom/portal";
 import {
   DarkTheme,
   DefaultTheme,
@@ -126,16 +127,18 @@ function RootLayoutNav() {
         <ThemeProvider
           value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
         >
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="(modal)"
-              options={{
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-          </Stack>
+          <PortalProvider>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="(modal)"
+                options={{
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen name="index" options={{ headerShown: false }} />
+            </Stack>
+          </PortalProvider>
         </ThemeProvider>
       </TamaguiProvider>
     </QueryClientProvider>

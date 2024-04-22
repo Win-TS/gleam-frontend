@@ -9,6 +9,7 @@ import { Circle, Sheet, View, Text, XStack, YStack } from "tamagui";
 
 import PrimaryBtn from "@/src/components/PrimaryBtn";
 import VerticalList from "@/src/components/VerticalList";
+import { Portal } from "@gorhom/portal";
 
 const TagList = ({
   categoryId,
@@ -99,58 +100,54 @@ export default function ({
   }, []);
 
   return (
-    <Sheet
-      forceRemoveScrollEnabled={open}
-      snapPoints={[80]}
-      modal
-      open={open}
-      onOpenChange={setOpen}
-    >
-      <Sheet.Overlay />
-      <Sheet.Frame p="$4" jc="center" ai="center" bc="$color1" gap="$3">
-        <YStack f={1} w="100%">
-          <PagerView
-            ref={pagerViewRef}
-            style={{ width: "100%", height: "100%" }}
-            initialPage={0}
-            onPageScroll={onPagerViewPageScroll}
-          >
-            {tagCategories.map((title, index) => (
-              <YStack
-                f={1}
-                w="100%"
-                jc="center"
-                ai="center"
-                gap="$3"
-                key={index}
-              >
-                <Text>{title}</Text>
-                <YStack f={1} w="100%" jc="center" ai="center">
-                  <View w="100%" h="100%">
-                    <TagList
-                      categoryId={index}
-                      isFocused={open}
-                      setTag={setTag}
-                    />
-                  </View>
+    <Portal>
+      <Sheet snapPoints={[80]} open={open} onOpenChange={setOpen}>
+        <Sheet.Overlay />
+        <Sheet.Frame p="$4" jc="center" ai="center" bc="$color1" gap="$3">
+          <YStack f={1} w="100%">
+            <PagerView
+              ref={pagerViewRef}
+              style={{ width: "100%", height: "100%" }}
+              initialPage={0}
+              onPageScroll={onPagerViewPageScroll}
+            >
+              {tagCategories.map((title, index) => (
+                <YStack
+                  f={1}
+                  w="100%"
+                  jc="center"
+                  ai="center"
+                  gap="$3"
+                  key={index}
+                >
+                  <Text>{title}</Text>
+                  <YStack f={1} w="100%" jc="center" ai="center">
+                    <View w="100%" h="100%">
+                      <TagList
+                        categoryId={index}
+                        isFocused={open}
+                        setTag={setTag}
+                      />
+                    </View>
+                  </YStack>
                 </YStack>
-              </YStack>
+              ))}
+            </PagerView>
+          </YStack>
+          <XStack gap="$2.5">
+            {tagCategories.map((_, index) => (
+              <Circle
+                size="$1"
+                bc={
+                  index === pagerViewPageScrollPosition ? "$gleam12" : "$color4"
+                }
+                key={index}
+                onPress={() => pagerViewRef.current?.setPage(index)}
+              />
             ))}
-          </PagerView>
-        </YStack>
-        <XStack gap="$2.5">
-          {tagCategories.map((_, index) => (
-            <Circle
-              size="$1"
-              bc={
-                index === pagerViewPageScrollPosition ? "$gleam12" : "$color4"
-              }
-              key={index}
-              onPress={() => pagerViewRef.current?.setPage(index)}
-            />
-          ))}
-        </XStack>
-      </Sheet.Frame>
-    </Sheet>
+          </XStack>
+        </Sheet.Frame>
+      </Sheet>
+    </Portal>
   );
 }
