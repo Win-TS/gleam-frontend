@@ -1,4 +1,5 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { Portal } from "@gorhom/portal";
 import { useForm } from "@tanstack/react-form";
 import { router, useLocalSearchParams, useRouter } from "expo-router";
 import { atom, useAtom, useSetAtom } from "jotai";
@@ -37,7 +38,6 @@ import {
 } from "@/src/hooks/hive";
 import { useHivePostListInfiniteQuery } from "@/src/hooks/post";
 import { HiveWithMemberInfo } from "@/src/schemas/hive";
-import { Portal } from "@gorhom/portal";
 
 export const editAtom = atom(false);
 export const openLeaveDialogAtom = atom(false);

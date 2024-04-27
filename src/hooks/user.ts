@@ -3,20 +3,22 @@ import axios, { AxiosError } from "axios";
 import { z, ZodError } from "zod";
 
 import {
-  useLoggingGetInfiniteQuery,
-  useLoggingGetQuery,
+  useLoggingInfiniteQuery,
+  useLoggingMutation,
+  useLoggingQuery,
 } from "@/src/hooks/query";
 import { friendPair_, friend_ } from "@/src/schemas/friend";
 import { user_ } from "@/src/schemas/user";
 import { userprofile_ } from "@/src/schemas/userprofile";
 import { useUserId } from "@/src/stores/user";
+import { fetchUriAsBlob } from "@/src/utils/fetchUriAsBlob";
 
 export const useUserQuery = () => {
   const userId = useUserId({ throw: false });
 
-  return useLoggingGetQuery({
+  return useLoggingQuery({
     url: "/user_v1/userinfo",
-    data: { user_id: userId },
+    query: { user_id: userId },
     config: {
       baseURL: process.env.EXPO_PUBLIC_USER_API,
     },
@@ -27,9 +29,9 @@ export const useUserQuery = () => {
 };
 
 export const useUserprofileQuery = (userId: number) => {
-  return useLoggingGetQuery({
+  return useLoggingQuery({
     url: "/user_v1/userprofile",
-    data: { user_id: userId },
+    query: { user_id: userId },
     config: {
       baseURL: process.env.EXPO_PUBLIC_USER_API,
     },
@@ -76,13 +78,14 @@ export const useUserprofileMutation = () => {
           ),
           photo
             ? (async () => {
-                const photoBlob = await (await fetch(photo)).blob();
+                const photoBlob = await fetchUriAsBlob(photo);
                 const uploadUserPhotoFormData = new FormData();
-                uploadUserPhotoFormData.append(
-                  "photo",
-                  photoBlob,
-                  `${userId}_${Date.now()}.${photo.split(";")[0].split("/")[1]}`,
-                );
+                // @ts-ignore
+                uploadUserPhotoFormData.append("photo", {
+                  uri: photo,
+                  name: `${userId}_${Date.now()}.${photoBlob.type.split("/")[1]}`,
+                  type: photoBlob.type,
+                });
                 const { url: photoUrl } =
                   await uploadUserPhotoResponse_.parseAsync(
                     (
@@ -121,69 +124,50 @@ export const useUserprofileMutation = () => {
 
 export const useUsernameMutation = () => {
   const userId = useUserId();
-  const queryClient = useQueryClient();
 
-  return useMutation<
-    void,
-    AxiosError<{ message: string }>,
-    { username: string }
-  >({
-    mutationFn: async ({ username }) => {
-      return await axios.patch(
-        "/user_v1/editusername",
-        {},
-        {
-          baseURL: process.env.EXPO_PUBLIC_USER_API,
-          params: {
-            user_id: userId,
-            new_username: username,
-          },
-        },
-      );
+  return useLoggingMutation({
+    method: "PATCH",
+    url: "/user_v1/editusername",
+    query: { user_id: userId },
+    getMutationRequestParams: ({ username }: { username: string }) => {
+      return { query: { new_username: username } };
     },
-    onSettled: async () => {
-      return await queryClient.invalidateQueries({
-        queryKey: ["user", userId, "info"],
-      });
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_USER_API,
     },
+    validator: z.any(),
+    invalidateKeys: [["user", userId, "info"]],
   });
 };
 
 export const useUserPrivateMutation = () => {
   const userId = useUserId();
-  const queryClient = useQueryClient();
 
-  return useMutation<
-    void,
-    AxiosError<{ message: string }>,
-    { privateAccount: boolean }
-  >({
-    mutationFn: async ({ privateAccount }) => {
-      const userPrivateFormData = new FormData();
-      userPrivateFormData.append("private_account", `${privateAccount}`);
-      return await axios.patch(
-        "/user_v1/editprivateaccount",
-        userPrivateFormData,
-        {
-          baseURL: process.env.EXPO_PUBLIC_USER_API,
-          params: { user_id: userId },
-        },
-      );
+  return useLoggingMutation({
+    method: "PATCH_FORM",
+    url: "/user_v1/editprivateaccount",
+    query: { user_id: userId },
+    getMutationRequestParams: ({
+      privateAccount,
+    }: {
+      privateAccount: boolean;
+    }) => {
+      return { body: { private_account: `${privateAccount}` } };
     },
-    onSettled: async () => {
-      return await queryClient.invalidateQueries({
-        queryKey: ["user", userId, "info"],
-      });
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_USER_API,
     },
+    validator: z.any(),
+    invalidateKeys: [["user", userId, "info"]],
   });
 };
 
 export const useFriendStatusQuery = (otherUserId: number) => {
   const userId = useUserId({ throw: false });
 
-  return useLoggingGetQuery({
+  return useLoggingQuery({
     url: "/friend_v1/",
-    data: { user_id1: userId, user_id2: otherUserId },
+    query: { user_id1: userId, user_id2: otherUserId },
     config: {
       baseURL: process.env.EXPO_PUBLIC_USER_API,
     },
@@ -195,9 +179,9 @@ export const useFriendStatusQuery = (otherUserId: number) => {
 };
 
 export const useFriendListInfiniteQuery = (userId: number) => {
-  return useLoggingGetInfiniteQuery({
+  return useLoggingInfiniteQuery({
     url: "/friend_v1/list",
-    data: { user_id: userId },
+    query: { user_id: userId },
     config: {
       baseURL: process.env.EXPO_PUBLIC_USER_API,
     },
@@ -208,78 +192,61 @@ export const useFriendListInfiniteQuery = (userId: number) => {
 
 export const useAddFriendMutation = (otherUserId: number) => {
   const userId = useUserId();
-  const queryClient = useQueryClient();
 
-  return useMutation<void, AxiosError<{ message: string }>>({
-    mutationFn: async () => {
-      return await axios.post(
-        "/friend_v1/add",
-        { user_id1: userId, user_id2: otherUserId },
-        {
-          baseURL: process.env.EXPO_PUBLIC_USER_API,
-        },
-      );
+  return useLoggingMutation({
+    method: "POST",
+    url: "/friend_v1/add",
+    body: { user_id1: userId, user_id2: otherUserId },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_USER_API,
     },
-    onSettled: async () => {
-      return await queryClient.invalidateQueries({
-        queryKey: ["user", userId, "friend", otherUserId],
-      });
-    },
+    validator: z.any(),
+    invalidateKeys: [["user", userId, "friend", otherUserId]],
   });
 };
 
 export const useAcceptFriendMutation = (otherUserId: number) => {
   const userId = useUserId();
-  const queryClient = useQueryClient();
 
-  return useMutation<void, AxiosError<{ message: string }>>({
-    mutationFn: async () => {
-      return await axios.patch(
-        "/friend_v1/accept",
-        { user_id1: otherUserId, user_id2: userId },
-        {
-          baseURL: process.env.EXPO_PUBLIC_USER_API,
-        },
-      );
+  return useLoggingMutation({
+    method: "PATCH",
+    url: "/friend_v1/accept",
+    body: { user_id1: otherUserId, user_id2: userId },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_USER_API,
     },
-    onSettled: async () => {
-      return await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: ["user", userId],
-        }),
-        queryClient.invalidateQueries({
-          queryKey: ["user", otherUserId],
-        }),
-      ]);
-    },
+    validator: z.any(),
+    invalidateKeys: [
+      ["user", userId],
+      ["user", otherUserId],
+    ],
   });
 };
 
 export const useDeclineFriendMutation = (otherUserId: number) => {
   const userId = useUserId();
-  const queryClient = useQueryClient();
 
-  return useMutation<void, AxiosError<{ message: string }>>({
-    mutationFn: async () => {
-      return await axios.delete("/friend_v1/decline", {
-        data: { user_id1: otherUserId, user_id2: userId },
-        baseURL: process.env.EXPO_PUBLIC_USER_API,
-      });
+  return useLoggingMutation({
+    method: "DELETE",
+    url: "/friend_v1/decline",
+    body: {
+      user_id1: otherUserId,
+      user_id2: userId,
     },
-    onSettled: async () => {
-      return await queryClient.invalidateQueries({
-        queryKey: ["user", userId, "friend", "pending"],
-      });
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_USER_API,
     },
+    validator: z.any(),
+    invalidateKeys: [["user", userId, "friend", "pending"]],
   });
 };
 
 export const useFriendRequestListInfiniteQuery = () => {
   const userId = useUserId({ throw: false });
 
-  return useLoggingGetInfiniteQuery({
+  return useLoggingInfiniteQuery({
     url: "/friend_v1/pending",
-    data: { user_id: userId },
+    query: { user_id: userId },
     config: {
       baseURL: process.env.EXPO_PUBLIC_USER_API,
     },
@@ -292,9 +259,9 @@ export const useFriendRequestListInfiniteQuery = () => {
 export const useFriendRequestCountQuery = () => {
   const userId = useUserId({ throw: false });
 
-  return useLoggingGetQuery({
+  return useLoggingQuery({
     url: "/friend_v1/requestcount",
-    data: { user_id: userId },
+    query: { user_id: userId },
     config: {
       baseURL: process.env.EXPO_PUBLIC_USER_API,
     },

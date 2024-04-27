@@ -13,6 +13,7 @@ import ImagePicker from "@/src/components/ImagePicker";
 import PageContainer from "@/src/components/PageContainer";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
 import SecondaryInput from "@/src/components/SecondaryInput";
+import { fetchUriAsBlob } from "@/src/utils/fetchUriAsBlob";
 
 export default function SignupFormScreen() {
   const theme = useTheme();
@@ -54,13 +55,14 @@ export default function SignupFormScreen() {
       gender,
       nationality,
     }: FormFields) => {
-      const photoBlob = await (await fetch(photo)).blob();
+      const photoBlob = await fetchUriAsBlob(photo);
       const formData = new FormData();
-      formData.append(
-        "photo",
-        photoBlob,
-        `${username}_${Date.now()}.${photo.split(";")[0].split("/")[1]}`,
-      );
+      // @ts-ignore
+      formData.append("photo", {
+        uri: photo,
+        name: `${username}_${Date.now()}.${photoBlob.type.split("/")[1]}`,
+        type: photoBlob.type,
+      });
       formData.append("firstname", firstName);
       formData.append("lastname", lastName);
       formData.append("username", username);

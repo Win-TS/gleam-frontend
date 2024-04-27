@@ -1,11 +1,26 @@
 import {
   QueryKey,
   useInfiniteQuery,
+  useMutation,
   useQueries,
   useQuery,
+  useQueryClient,
 } from "@tanstack/react-query";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
+import { defu } from "defu";
+import _ from "lodash";
 import { ZodError, ZodType, ZodTypeDef } from "zod";
+
+type Requester<Query extends unknown, Body extends unknown> = (req: {
+  url: string;
+  query: Query;
+  body: Body;
+  config?: AxiosRequestConfig<unknown>;
+}) => Promise<unknown>;
+type RequesterQuery<Req extends Requester<any, any>> =
+  Parameters<Req>[0]["query"];
+type RequesterBody<Req extends Requester<any, any>> =
+  Parameters<Req>[0]["body"];
 
 const requestPromiseValidatorAdapter = async <
   Response extends unknown,
@@ -33,27 +48,24 @@ const requestPromiseValidatorAdapter = async <
 };
 
 export const useLoggingQueryInternal = <
+  Query extends object | undefined,
+  Req extends Requester<Query, undefined>,
   Response extends unknown,
-  Data extends unknown,
   Def extends ZodTypeDef,
 >({
   requester,
   url,
-  data,
+  query,
   config,
   validator,
   default: def,
   queryKey,
   enabled,
 }: {
-  requester: (
-    url: string,
-    data?: Data,
-    config?: AxiosRequestConfig<Data>,
-  ) => Promise<unknown>;
+  requester: Req;
   url: string;
-  data: Data;
-  config: AxiosRequestConfig<Data>;
+  query: Query;
+  config: AxiosRequestConfig;
   validator: ZodType<Response, Def, unknown>;
   default?: Response;
   queryKey: QueryKey;
@@ -63,51 +75,48 @@ export const useLoggingQueryInternal = <
     queryKey,
     queryFn: () =>
       requestPromiseValidatorAdapter(
-        requester(url, data, config),
+        requester({ url, query, body: undefined, config }),
         validator,
         def,
-        (log, err) => console.error(log, url, data, err),
+        (log, err) => console.error(log, url, query, err),
       ),
     enabled,
   });
 };
 
 export const useLoggingQueriesInternal = <
+  Query extends object | undefined,
+  Req extends Requester<Query, undefined>,
   ResponseItem extends unknown,
-  Data extends unknown,
   Def extends ZodTypeDef,
 >({
   requester,
   url,
-  data,
+  queries,
   config,
   validator,
   default: def,
   queryKey,
 }: {
-  requester: (
-    url: string,
-    data?: Data,
-    config?: AxiosRequestConfig<Data>,
-  ) => Promise<unknown>;
+  requester: Req;
   url: string;
-  data: Data[];
-  config: AxiosRequestConfig<Data>;
+  queries: Query[];
+  config: AxiosRequestConfig;
   validator: ZodType<ResponseItem, Def, unknown>;
   default?: ResponseItem;
-  queryKey: (item: Data) => QueryKey;
+  queryKey: (query: Query) => QueryKey;
 }) => {
   return useQueries({
-    queries: data
-      ? data.map((item) => {
+    queries: queries
+      ? queries.map((query) => {
           return {
-            queryKey: queryKey(item),
+            queryKey: queryKey(query),
             queryFn: () =>
               requestPromiseValidatorAdapter(
-                requester(url, item, config),
+                requester({ url, query, body: undefined, config }),
                 validator,
                 def,
-                (log, err) => console.error(log, url, item, err),
+                (log, err) => console.error(log, url, query, err),
               ),
           };
         })
@@ -116,13 +125,14 @@ export const useLoggingQueriesInternal = <
 };
 
 export const useLoggingInfiniteQueryInternal = <
+  Query extends object | undefined,
+  Req extends Requester<Query, undefined>,
   Response extends unknown[],
-  Data extends object,
   Def extends ZodTypeDef,
 >({
   requester,
   url,
-  data,
+  query,
   config,
   validator,
   default: def,
@@ -130,14 +140,10 @@ export const useLoggingInfiniteQueryInternal = <
   limit,
   enabled,
 }: {
-  requester: (
-    url: string,
-    data?: Data & { limit: number; offset: number },
-    config?: AxiosRequestConfig<Data>,
-  ) => Promise<unknown>;
+  requester: Req;
   url: string;
-  data: Data;
-  config: AxiosRequestConfig<Data>;
+  query: Query;
+  config: AxiosRequestConfig;
   validator: ZodType<Response, Def, unknown>;
   default?: Response;
   queryKey: QueryKey;
@@ -148,14 +154,15 @@ export const useLoggingInfiniteQueryInternal = <
     queryKey,
     queryFn: async ({ pageParam }) => {
       const result = await requestPromiseValidatorAdapter(
-        requester(
+        requester({
           url,
-          { ...data, limit: limit ?? 10, offset: pageParam },
+          query: defu(query, { limit: limit ?? 10, offset: pageParam }),
+          body: undefined,
           config,
-        ),
+        }),
         validator,
         def,
-        (log, err) => console.error(log, url, data, err),
+        (log, err) => console.error(log, url, query, err),
       );
       return {
         data: result,
@@ -169,59 +176,277 @@ export const useLoggingInfiniteQueryInternal = <
   });
 };
 
-const getRequester = async <Data extends unknown>(
-  url: string,
-  data?: Data,
-  config?: AxiosRequestConfig<Data>,
-) => {
-  return (await axios.get(url, { params: data, ...config })).data;
+export const useLoggingMutationInternal = <
+  Req extends Requester<any, any>,
+  Query extends Partial<RequesterQuery<Req>>,
+  Body extends Partial<RequesterBody<Req>>,
+  MutationQuery extends Partial<RequesterQuery<Req>>,
+  MutationBody extends Partial<RequesterBody<Req>>,
+  Response extends unknown,
+  Def extends ZodTypeDef,
+  GetMutationRequestParamsInput extends unknown = void,
+>({
+  requester,
+  url,
+  query,
+  body,
+  getMutationRequestParams,
+  config,
+  validator,
+  default: def,
+  invalidateKeys,
+}: {
+  requester: Req;
+  url: string;
+  query?: Query;
+  body?: Body;
+  getMutationRequestParams?: (input: GetMutationRequestParamsInput) => {
+    query?: MutationQuery;
+    body?: MutationBody;
+  };
+  config: AxiosRequestConfig;
+  validator: ZodType<Response, Def, unknown>;
+  default?: Response;
+  invalidateKeys?: (string | number)[][];
+}) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: GetMutationRequestParamsInput) => {
+      const { query: additionalQuery, body: additionalBody } =
+        getMutationRequestParams?.(input) ?? {
+          query: undefined,
+          body: undefined,
+        };
+      const mergedQuery_ = defu(query, additionalQuery);
+      const mergedQuery = _.isEmpty(mergedQuery_) ? undefined : mergedQuery_;
+      const mergedBody_ = defu(body, additionalBody);
+      const mergedBody = _.isEmpty(mergedBody_) ? undefined : mergedBody_;
+      return requestPromiseValidatorAdapter(
+        requester({
+          url,
+          query: mergedQuery,
+          body: mergedBody,
+          config,
+        }),
+        validator,
+        def,
+        (log, err) => console.error(log, url, query, err),
+      );
+    },
+    onSettled: () => {
+      return Promise.all(
+        invalidateKeys?.map((key) =>
+          queryClient.invalidateQueries({ queryKey: key }),
+        ) ?? [],
+      );
+    },
+  });
 };
 
-export const useLoggingGetQuery = <
-  Response extends unknown,
-  Data extends unknown,
-  Def extends ZodTypeDef,
->(params: {
+const getRequester = async <Query extends object | undefined>(req: {
   url: string;
-  data: Data;
-  config: AxiosRequestConfig<Data>;
+  query: Query;
+  body: undefined;
+  config?: AxiosRequestConfig;
+}) => {
+  return (await axios.get(req.url, { params: req.query, ...req.config })).data;
+};
+
+const postRequester = async <
+  Query extends object | undefined,
+  Body extends object | undefined,
+>(req: {
+  url: string;
+  query: Query;
+  body: Body;
+  config?: AxiosRequestConfig;
+}) => {
+  return (
+    await axios.post(req.url, req.body, { params: req.query, ...req.config })
+  ).data;
+};
+
+const putRequester = async <
+  Query extends object | undefined,
+  Body extends object | undefined,
+>(req: {
+  url: string;
+  query: Query;
+  body: Body;
+  config?: AxiosRequestConfig;
+}) => {
+  return (
+    await axios.put(req.url, req.body, { params: req.query, ...req.config })
+  ).data;
+};
+
+const patchRequester = async <
+  Query extends object | undefined,
+  Body extends object | undefined,
+>(req: {
+  url: string;
+  query: Query;
+  body: Body;
+  config?: AxiosRequestConfig;
+}) => {
+  return (
+    await axios.patch(req.url, req.body, { params: req.query, ...req.config })
+  ).data;
+};
+
+const postFormRequester = async <
+  Query extends object | undefined,
+  Body extends object | undefined,
+>(req: {
+  url: string;
+  query: Query;
+  body: Body;
+  config?: AxiosRequestConfig;
+}) => {
+  return (
+    await axios.postForm(req.url, req.body, {
+      params: req.query,
+      ...req.config,
+    })
+  ).data;
+};
+
+const putFormRequester = async <
+  Query extends object | undefined,
+  Body extends object | undefined,
+>(req: {
+  url: string;
+  query: Query;
+  body: Body;
+  config?: AxiosRequestConfig;
+}) => {
+  return (
+    await axios.putForm(req.url, req.body, { params: req.query, ...req.config })
+  ).data;
+};
+
+const patchFormRequester = async <
+  Query extends object | undefined,
+  Body extends object | undefined,
+>(req: {
+  url: string;
+  query: Query;
+  body: Body;
+  config?: AxiosRequestConfig;
+}) => {
+  return (
+    await axios.patchForm(req.url, req.body, {
+      params: req.query,
+      ...req.config,
+    })
+  ).data;
+};
+
+const deleteRequester = async <
+  Query extends object | undefined,
+  Body extends object | undefined,
+>(req: {
+  url: string;
+  query: Query;
+  body: Body;
+  config?: AxiosRequestConfig;
+}) => {
+  return (
+    await axios.delete(req.url, {
+      params: req.query,
+      data: req.body,
+      ...req.config,
+    })
+  ).data;
+};
+
+const REQUESTERS = {
+  GET: getRequester,
+  POST: postRequester,
+  PUT: putRequester,
+  PATCH: patchRequester,
+  POST_FORM: postFormRequester,
+  PUT_FORM: putFormRequester,
+  PATCH_FORM: patchFormRequester,
+  DELETE: deleteRequester,
+};
+type MethodRequester<Method extends keyof typeof REQUESTERS> =
+  (typeof REQUESTERS)[Method];
+
+type OmitRequester<
+  Req extends Requester<any, any>,
+  Query extends unknown,
+  Body extends unknown,
+> = Req extends Requester<Query, Body> ? Req : never;
+
+type RequesterFulfilling<Query extends unknown, Body extends unknown> = {
+  [Method in keyof typeof REQUESTERS as OmitRequester<
+    MethodRequester<Method>,
+    Query,
+    Body
+  > extends never
+    ? never
+    : Method]: MethodRequester<Method>;
+};
+
+export const useLoggingQuery = <
+  Query extends object | undefined,
+  Response extends unknown,
+  Def extends ZodTypeDef,
+>({
+  method,
+  ...params
+}: {
+  method?: keyof RequesterFulfilling<unknown, undefined>;
+  url: string;
+  query: Query;
+  config: AxiosRequestConfig<unknown>;
   validator: ZodType<Response, Def, unknown>;
   default?: Response;
   queryKey: QueryKey;
   enabled?: boolean;
 }) => {
   return useLoggingQueryInternal({
-    requester: getRequester,
+    requester: REQUESTERS[method ?? "GET"],
     ...params,
   });
 };
 
-export const useLoggingGetQueries = <
+export const useLoggingQueries = <
+  Query extends object | undefined,
   ResponseItem extends unknown,
-  Data extends unknown,
   Def extends ZodTypeDef,
->(params: {
+>({
+  method,
+  ...params
+}: {
+  method?: keyof RequesterFulfilling<unknown, undefined>;
   url: string;
-  data: Data[];
-  config: AxiosRequestConfig<Data>;
+  queries: Query[];
+  config: AxiosRequestConfig<unknown>;
   validator: ZodType<ResponseItem, Def, unknown>;
   default?: ResponseItem;
-  queryKey: (item: Data) => QueryKey;
+  queryKey: (item: Query) => QueryKey;
 }) => {
   return useLoggingQueriesInternal({
-    requester: getRequester,
+    requester: REQUESTERS[method ?? "GET"],
     ...params,
   });
 };
 
-export const useLoggingGetInfiniteQuery = <
+export const useLoggingInfiniteQuery = <
+  Query extends object | undefined,
   Response extends unknown[],
-  Data extends object,
   Def extends ZodTypeDef,
->(params: {
+>({
+  method,
+  ...params
+}: {
+  method?: keyof RequesterFulfilling<unknown, undefined>;
   url: string;
-  data: Data;
-  config: AxiosRequestConfig<Data>;
+  query: Query;
+  config: AxiosRequestConfig;
   validator: ZodType<Response, Def, unknown>;
   default?: Response;
   queryKey: QueryKey;
@@ -229,7 +454,39 @@ export const useLoggingGetInfiniteQuery = <
   enabled?: boolean;
 }) => {
   return useLoggingInfiniteQueryInternal({
-    requester: getRequester,
+    requester: REQUESTERS[method ?? "GET"],
+    ...params,
+  });
+};
+
+export const useLoggingMutation = <
+  Method extends keyof typeof REQUESTERS,
+  Query extends Partial<RequesterQuery<MethodRequester<Method>>>,
+  Body extends Partial<RequesterBody<MethodRequester<Method>>>,
+  MutationQuery extends Partial<RequesterQuery<MethodRequester<Method>>>,
+  MutationBody extends Partial<RequesterBody<MethodRequester<Method>>>,
+  Response extends unknown,
+  Def extends ZodTypeDef,
+  GetMutationRequestParamsInput extends unknown = void,
+>({
+  method,
+  ...params
+}: {
+  method: Method;
+  url: string;
+  query?: Query;
+  body?: Body;
+  getMutationRequestParams?: (input: GetMutationRequestParamsInput) => {
+    query?: MutationQuery;
+    body?: MutationBody;
+  };
+  config: AxiosRequestConfig;
+  validator: ZodType<Response, Def, unknown>;
+  default?: Response;
+  invalidateKeys?: (string | number)[][];
+}) => {
+  return useLoggingMutationInternal({
+    requester: REQUESTERS[method],
     ...params,
   });
 };

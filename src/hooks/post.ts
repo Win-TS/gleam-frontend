@@ -1,20 +1,22 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { z } from "zod";
 
 import {
-  useLoggingGetInfiniteQuery,
-  useLoggingGetQuery,
+  useLoggingInfiniteQuery,
+  useLoggingMutation,
+  useLoggingQuery,
 } from "@/src/hooks/query";
 import { post_, feedPost_, hivePost_ } from "@/src/schemas/post";
 import { useUserId } from "@/src/stores/user";
+import { fetchUriAsBlob } from "@/src/utils/fetchUriAsBlob";
 
 export const usePostQuery = (postId: number) => {
   const userId = useUserId({ throw: false });
 
-  return useLoggingGetQuery({
+  return useLoggingQuery({
     url: "/post_v1/post",
-    data: { post_id: postId, user_id: userId },
+    query: { post_id: postId, user_id: userId },
     config: {
       baseURL: process.env.EXPO_PUBLIC_GROUP_API,
     },
@@ -25,9 +27,9 @@ export const usePostQuery = (postId: number) => {
 };
 
 export const useHivePostListInfiniteQuery = (hiveId: number) => {
-  return useLoggingGetInfiniteQuery({
+  return useLoggingInfiniteQuery({
     url: "/post_v1/groupposts",
-    data: { group_id: hiveId },
+    query: { group_id: hiveId },
     config: {
       baseURL: process.env.EXPO_PUBLIC_GROUP_API,
     },
@@ -39,9 +41,9 @@ export const useHivePostListInfiniteQuery = (hiveId: number) => {
 export const useOngoingPostListInfiniteQuery = () => {
   const userId = useUserId({ throw: false });
 
-  return useLoggingGetInfiniteQuery({
+  return useLoggingInfiniteQuery({
     url: "/post_v1/ongoingfeed",
-    data: { user_id: userId },
+    query: { user_id: userId },
     config: {
       baseURL: process.env.EXPO_PUBLIC_GROUP_API,
     },
@@ -54,9 +56,9 @@ export const useOngoingPostListInfiniteQuery = () => {
 export const useFollowingPostListInfiniteQuery = () => {
   const userId = useUserId({ throw: false });
 
-  return useLoggingGetInfiniteQuery({
+  return useLoggingInfiniteQuery({
     url: "/post_v1/followingfeed",
-    data: { user_id: userId },
+    query: { user_id: userId },
     config: {
       baseURL: process.env.EXPO_PUBLIC_GROUP_API,
     },
@@ -73,9 +75,9 @@ export const postReactionCountsResponse_ = z.object({
   success: z.coerce.boolean(),
 });
 export const usePostReactionCountsQuery = (postId: number) => {
-  return useLoggingGetQuery({
+  return useLoggingQuery({
     url: "/reaction_v1/postreactioncount",
-    data: { post_id: postId },
+    query: { post_id: postId },
     config: {
       baseURL: process.env.EXPO_PUBLIC_GROUP_API,
     },
@@ -96,16 +98,17 @@ export const useCreatePostMutation = () => {
     }
   >({
     mutationFn: async ({ hiveId, photo }) => {
-      const photoBlob = await (await fetch(photo)).blob();
+      const photoBlob = await fetchUriAsBlob(photo);
       const postFormData = new FormData();
       postFormData.append("member_id", userId.toString());
       postFormData.append("group_id", hiveId.toString());
       postFormData.append("description", "");
-      postFormData.append(
-        "photo",
-        photoBlob,
-        `${userId}_${Date.now()}.${photo.split(";")[0].split("/")[1]}`,
-      );
+      // @ts-ignore
+      postFormData.append("photo", {
+        uri: photo,
+        name: `${userId}_${hiveId}_${Date.now()}.${photoBlob.type.split("/")[1]}`,
+        type: photoBlob.type,
+      });
       return await axios.post("/post_v1/post", postFormData, {
         baseURL: process.env.EXPO_PUBLIC_GROUP_API,
       });
@@ -118,59 +121,41 @@ export const useCreatePostReactionMutation = (
   reaction: string,
 ) => {
   const userId = useUserId();
-  const queryClient = useQueryClient();
 
-  return useMutation<void, AxiosError<{ message: string }>>({
-    mutationFn: async () => {
-      return await axios.post(
-        "/reaction_v1/reaction",
-        {
-          post_id: postId,
-          member_id: userId,
-          reaction,
-        },
-        { baseURL: process.env.EXPO_PUBLIC_GROUP_API },
-      );
+  return useLoggingMutation({
+    method: "POST",
+    url: "/reaction_v1/reaction",
+    body: { post_id: postId, member_id: userId, reaction },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_GROUP_API,
     },
-    onSettled: async () => {
-      return await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: ["post", postId],
-        }),
-        queryClient.invalidateQueries({
-          queryKey: ["post", "user", userId],
-        }),
-      ]);
-    },
+    validator: z.any(),
+    invalidateKeys: [
+      ["post", postId],
+      ["post", "user", userId],
+    ],
   });
 };
 
 export const useDeletePostReactionMutation = (postId: number) => {
   const userId = useUserId();
-  const queryClient = useQueryClient();
-
   const postQuery = usePostQuery(postId);
 
-  return useMutation<void, AxiosError<{ message: string }>>({
-    mutationFn: async () => {
-      return await axios.delete("/reaction_v1/reaction", {
-        baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-        data: {
-          post_id: postId,
-          member_id: userId,
-          reaction: postQuery.data?.reaction?.reaction, // FIXME: maybe backend can just delete the reaction
-        },
-      });
+  return useLoggingMutation({
+    method: "DELETE",
+    url: "/reaction_v1/reaction",
+    body: {
+      post_id: postId,
+      member_id: userId,
+      reaction: postQuery.data?.reaction?.reaction, // FIXME: maybe backend can just delete the reaction
     },
-    onSettled: async () => {
-      return await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: ["post", postId],
-        }),
-        queryClient.invalidateQueries({
-          queryKey: ["post", "user", userId],
-        }),
-      ]);
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_GROUP_API,
     },
+    validator: z.any(),
+    invalidateKeys: [
+      ["post", postId],
+      ["post", "user", userId],
+    ],
   });
 };
