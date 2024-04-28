@@ -1,7 +1,9 @@
 import { useForm } from "@tanstack/react-form";
+import { zodValidator } from "@tanstack/zod-form-adapter";
 import { getAuth } from "firebase/auth";
 import React, { useState } from "react";
-import { Input, Text, View, XStack, YStack } from "tamagui";
+import { Input, Spinner, Text, View, XStack, YStack } from "tamagui";
+import { z } from "zod";
 
 import ActionDialog from "@/src/components/ActionDialog";
 import PageContainer from "@/src/components/PageContainer";
@@ -12,7 +14,7 @@ import QueryPlaceholder from "@/src/components/QueryPlaceholder";
 import Section from "@/src/components/Section";
 import {
   useUserQuery,
-  useUsernameMutation,
+  useEditUserUsernameMutation,
   useUserPrivateMutation,
 } from "@/src/hooks/user";
 
@@ -20,12 +22,17 @@ export default function SettingScreen() {
   const userQuery = useUserQuery();
 
   const userPrivateMutation = useUserPrivateMutation();
-  const usernameMutation = useUsernameMutation();
+  const usernameMutation = useEditUserUsernameMutation();
 
-  const usernameForm = useForm({
+  const formValidator = {
+    username: z.string(),
+  };
+
+  const form = useForm({
     defaultValues: {
       username: "",
     },
+    validatorAdapter: zodValidator,
     onSubmit: async ({ value }) => {
       try {
         await usernameMutation.mutateAsync(value);
@@ -53,10 +60,11 @@ export default function SettingScreen() {
       </Section>
       <Section>
         <YStack w="100%" px="$3" py="$1" gap="$2">
-          <usernameForm.Provider>
+          <form.Provider>
             <Text fos="$5">Username</Text>
-            <usernameForm.Field
+            <form.Field
               name="username"
+              validators={{ onChange: formValidator.username }}
               children={(field) => (
                 <Input
                   py="$1"
@@ -76,11 +84,25 @@ export default function SettingScreen() {
               you may only change your username once in 7 days
             </Text>
             <XStack w="100%" jc="flex-end">
-              <PrimaryBtn h="$2" onPress={usernameForm.handleSubmit}>
-                Change Username
-              </PrimaryBtn>
+              <form.Subscribe
+                selector={(state) => [state.canSubmit, state.isSubmitting]}
+                children={([canSubmit, isSubmitting]) =>
+                  isSubmitting ? (
+                    <Spinner size="large" color="$color11" />
+                  ) : (
+                    <PrimaryBtn
+                      h="$2"
+                      disabled={!canSubmit}
+                      opacity={canSubmit ? 1 : 0.5}
+                      onPress={form.handleSubmit}
+                    >
+                      Change Username
+                    </PrimaryBtn>
+                  )
+                }
+              />
             </XStack>
-          </usernameForm.Provider>
+          </form.Provider>
         </YStack>
       </Section>
       <Section>

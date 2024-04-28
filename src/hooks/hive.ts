@@ -1,6 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios, { AxiosError } from "axios";
-import { z, ZodError } from "zod";
+import { z } from "zod";
 
 import {
   useLoggingInfiniteQuery,
@@ -17,7 +15,6 @@ import {
   hiveRequest_,
 } from "@/src/schemas/hive";
 import { useUserId } from "@/src/stores/user";
-import { fetchUriAsBlob } from "@/src/utils/fetchUriAsBlob";
 
 export const useHiveQuery = (hiveId: number) => {
   const userId = useUserId({ throw: false });
@@ -105,6 +102,56 @@ export const useUserHiveListQuery = (userId: number) => {
   });
 };
 
+export const useCreateHiveMutation = () => {
+  const userId = useUserId();
+
+  return useLoggingMutation({
+    method: "POST_FORM",
+    url: "/group_v1/group",
+    getMutationRequestParams: ({
+      name,
+      photo,
+      tagId,
+      frequency,
+      maxMember,
+      type,
+      visibility,
+      description,
+    }: {
+      name: string;
+      photo: string;
+      tagId: number;
+      frequency: number;
+      maxMember: number;
+      type: string;
+      visibility: boolean;
+      description: string;
+    }) => {
+      return {
+        body: {
+          group_creator_id: userId,
+          group_name: name,
+          photo: {
+            uri: photo,
+            filename: (blob: Blob) =>
+              `${userId}_${Date.now()}.${blob.type.split("/")[1]}`,
+          },
+          tag_id: tagId,
+          frequency,
+          max_members: maxMember,
+          group_type: type,
+          visibility,
+          description,
+        },
+      };
+    },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_GROUP_API,
+    },
+    validator: z.any(),
+  });
+};
+
 export const useDeleteHiveMutation = (hiveId: number, userId: number) => {
   return useLoggingMutation({
     method: "DELETE",
@@ -186,71 +233,76 @@ export const useLeaveHiveMutation = (hiveId: number) => {
   return useDeleteHiveMemberMutation(hiveId, userId);
 };
 
-export const useHiveInfoMutation = (hiveId: number) => {
+export const useEditHiveNameMutation = (hiveId: number) => {
   const userId = useUserId();
-  const queryClient = useQueryClient();
 
-  return useMutation<
-    void,
-    AxiosError<{ message: string }> | ZodError,
-    { photo: string | undefined; name: string; description: string }
-  >({
-    mutationFn: async ({ photo, name, description }) => {
-      await Promise.all(
-        [
-          axios.patch(
-            "/group_v1/editgroupname",
-            { group_name: name, member_id: userId },
-            {
-              baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-              params: {
-                group_id: hiveId,
-              },
-            },
-          ),
-          axios.patch(
-            "/group_v1/editgroupname",
-            {},
-            {
-              baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-              params: {
-                group_id: hiveId,
-                editor_id: userId,
-                description,
-              },
-            },
-          ),
-          photo
-            ? (async () => {
-                const photoBlob = await fetchUriAsBlob(photo);
-                const editPhotoFormData = new FormData();
-                editPhotoFormData.append("editor_id", userId.toString());
-                // @ts-ignore
-                editPhotoFormData.append("photo", {
-                  uri: photo,
-                  name: `${hiveId}_${Date.now()}.${photoBlob.type.split("/")[1]}`,
-                  type: photoBlob.type,
-                });
-                await axios.patch(
-                  "/group_v1/editgroupphoto",
-                  editPhotoFormData,
-                  {
-                    baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-                    params: {
-                      group_id: hiveId,
-                    },
-                  },
-                );
-              })()
-            : undefined,
-        ].filter(Boolean),
-      );
+  return useLoggingMutation({
+    method: "PATCH",
+    url: "/group_v1/editgroupname",
+    query: {
+      group_id: hiveId,
     },
-    onSettled: async () => {
-      return await queryClient.invalidateQueries({
-        queryKey: ["hive", hiveId, "data"],
-      });
+    body: {
+      member_id: userId,
     },
+    getMutationRequestParams: ({ name }: { name: string }) => {
+      return { body: { group_name: name } };
+    },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_GROUP_API,
+    },
+    validator: z.any(),
+    invalidateKeys: [["hive", hiveId, "data"]],
+  });
+};
+
+export const useEditHiveDescriptionMutation = (hiveId: number) => {
+  const userId = useUserId();
+
+  return useLoggingMutation({
+    method: "PATCH",
+    url: "/group_v1/editgroupdescription",
+    query: {
+      group_id: hiveId,
+      editor_id: userId,
+    },
+    getMutationRequestParams: ({ description }: { description: string }) => {
+      return { query: { description } };
+    },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_GROUP_API,
+    },
+    validator: z.any(),
+    invalidateKeys: [["hive", hiveId, "data"]],
+  });
+};
+
+export const useEditHivePhotoMutation = (hiveId: number) => {
+  const userId = useUserId();
+
+  return useLoggingMutation({
+    method: "PATCH_FORM",
+    url: "/group_v1/editgroupphoto",
+    query: {
+      group_id: hiveId,
+    },
+    body: { editor_id: userId },
+    getMutationRequestParams: ({ photo }: { photo: string }) => {
+      return {
+        body: {
+          photo: {
+            uri: photo,
+            filename: (blob: Blob) =>
+              `${hiveId}_${Date.now()}.${blob.type.split("/")[1]}`,
+          },
+        },
+      };
+    },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_GROUP_API,
+    },
+    validator: z.any(),
+    invalidateKeys: [["hive", hiveId, "data"]],
   });
 };
 

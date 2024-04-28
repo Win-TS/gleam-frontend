@@ -1,6 +1,7 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Portal } from "@gorhom/portal";
 import { useForm } from "@tanstack/react-form";
+import { zodValidator } from "@tanstack/zod-form-adapter";
 import { router, useLocalSearchParams, useRouter } from "expo-router";
 import { atom, useAtom, useSetAtom } from "jotai";
 import React, { useMemo, useState } from "react";
@@ -13,6 +14,7 @@ import {
   Popover,
   PortalProvider,
   Sheet,
+  Spinner,
   Text,
   View,
   XStack,
@@ -32,7 +34,9 @@ import QueryPlaceholder from "@/src/components/QueryPlaceholder";
 import SecondaryBtn from "@/src/components/SecondaryBtn";
 import VerticalList from "@/src/components/VerticalList";
 import {
-  useHiveInfoMutation,
+  useEditHiveDescriptionMutation,
+  useEditHiveNameMutation,
+  useEditHivePhotoMutation,
   useHiveQuery,
   useRequestHiveMutation,
 } from "@/src/hooks/hive";
@@ -58,13 +62,19 @@ const HiveRequestSheet = ({ hiveId }: { hiveId: number }) => {
 
   const requestHiveMutation = useRequestHiveMutation(hiveId);
 
+  const formValidator = {
+    description: z.string(),
+  };
+
   const form = useForm({
     defaultValues: {
       description: "",
     },
+    validatorAdapter: zodValidator,
     onSubmit: async ({ value }) => {
       try {
-        await requestHiveMutation.mutateAsync(value);
+        const parsedValue = await z.object(formValidator).parseAsync(value);
+        await requestHiveMutation.mutateAsync(parsedValue);
         setOpenRequestSheet(false);
       } catch {}
     },
@@ -82,6 +92,7 @@ const HiveRequestSheet = ({ hiveId }: { hiveId: number }) => {
           <form.Provider>
             <form.Field
               name="description"
+              validators={{ onChange: formValidator.description }}
               children={(field) => (
                 <Input
                   h="$12"
@@ -95,9 +106,23 @@ const HiveRequestSheet = ({ hiveId }: { hiveId: number }) => {
               )}
             />
           </form.Provider>
-          <SecondaryBtn w="100%" onPress={form.handleSubmit}>
-            REQUEST
-          </SecondaryBtn>
+          <form.Subscribe
+            selector={(state) => [state.canSubmit, state.isSubmitting]}
+            children={([canSubmit, isSubmitting]) =>
+              isSubmitting ? (
+                <Spinner size="large" color="$color11" />
+              ) : (
+                <SecondaryBtn
+                  w="100%"
+                  disabled={!canSubmit}
+                  opacity={canSubmit ? 1 : 0.5}
+                  onPress={form.handleSubmit}
+                >
+                  REQUEST
+                </SecondaryBtn>
+              )
+            }
+          />
         </Sheet.Frame>
       </Sheet>
     </Portal>
@@ -283,19 +308,39 @@ const HiveFormHeader = ({
   hive: HiveWithMemberInfo;
   setIsEditHive: (edit: boolean) => void;
 }) => {
-  const hiveInfoMutation = useHiveInfoMutation(hive.group_info.group_id);
+  const hiveNameMutation = useEditHiveNameMutation(hive.group_info.group_id);
+  const hiveDescriptionMutation = useEditHiveDescriptionMutation(
+    hive.group_info.group_id,
+  );
+  const hivePhotoMutation = useEditHivePhotoMutation(hive.group_info.group_id);
+
+  const formValidator = {
+    name: z.string(),
+    description: z.string(),
+    photo: z.optional(z.string()),
+  };
 
   const form = useForm({
     defaultValues: {
-      photo: undefined as string | undefined,
       name: hive.group_info.group_name,
       description: hive.group_info.description.String,
+      photo: undefined as string | undefined,
     },
+    validatorAdapter: zodValidator,
     onSubmit: async ({ value }) => {
       try {
-        await hiveInfoMutation.mutateAsync(value);
+        const { name, description, photo } = await z
+          .object(formValidator)
+          .parseAsync(value);
+        await Promise.all(
+          [
+            hiveNameMutation.mutateAsync({ name }),
+            hiveDescriptionMutation.mutateAsync({ description }),
+            photo ? hivePhotoMutation.mutateAsync({ photo }) : undefined,
+          ].filter(Boolean),
+        );
+        setIsEditHive(false);
       } catch {}
-      setIsEditHive(false);
     },
   });
 
@@ -303,6 +348,7 @@ const HiveFormHeader = ({
     <form.Provider>
       <form.Field
         name="photo"
+        validators={{ onChange: formValidator.photo }}
         children={(field) => (
           <ImagePicker
             size="$8"
@@ -313,30 +359,61 @@ const HiveFormHeader = ({
       />
       <View w="100%" jc="center" ai="center">
         <View w="100%" jc="center" ai="center" gap="$1">
-          <Input
-            value={hive.group_info.group_name}
-            py="$1"
-            w="100%"
-            bw="$1"
-            boc="$gleam12"
-            fos="$6"
-            fow="bold"
+          <form.Field
+            name="name"
+            validators={{ onChange: formValidator.name }}
+            children={(field) => (
+              <Input
+                value={field.state.value}
+                py="$1"
+                w="100%"
+                bw="$1"
+                boc="$gleam12"
+                fos="$6"
+                fow="bold"
+                onBlur={field.handleBlur}
+                onChangeText={field.handleChange}
+              />
+            )}
           />
-          <Input
-            value={hive.group_info.description.String}
-            h="$8"
-            w="100%"
-            py="$1"
-            bw="$1"
-            boc="$gleam12"
-            fos="$2"
-            multiline
+          <form.Field
+            name="description"
+            validators={{ onChange: formValidator.description }}
+            children={(field) => (
+              <Input
+                value={field.state.value}
+                h="$8"
+                w="100%"
+                py="$1"
+                bw="$1"
+                boc="$gleam12"
+                fos="$2"
+                multiline
+                onBlur={field.handleBlur}
+                onChangeText={field.handleChange}
+              />
+            )}
           />
         </View>
       </View>
-      <PrimaryBtn size="$2.5" w="$8" onPress={form.handleSubmit}>
-        DONE
-      </PrimaryBtn>
+      <form.Subscribe
+        selector={(state) => [state.canSubmit, state.isSubmitting]}
+        children={([canSubmit, isSubmitting]) =>
+          isSubmitting ? (
+            <Spinner size="large" color="$color11" />
+          ) : (
+            <PrimaryBtn
+              size="$2.5"
+              w="$8"
+              disabled={!canSubmit}
+              opacity={canSubmit ? 1 : 0.5}
+              onPress={form.handleSubmit}
+            >
+              DONE
+            </PrimaryBtn>
+          )
+        }
+      />
     </form.Provider>
   );
 };

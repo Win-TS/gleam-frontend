@@ -1,6 +1,4 @@
 import { FontAwesome } from "@expo/vector-icons";
-import { useMutation } from "@tanstack/react-query";
-import axios, { AxiosError, AxiosResponse } from "axios";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -18,19 +16,7 @@ import ImagePicker from "@/src/components/ImagePicker";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
 import PrimarySwitch from "@/src/components/PrimarySwitch";
 import TagPickerSheet from "@/src/components/TagPickerSheet";
-import { useUserId } from "@/src/stores/user";
-
-type CreateHive = {
-  groupName: string;
-  groupCreatorId: number;
-  photo: string;
-  tagId: number;
-  frequency: number;
-  maxMember: number;
-  groupType: string;
-  visibility: boolean;
-  description: string;
-};
+import { useCreateHiveMutation } from "@/src/hooks/hive";
 
 const PlusMinusButton = ({
   handleToggle,
@@ -84,54 +70,16 @@ export default function CreateScreen() {
   const router = useRouter();
 
   const hiveItems = ["Social", "Personal"] as const;
-  const groupCreatorId = useUserId();
-  const [groupName, setGroupName] = useState<string>("");
+  const [name, setName] = useState<string>("");
   const [photo, setPhoto] = useState<string>("");
   const [tagId, setTagId] = useState<number>(-1);
   const [frequency, setFrequency] = useState<number>(1);
   const [maxMember, setMaxMember] = useState<number>(1);
-  const [groupType, setGroupType] = useState<string>("Social");
+  const [type, setType] = useState<string>("Social");
   const [visibility, setVisibility] = useState<boolean>(true);
   const [description, setDescription] = useState<string>("");
 
-  const createHiveQuery = useMutation<
-    AxiosResponse,
-    AxiosError<{ message: string }>,
-    CreateHive
-  >({
-    mutationFn: async ({
-      groupName,
-      groupCreatorId,
-      photo,
-      tagId,
-      frequency,
-      maxMember,
-      groupType,
-      visibility,
-      description,
-    }: CreateHive) => {
-      return await axios.post(
-        "/group_v1/group",
-        {
-          group_name: groupName,
-          group_creator_id: groupCreatorId.toString(),
-          photo,
-          tag_id: tagId.toString(),
-          frequency: frequency.toString(),
-          max_members: maxMember.toString(),
-          group_type: groupType,
-          visibility: visibility.toString(),
-          description,
-        },
-        {
-          baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        },
-      );
-    },
-  });
+  const createHiveMutation = useCreateHiveMutation();
 
   return (
     <YStack f={1}>
@@ -146,7 +94,7 @@ export default function CreateScreen() {
         $sm={{ px: "$4" }}
       >
         <ImagePicker size="$10" image={photo} setImage={setPhoto} />
-        <Select onValueChange={setGroupType}>
+        <Select onValueChange={setType}>
           <Select.Trigger
             fb={0}
             size="$2"
@@ -202,7 +150,7 @@ export default function CreateScreen() {
           $gtSm={{ maw: "$20" }}
           placeholder="NAME YOUR HIVE"
           bc="$gleam1"
-          onChangeText={setGroupName}
+          onChangeText={setName}
         />
         <Input
           h="$12"
@@ -249,14 +197,13 @@ export default function CreateScreen() {
           w="$20"
           mt="$8"
           onPress={() => {
-            createHiveQuery.mutate({
-              groupName,
-              groupCreatorId,
+            createHiveMutation.mutate({
+              name,
               photo,
               tagId,
               frequency,
               maxMember,
-              groupType,
+              type,
               visibility,
               description,
             });

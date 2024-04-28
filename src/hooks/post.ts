@@ -1,5 +1,3 @@
-import { useMutation } from "@tanstack/react-query";
-import axios, { AxiosError } from "axios";
 import { z } from "zod";
 
 import {
@@ -9,7 +7,6 @@ import {
 } from "@/src/hooks/query";
 import { post_, feedPost_, hivePost_ } from "@/src/schemas/post";
 import { useUserId } from "@/src/stores/user";
-import { fetchUriAsBlob } from "@/src/utils/fetchUriAsBlob";
 
 export const usePostQuery = (postId: number) => {
   const userId = useUserId({ throw: false });
@@ -89,30 +86,32 @@ export const usePostReactionCountsQuery = (postId: number) => {
 export const useCreatePostMutation = () => {
   const userId = useUserId();
 
-  return useMutation<
-    void,
-    AxiosError<{ message: string }>,
-    {
+  return useLoggingMutation({
+    method: "POST_FORM",
+    url: "/post_v1/post",
+    body: { member_id: userId, description: "" },
+    getMutationRequestParams: ({
+      hiveId,
+      photo,
+    }: {
       hiveId: number;
       photo: string;
-    }
-  >({
-    mutationFn: async ({ hiveId, photo }) => {
-      const photoBlob = await fetchUriAsBlob(photo);
-      const postFormData = new FormData();
-      postFormData.append("member_id", userId.toString());
-      postFormData.append("group_id", hiveId.toString());
-      postFormData.append("description", "");
-      // @ts-ignore
-      postFormData.append("photo", {
-        uri: photo,
-        name: `${userId}_${hiveId}_${Date.now()}.${photoBlob.type.split("/")[1]}`,
-        type: photoBlob.type,
-      });
-      return await axios.post("/post_v1/post", postFormData, {
-        baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-      });
+    }) => {
+      return {
+        body: {
+          group_id: hiveId,
+          photo: {
+            uri: photo,
+            filename: (blob: Blob) =>
+              `${userId}_${hiveId}_${Date.now()}.${blob.type.split("/")[1]}`,
+          },
+        },
+      };
     },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_GROUP_API,
+    },
+    validator: z.any(),
   });
 };
 

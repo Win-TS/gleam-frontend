@@ -1,12 +1,14 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
+import { zodValidator } from "@tanstack/zod-form-adapter";
 import { useRouter } from "expo-router";
 import { FirebaseError } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import React, { useEffect, useCallback } from "react";
 import { BackHandler } from "react-native";
-import { Text, Checkbox, YStack, XStack } from "tamagui";
+import { Text, Checkbox, YStack, XStack, Spinner } from "tamagui";
+import { z } from "zod";
 
 import { LogoIcon } from "@/assets";
 import PageContainer from "@/src/components/PageContainer";
@@ -31,23 +33,28 @@ export default function LoginScreen() {
     return removeCallback;
   }, []);
 
-  type FormFields = {
-    email: string;
-    password: string;
-  };
-
-  const loginMutation = useMutation<undefined, FirebaseError, FormFields>({
-    mutationFn: async ({ email, password }: FormFields) => {
+  const loginMutation = useMutation<
+    undefined,
+    FirebaseError,
+    { email: string; password: string }
+  >({
+    mutationFn: async ({ email, password }) => {
       const auth = getAuth();
       await signInWithEmailAndPassword(auth, email, password);
     },
   });
+
+  const formValidator = {
+    email: z.string().email(),
+    password: z.string(),
+  };
 
   const form = useForm({
     defaultValues: {
       email: "",
       password: "",
     },
+    validatorAdapter: zodValidator,
     onSubmit: async ({ value }) => {
       try {
         await loginMutation.mutateAsync(value);
@@ -62,6 +69,7 @@ export default function LoginScreen() {
         <form.Provider>
           <form.Field
             name="email"
+            validators={{ onChange: formValidator.email }}
             children={(field) => (
               <SecondaryInput
                 w="100%"
@@ -74,6 +82,7 @@ export default function LoginScreen() {
           />
           <form.Field
             name="password"
+            validators={{ onChange: formValidator.password }}
             children={(field) => (
               <SecondaryInput
                 w="100%"
@@ -98,9 +107,24 @@ export default function LoginScreen() {
           <Text h="$4" w="100%" col="#ff0000" fos="$2" fow="bold">
             {loginMutation.error?.message ?? ""}
           </Text>
-          <PrimaryBtn size="$4" w="100%" onPress={form.handleSubmit}>
-            LOG IN
-          </PrimaryBtn>
+          <form.Subscribe
+            selector={(state) => [state.canSubmit, state.isSubmitting]}
+            children={([canSubmit, isSubmitting]) =>
+              isSubmitting ? (
+                <Spinner size="large" color="$color11" />
+              ) : (
+                <PrimaryBtn
+                  size="$4"
+                  w="100%"
+                  disabled={!canSubmit}
+                  opacity={canSubmit ? 1 : 0.5}
+                  onPress={form.handleSubmit}
+                >
+                  LOG IN
+                </PrimaryBtn>
+              )
+            }
+          />
           <SecondaryBtn
             size="$4"
             w="100%"

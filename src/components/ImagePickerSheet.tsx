@@ -1,10 +1,10 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { Portal } from "@gorhom/portal";
 import * as ImagePicker from "expo-image-picker";
 import React from "react";
 import { XStack, useTheme, Sheet, Text, YStack } from "tamagui";
 
 import PrimaryBtn from "@/src/components/PrimaryBtn";
-import { Portal } from "@gorhom/portal";
 
 export default function ({
   open,

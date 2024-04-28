@@ -3,6 +3,7 @@ import { useForm } from "@tanstack/react-form";
 import { zodValidator } from "@tanstack/zod-form-adapter";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
+import { Pressable } from "react-native";
 import { Image, Spinner, Text, View, XStack, YStack, useTheme } from "tamagui";
 import { z } from "zod";
 
@@ -14,7 +15,6 @@ import SecondaryBtn from "@/src/components/SecondaryBtn";
 import { useCreatePostMutation } from "@/src/hooks/post";
 import { Hive, hive_ } from "@/src/schemas/hive";
 import { useUserId } from "@/src/stores/user";
-import { Pressable } from "react-native";
 
 export default function AddStreakScreen() {
   const theme = useTheme();
@@ -24,29 +24,29 @@ export default function AddStreakScreen() {
 
   const createPostMutation = useCreatePostMutation();
 
+  const formValidator = {
+    hive: hive_,
+    image: z.string(),
+  };
+
   const form = useForm({
     defaultValues: {
       hive: undefined as Hive | undefined,
       image: "",
     },
-    defaultState: { canSubmit: false },
-    validators: {
-      onChange: z.object({
-        hive: hive_,
-        image: z.string(),
-      }),
-    },
     validatorAdapter: zodValidator,
-    onSubmit: async ({ value: { hive, image } }) => {
-      if (hive) {
-        try {
-          await createPostMutation.mutateAsync({
-            hiveId: hive?.group_id,
-            photo: image,
-          });
-          router.replace("/home/");
-        } catch {}
-      }
+    onSubmit: async ({ value }) => {
+      try {
+        const {
+          hive: { group_id },
+          image,
+        } = await z.object(formValidator).parseAsync(value);
+        await createPostMutation.mutateAsync({
+          hiveId: group_id,
+          photo: image,
+        });
+        router.replace("/home/");
+      } catch {}
     },
   });
 
@@ -63,6 +63,7 @@ export default function AddStreakScreen() {
             <Pressable onPress={() => setImagePickerOpen(!imagePickerOpen)}>
               <form.Field
                 name="image"
+                validators={{ onChange: formValidator.image }}
                 children={(field) => (
                   <>
                     {field.state.value ? (
@@ -84,6 +85,7 @@ export default function AddStreakScreen() {
             <Text fow="bold">WHAT IS YOUR ACHIEVEMENT TODAY??</Text>
             <form.Field
               name="hive"
+              validators={{ onChange: formValidator.hive }}
               children={(field) => (
                 <>
                   <SecondaryBtn

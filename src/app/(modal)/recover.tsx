@@ -1,10 +1,12 @@
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
+import { zodValidator } from "@tanstack/zod-form-adapter";
 import axios, { AxiosError } from "axios";
 import { useRouter } from "expo-router";
 import React, { useEffect, useCallback } from "react";
 import { BackHandler } from "react-native";
-import { Text, YStack } from "tamagui";
+import { Spinner, Text, YStack } from "tamagui";
+import { z } from "zod";
 
 import { LogoIcon } from "@/assets";
 import PageContainer from "@/src/components/PageContainer";
@@ -54,15 +56,23 @@ export default function RecoverScreen() {
     },
   });
 
+  const formValidator = {
+    email: z.string().email(),
+    confirmationCode: z.string(),
+    password: z.string(),
+  };
+
   const form = useForm({
     defaultValues: {
       email: "",
       confirmationCode: "",
       password: "",
     },
+    validatorAdapter: zodValidator,
     onSubmit: async ({ value }) => {
       try {
-        await recoverMutation.mutateAsync(value);
+        const parsedValue = await z.object(formValidator).parseAsync(value);
+        await recoverMutation.mutateAsync(parsedValue);
       } catch {}
     },
   });
@@ -74,6 +84,7 @@ export default function RecoverScreen() {
         <form.Provider>
           <form.Field
             name="email"
+            validators={{ onChange: formValidator.email }}
             children={(field) => (
               <SecondaryInput
                 w="100%"
@@ -89,6 +100,7 @@ export default function RecoverScreen() {
           </PrimaryBtn>
           <form.Field
             name="confirmationCode"
+            validators={{ onChange: formValidator.confirmationCode }}
             children={(field) => (
               <SecondaryInput
                 w="100%"
@@ -101,6 +113,7 @@ export default function RecoverScreen() {
           />
           <form.Field
             name="password"
+            validators={{ onChange: formValidator.password }}
             children={(field) => (
               <SecondaryInput
                 w="100%"
@@ -115,9 +128,24 @@ export default function RecoverScreen() {
           <Text h="$4" w="100%" col="#ff0000" fos="$2" fow="bold">
             {""}
           </Text>
-          <PrimaryBtn size="$4" w="100%" onPress={form.handleSubmit}>
-            RESET PASSWORD
-          </PrimaryBtn>
+          <form.Subscribe
+            selector={(state) => [state.canSubmit, state.isSubmitting]}
+            children={([canSubmit, isSubmitting]) =>
+              isSubmitting ? (
+                <Spinner size="large" color="$color11" />
+              ) : (
+                <PrimaryBtn
+                  size="$4"
+                  w="100%"
+                  disabled={!canSubmit}
+                  opacity={canSubmit ? 1 : 0.5}
+                  onPress={form.handleSubmit}
+                >
+                  RESET PASSWORD
+                </PrimaryBtn>
+              )
+            }
+          />
           <SecondaryBtn
             size="$4"
             w="100%"

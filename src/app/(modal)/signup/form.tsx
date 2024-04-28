@@ -1,19 +1,27 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useForm } from "@tanstack/react-form";
-import { useMutation } from "@tanstack/react-query";
-import axios, { AxiosError, AxiosResponse } from "axios";
+import { zodValidator } from "@tanstack/zod-form-adapter";
 import { useRouter } from "expo-router";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import { Platform } from "react-native";
-import { Text, Select, YStack, XStack, useTheme, Separator } from "tamagui";
+import {
+  Text,
+  Select,
+  YStack,
+  XStack,
+  useTheme,
+  Separator,
+  Spinner,
+} from "tamagui";
+import { z } from "zod";
 
 import ImagePicker from "@/src/components/ImagePicker";
 import PageContainer from "@/src/components/PageContainer";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
 import SecondaryInput from "@/src/components/SecondaryInput";
-import { fetchUriAsBlob } from "@/src/utils/fetchUriAsBlob";
+import { useMutationErrorMessage } from "@/src/hooks/query";
+import { useSignupMutation } from "@/src/hooks/user";
 
 export default function SignupFormScreen() {
   const theme = useTheme();
@@ -25,75 +33,21 @@ export default function SignupFormScreen() {
   const [webBirthDateTempState, setWebBirthDateTempState] =
     useState("DD/MM/YYYY");
 
-  type FormFields = {
-    photo: string;
-    firstName: string;
-    lastName: string;
-    username: string;
-    email: string;
-    password: string;
-    phoneNumber: string;
-    birthDate: Date | undefined;
-    gender: (typeof genderItems)[number] | undefined;
-    nationality: (typeof nationalityItems)[number] | undefined;
+  const signupMutation = useSignupMutation();
+  const signupMutationErrorMessage = useMutationErrorMessage(signupMutation);
+
+  const formValidator = {
+    photo: z.string(),
+    firstName: z.string(),
+    lastName: z.string(),
+    username: z.string(),
+    email: z.string(),
+    password: z.string(),
+    phoneNumber: z.string(),
+    birthDate: z.date(),
+    gender: z.string(),
+    nationality: z.string(),
   };
-
-  const signupMutation = useMutation<
-    AxiosResponse,
-    AxiosError<{ message: string }>,
-    FormFields
-  >({
-    mutationFn: async ({
-      photo,
-      firstName,
-      lastName,
-      username,
-      email,
-      password,
-      phoneNumber,
-      birthDate,
-      gender,
-      nationality,
-    }: FormFields) => {
-      const photoBlob = await fetchUriAsBlob(photo);
-      const formData = new FormData();
-      // @ts-ignore
-      formData.append("photo", {
-        uri: photo,
-        name: `${username}_${Date.now()}.${photoBlob.type.split("/")[1]}`,
-        type: photoBlob.type,
-      });
-      formData.append("firstname", firstName);
-      formData.append("lastname", lastName);
-      formData.append("username", username);
-      formData.append("email", email);
-      formData.append("phone_no", `+66${phoneNumber}`);
-      formData.append(
-        "birthday",
-        birthDate?.toISOString()?.split("T")[0] ?? "",
-      );
-      formData.append("gender", gender ?? "");
-      formData.append("nationality", nationality ?? "");
-      formData.append("password", password);
-      return await axios.post("/user_v1/createuser", formData, {
-        baseURL: process.env.EXPO_PUBLIC_USER_API,
-      });
-    },
-    onSuccess: async (_, { email, password }) => {
-      /*
-      router.replace({
-        pathname: "/signup/otp",
-        params: {
-          email,
-          password,
-        },
-      });
-      */
-
-      const auth = getAuth();
-      await signInWithEmailAndPassword(auth, email, password);
-    },
-  });
 
   const form = useForm({
     defaultValues: {
@@ -108,9 +62,11 @@ export default function SignupFormScreen() {
       gender: undefined as (typeof genderItems)[number] | undefined,
       nationality: undefined as (typeof nationalityItems)[number] | undefined,
     },
+    validatorAdapter: zodValidator,
     onSubmit: async ({ value }) => {
       try {
-        await signupMutation.mutateAsync(value);
+        const parsedValue = await z.object(formValidator).parseAsync(value);
+        await signupMutation.mutateAsync(parsedValue);
       } catch {}
     },
   });
@@ -122,6 +78,7 @@ export default function SignupFormScreen() {
         <YStack f={1} w="100%" jc="center" ai="center" gap="$3">
           <form.Field
             name="photo"
+            validators={{ onChange: formValidator.photo }}
             children={(field) => (
               <ImagePicker
                 size="$12"
@@ -132,6 +89,7 @@ export default function SignupFormScreen() {
           />
           <form.Field
             name="firstName"
+            validators={{ onChange: formValidator.firstName }}
             children={(field) => (
               <SecondaryInput
                 w="100%"
@@ -144,6 +102,7 @@ export default function SignupFormScreen() {
           />
           <form.Field
             name="lastName"
+            validators={{ onChange: formValidator.lastName }}
             children={(field) => (
               <SecondaryInput
                 w="100%"
@@ -157,6 +116,7 @@ export default function SignupFormScreen() {
           <Separator w="100%" borderColor="$gleam12" />
           <form.Field
             name="username"
+            validators={{ onChange: formValidator.username }}
             children={(field) => (
               <SecondaryInput
                 w="100%"
@@ -169,6 +129,7 @@ export default function SignupFormScreen() {
           />
           <form.Field
             name="email"
+            validators={{ onChange: formValidator.email }}
             children={(field) => (
               <SecondaryInput
                 w="100%"
@@ -181,6 +142,7 @@ export default function SignupFormScreen() {
           />
           <form.Field
             name="password"
+            validators={{ onChange: formValidator.password }}
             children={(field) => (
               <SecondaryInput
                 w="100%"
@@ -205,6 +167,7 @@ export default function SignupFormScreen() {
             />
             <form.Field
               name="phoneNumber"
+              validators={{ onChange: formValidator.phoneNumber }}
               children={(field) => (
                 <SecondaryInput
                   fg={1}
@@ -228,6 +191,7 @@ export default function SignupFormScreen() {
               <Text fos="$2">Date of Birth</Text>
               <form.Field
                 name="birthDate"
+                validators={{ onChange: formValidator.birthDate }}
                 children={(field) =>
                   Platform.OS === "web" ? (
                     <SecondaryInput
@@ -287,6 +251,7 @@ export default function SignupFormScreen() {
             </YStack>
             <form.Field
               name="gender"
+              validators={{ onChange: formValidator.gender }}
               children={(field) => (
                 <Select
                   onValueChange={(value) =>
@@ -352,6 +317,7 @@ export default function SignupFormScreen() {
           </XStack>
           <form.Field
             name="nationality"
+            validators={{ onChange: formValidator.nationality }}
             children={(field) => (
               <Select
                 onValueChange={(value) =>
@@ -410,14 +376,29 @@ export default function SignupFormScreen() {
           />
           <YStack pos="relative" h="$4" w="100%">
             <Text col="#ff0000" fos="$2" fow="bold">
-              {signupMutation.error?.response?.data?.message ?? ""}
+              {signupMutationErrorMessage ?? ""}
             </Text>
           </YStack>
         </YStack>
         <YStack h="$11" w="100%" jc="center" ai="center" gap="$3">
-          <PrimaryBtn size="$4" w="100%" onPress={form.handleSubmit}>
-            Sign up
-          </PrimaryBtn>
+          <form.Subscribe
+            selector={(state) => [state.canSubmit, state.isSubmitting]}
+            children={([canSubmit, isSubmitting]) =>
+              isSubmitting ? (
+                <Spinner size="large" color="$color11" />
+              ) : (
+                <PrimaryBtn
+                  size="$4"
+                  w="100%"
+                  disabled={!canSubmit}
+                  opacity={canSubmit ? 1 : 0.5}
+                  onPress={form.handleSubmit}
+                >
+                  Sign up
+                </PrimaryBtn>
+              )
+            }
+          />
           <XStack gap="$3">
             <Text col="#b8ab8c" fos="$2" fow="bold">
               Already have an account?

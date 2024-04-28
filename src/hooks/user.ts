@@ -1,6 +1,5 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios, { AxiosError } from "axios";
-import { z, ZodError } from "zod";
+import { getAuth, signInWithEmailAndPassword } from "@firebase/auth";
+import { z } from "zod";
 
 import {
   useLoggingInfiniteQuery,
@@ -11,7 +10,6 @@ import { friendPair_, friend_ } from "@/src/schemas/friend";
 import { user_ } from "@/src/schemas/user";
 import { userprofile_ } from "@/src/schemas/userprofile";
 import { useUserId } from "@/src/stores/user";
-import { fetchUriAsBlob } from "@/src/utils/fetchUriAsBlob";
 
 export const useUserQuery = () => {
   const userId = useUserId({ throw: false });
@@ -40,89 +38,78 @@ export const useUserprofileQuery = (userId: number) => {
   });
 };
 
-export const uploadUserPhotoResponse_ = z.object({
-  success: z.coerce.boolean(),
-  message: z.string(),
-  url: z.string(),
-});
-
-export const useUserprofileMutation = () => {
+export const useEditUserNameMutation = () => {
   const userId = useUserId();
-  const queryClient = useQueryClient();
 
-  return useMutation<
-    void,
-    AxiosError<{ message: string }> | ZodError,
-    { photo: string | undefined; firstname: string; lastname: string }
-  >({
-    mutationFn: async ({
-      photo,
+  return useLoggingMutation({
+    method: "PATCH",
+    url: "/user_v1/editname",
+    query: { user_id: userId },
+    getMutationRequestParams: ({
       firstname,
       lastname,
     }: {
-      photo: string | undefined;
       firstname: string;
       lastname: string;
     }) => {
-      await Promise.all(
-        [
-          axios.patch(
-            "/user_v1/editname",
-            { firstname, lastname },
-            {
-              baseURL: process.env.EXPO_PUBLIC_USER_API,
-              params: {
-                user_id: userId,
-              },
-            },
-          ),
-          photo
-            ? (async () => {
-                const photoBlob = await fetchUriAsBlob(photo);
-                const uploadUserPhotoFormData = new FormData();
-                // @ts-ignore
-                uploadUserPhotoFormData.append("photo", {
-                  uri: photo,
-                  name: `${userId}_${Date.now()}.${photoBlob.type.split("/")[1]}`,
-                  type: photoBlob.type,
-                });
-                const { url: photoUrl } =
-                  await uploadUserPhotoResponse_.parseAsync(
-                    (
-                      await axios.post(
-                        "/user_v1/uploaduserphoto",
-                        uploadUserPhotoFormData,
-                        {
-                          baseURL: process.env.EXPO_PUBLIC_USER_API,
-                          headers: {
-                            "Content-Type": "multipart/form-data",
-                          },
-                        },
-                      )
-                    ).data,
-                  );
-                const editPhotoFormData = new FormData();
-                editPhotoFormData.append("photo_url", photoUrl);
-                await axios.patch("/user_v1/editphoto", editPhotoFormData, {
-                  baseURL: process.env.EXPO_PUBLIC_USER_API,
-                  params: {
-                    user_id: userId,
-                  },
-                });
-              })()
-            : undefined,
-        ].filter(Boolean),
-      );
+      return { body: { firstname, lastname } };
     },
-    onSettled: async () => {
-      return await queryClient.invalidateQueries({
-        queryKey: ["user", userId, "info"],
-      });
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_USER_API,
     },
+    validator: z.any(),
+    invalidateKeys: [["user", userId, "info"]],
   });
 };
 
-export const useUsernameMutation = () => {
+export const useUploadUserPhotoMutation = () => {
+  const userId = useUserId();
+
+  return useLoggingMutation({
+    method: "POST_FORM",
+    url: "/user_v1/uploaduserphoto",
+    getMutationRequestParams: ({ photo }: { photo: string }) => {
+      return {
+        body: {
+          photo: {
+            uri: photo,
+            filename: (blob: Blob) =>
+              `${userId}_${Date.now()}.${blob.type.split("/")[1]}`,
+          },
+        },
+      };
+    },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_USER_API,
+    },
+    validator: z.object({
+      success: z.coerce.boolean(),
+      message: z.string(),
+      url: z.string(),
+    }),
+  });
+};
+
+export const useEditUserPhotoMutation = () => {
+  const userId = useUserId();
+
+  return useLoggingMutation({
+    method: "PATCH_FORM",
+    url: "/user_v1/editphoto",
+    query: { user_id: userId },
+    getMutationRequestParams: ({ photoUrl }: { photoUrl: string }) => {
+      return {
+        body: { photo_url: photoUrl },
+      };
+    },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_USER_API,
+    },
+    validator: z.any(),
+  });
+};
+
+export const useEditUserUsernameMutation = () => {
   const userId = useUserId();
 
   return useLoggingMutation({
@@ -268,5 +255,72 @@ export const useFriendRequestCountQuery = () => {
     queryKey: ["user", userId, "friend", "pending", "count"],
     validator: z.coerce.number(),
     enabled: !!userId,
+  });
+};
+
+export const useSignupMutation = () => {
+  return useLoggingMutation({
+    method: "POST_FORM",
+    url: "/user_v1/createuser",
+    getMutationRequestParams: ({
+      photo,
+      firstName,
+      lastName,
+      username,
+      email,
+      password,
+      phoneNumber,
+      birthDate,
+      gender,
+      nationality,
+    }: {
+      photo: string;
+      firstName: string;
+      lastName: string;
+      username: string;
+      email: string;
+      password: string;
+      phoneNumber: string;
+      birthDate: Date;
+      gender: string;
+      nationality: string;
+    }) => {
+      return {
+        body: {
+          photo: {
+            uri: photo,
+            filename: (blob: Blob) =>
+              `${username}_${Date.now()}.${blob.type.split("/")[1]}`,
+          },
+          firstnaame: firstName,
+          lastname: lastName,
+          username,
+          email,
+          password,
+          phone_no: `+66${phoneNumber}`,
+          birthday: birthDate.toISOString().split("T")[0],
+          gender,
+          nationality,
+        },
+      };
+    },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_USER_API,
+    },
+    validator: z.any(),
+    onSuccess: async (_, { email, password }) => {
+      /*
+      router.replace({
+        pathname: "/signup/otp",
+        params: {
+          email,
+          password,
+        },
+      });
+      */
+
+      const auth = getAuth();
+      await signInWithEmailAndPassword(auth, email, password);
+    },
   });
 };

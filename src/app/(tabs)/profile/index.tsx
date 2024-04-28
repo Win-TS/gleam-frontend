@@ -1,4 +1,5 @@
 import { useForm } from "@tanstack/react-form";
+import { zodValidator } from "@tanstack/zod-form-adapter";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { Pressable } from "react-native";
@@ -9,7 +10,9 @@ import {
   YStack,
   Input,
   useWindowDimensions,
+  Spinner,
 } from "tamagui";
+import { z } from "zod";
 
 import { Icon } from "@/assets";
 import GleamContainer from "@/src/components/GleamContainer";
@@ -21,7 +24,12 @@ import ProfileHeader from "@/src/components/ProfileHeader";
 import QueryPlaceholder from "@/src/components/QueryPlaceholder";
 import Section from "@/src/components/Section";
 import SwitchWithLabel from "@/src/components/SwitchWithLabel";
-import { useUserprofileMutation, useUserprofileQuery } from "@/src/hooks/user";
+import {
+  useEditUserNameMutation,
+  useEditUserPhotoMutation,
+  useUploadUserPhotoMutation,
+  useUserprofileQuery,
+} from "@/src/hooks/user";
 import { Userprofile } from "@/src/schemas/userprofile";
 import { useUserId } from "@/src/stores/user";
 
@@ -32,19 +40,42 @@ const ProfileFormHeader = ({
   userprofile: Userprofile;
   setIsEditProfile: (edit: boolean) => void;
 }) => {
-  const userprofileMutation = useUserprofileMutation();
+  const editUserNameMutation = useEditUserNameMutation();
+  const uploadUserPhotoMutation = useUploadUserPhotoMutation();
+  const editUserPhotoMutation = useEditUserPhotoMutation();
+
+  const formValidator = {
+    firstname: z.string(),
+    lastname: z.string(),
+    photo: z.optional(z.string()),
+  };
 
   const form = useForm({
     defaultValues: {
-      photo: undefined as string | undefined,
       firstname: userprofile.firstname,
       lastname: userprofile.lastname,
+      photo: undefined as string | undefined,
     },
+    validatorAdapter: zodValidator,
     onSubmit: async ({ value }) => {
       try {
-        await userprofileMutation.mutateAsync(value);
+        const { firstname, lastname, photo } = await z
+          .object(formValidator)
+          .parseAsync(value);
+        await Promise.all(
+          [
+            editUserNameMutation.mutateAsync({ firstname, lastname }),
+            photo
+              ? (async () => {
+                  const { url: photoUrl } =
+                    await uploadUserPhotoMutation.mutateAsync({ photo });
+                  await editUserPhotoMutation.mutateAsync({ photoUrl });
+                })()
+              : undefined,
+          ].filter(Boolean),
+        );
+        setIsEditProfile(false);
       } catch {}
-      setIsEditProfile(false);
     },
   });
 
@@ -53,6 +84,7 @@ const ProfileFormHeader = ({
       <form.Provider>
         <form.Field
           name="photo"
+          validators={{ onChange: formValidator.photo }}
           children={(field) => (
             <ImagePicker
               size="$12"
@@ -65,6 +97,7 @@ const ProfileFormHeader = ({
           <XStack w="100%" jc="center" ai="center" gap="$2">
             <form.Field
               name="firstname"
+              validators={{ onChange: formValidator.firstname }}
               children={(field) => (
                 <Input
                   f={1}
@@ -78,6 +111,7 @@ const ProfileFormHeader = ({
             />
             <form.Field
               name="lastname"
+              validators={{ onChange: formValidator.lastname }}
               children={(field) => (
                 <Input
                   f={1}
@@ -94,9 +128,24 @@ const ProfileFormHeader = ({
         <Text fos="$4" fow="normal" col="$color11">
           {userprofile.username}
         </Text>
-        <PrimaryBtn size="$2.5" w="$12" onPress={form.handleSubmit}>
-          DONE
-        </PrimaryBtn>
+        <form.Subscribe
+          selector={(state) => [state.canSubmit, state.isSubmitting]}
+          children={([canSubmit, isSubmitting]) =>
+            isSubmitting ? (
+              <Spinner size="large" color="$color11" />
+            ) : (
+              <PrimaryBtn
+                size="$2.5"
+                w="$12"
+                disabled={!canSubmit}
+                opacity={canSubmit ? 1 : 0.5}
+                onPress={form.handleSubmit}
+              >
+                DONE
+              </PrimaryBtn>
+            )
+          }
+        />
       </form.Provider>
     </YStack>
   );
