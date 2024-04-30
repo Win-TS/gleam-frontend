@@ -258,7 +258,7 @@ export const useFriendRequestCountQuery = () => {
   });
 };
 
-export const useSignupMutation = () => {
+export const useSignUpMutation = () => {
   return useLoggingMutation({
     method: "POST_FORM",
     url: "/user_v1/createuser",

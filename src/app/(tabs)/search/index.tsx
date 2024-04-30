@@ -1,6 +1,4 @@
 import { FontAwesome } from "@expo/vector-icons";
-import { useQuery } from "@tanstack/react-query";
-import axios, { AxiosError } from "axios";
 import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
 import { Pressable } from "react-native";
@@ -18,9 +16,11 @@ import {
 import HiveBtn from "@/src/components/HiveBtn";
 import HiveByTagBtn from "@/src/components/HiveByTagBtn";
 import PageContainer from "@/src/components/PageContainer";
+import QueryPlaceholder from "@/src/components/QueryPlaceholder";
 import TagPickerSheet from "@/src/components/TagPickerSheet";
 import VerticalList from "@/src/components/VerticalList";
 import {
+  useHiveByTagQuery,
   useHiveListInfiniteQuery,
   useSearchHiveListInfiniteQuery,
 } from "@/src/hooks/hive";
@@ -124,18 +124,7 @@ const SearchHiveByTag = ({ tagId }: { tagId: number }) => {
   const router = useRouter();
   const { width } = useWindowDimensions();
 
-  const useGroupByTagQuery = (tagId: number) => {
-    return useQuery<any, AxiosError<{ message: string }>>({
-      queryKey: ["group", tagId],
-      queryFn: async () => {
-        return await axios.get("/tag_v1/groupswithtag", {
-          baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-          params: { tag_id: tagId },
-        });
-      },
-    });
-  };
-  const groupByTag = useGroupByTagQuery(tagId);
+  const hiveByTagQuery = useHiveByTagQuery(tagId);
 
   return (
     <>
@@ -155,28 +144,34 @@ const SearchHiveByTag = ({ tagId }: { tagId: number }) => {
       <YStack w="100%">
         <Text>EXPLORE</Text>
       </YStack>
-      <View f={1} w={width - 16} $gtSm={{ maw: 290 }}>
-        <VerticalList
-          data={groupByTag.data?.data}
-          numColumns={3}
-          ItemSeparatorComponent={() => <View h="$0.75" />}
-          estimatedItemSize={Math.min(width - 32, 290) / 3 + 16}
-          renderItem={({ item }: { item: any }) => (
-            <View f={1} px="$1.5">
-              <HiveByTagBtn
-                group_name={item.group_name}
-                hiveImg={item.photo_url.String}
-                onPress={() =>
-                  router.replace({
-                    pathname: "/(tabs)/home/hive/[id]/",
-                    params: { id: item.group_id },
-                  })
-                }
-              />
-            </View>
-          )}
-        />
-      </View>
+      <QueryPlaceholder
+        query={hiveByTagQuery}
+        spinnerSize="large"
+        renderData={(data) => (
+          <View f={1} w={width - 16} $gtSm={{ maw: 290 }}>
+            <VerticalList
+              data={data}
+              numColumns={3}
+              ItemSeparatorComponent={() => <View h="$0.75" />}
+              estimatedItemSize={Math.min(width - 32, 290) / 3 + 16}
+              renderItem={({ item }) => (
+                <View f={1} px="$1.5">
+                  <HiveByTagBtn
+                    group_name={item.group_name}
+                    hiveImg={item.photo_url.String}
+                    onPress={() =>
+                      router.replace({
+                        pathname: "/(tabs)/home/hive/[id]/",
+                        params: { id: item.group_id },
+                      })
+                    }
+                  />
+                </View>
+              )}
+            />
+          </View>
+        )}
+      />
     </>
   );
 };

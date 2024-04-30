@@ -1,5 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
-import axios, { AxiosError } from "axios";
+import { Portal } from "@gorhom/portal";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Animated } from "react-native";
 import PagerView, {
@@ -8,8 +7,9 @@ import PagerView, {
 import { Circle, Sheet, View, Text, XStack, YStack } from "tamagui";
 
 import PrimaryBtn from "@/src/components/PrimaryBtn";
+import QueryPlaceholder from "@/src/components/QueryPlaceholder";
 import VerticalList from "@/src/components/VerticalList";
-import { Portal } from "@gorhom/portal";
+import { useTagByCategoryQuery } from "@/src/hooks/hive";
 
 const TagList = ({
   categoryId,
@@ -20,39 +20,34 @@ const TagList = ({
   isFocused: boolean;
   setTag: (tagId: number, tagName: string) => void;
 }) => {
-  const useTagByCatQuery = (categoryId: number) => {
-    return useQuery<any, AxiosError<{ message: string }>>({
-      queryKey: ["tag", "category", categoryId],
-      queryFn: async () => {
-        return await axios.get("/tag_v1/tagbycategory", {
-          baseURL: process.env.EXPO_PUBLIC_GROUP_API,
-          params: { category_id: categoryId },
-        });
-      },
-    });
-  };
-  const tagFromCat = useTagByCatQuery(categoryId);
+  const tagByCategoryQuery = useTagByCategoryQuery(categoryId);
 
   return (
-    <VerticalList
-      data={tagFromCat.data?.data}
-      numColumns={3}
-      ItemSeparatorComponent={() => <View h="$1" />}
-      estimatedItemSize={46}
-      renderItem={({ item }: { item: any }) => (
-        <View f={1} px="$3">
-          <PrimaryBtn
-            size="$2"
-            w="100%"
-            onPress={() => {
-              setTag(item.tag_id, item.tag_name);
-            }}
-          >
-            {item.tag_name}
-          </PrimaryBtn>
-        </View>
+    <QueryPlaceholder
+      query={tagByCategoryQuery}
+      spinnerSize="large"
+      renderData={(data) => (
+        <VerticalList
+          data={data}
+          numColumns={3}
+          ItemSeparatorComponent={() => <View h="$1" />}
+          estimatedItemSize={46}
+          renderItem={({ item }: { item: any }) => (
+            <View f={1} px="$3">
+              <PrimaryBtn
+                size="$2"
+                w="100%"
+                onPress={() => {
+                  setTag(item.tag_id, item.tag_name);
+                }}
+              >
+                {item.tag_name}
+              </PrimaryBtn>
+            </View>
+          )}
+          isFocused={isFocused}
+        />
       )}
-      isFocused={isFocused}
     />
   );
 };

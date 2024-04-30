@@ -3,8 +3,6 @@ import { useMutation } from "@tanstack/react-query";
 import { zodValidator } from "@tanstack/zod-form-adapter";
 import axios, { AxiosError } from "axios";
 import { useRouter } from "expo-router";
-import React, { useEffect, useCallback } from "react";
-import { BackHandler } from "react-native";
 import { Spinner, Text, YStack } from "tamagui";
 import { z } from "zod";
 
@@ -13,23 +11,12 @@ import PageContainer from "@/src/components/PageContainer";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
 import SecondaryBtn from "@/src/components/SecondaryBtn";
 import SecondaryInput from "@/src/components/SecondaryInput";
+import { usePreventHardwareBackPress } from "@/src/hooks/usePreventHardwareBackPress";
 
 export default function RecoverScreen() {
+  usePreventHardwareBackPress();
+
   const router = useRouter();
-
-  const preventBackCallback = useCallback(() => true, []);
-
-  const removeCallback = useCallback(
-    () =>
-      BackHandler.removeEventListener("hardwareBackPress", preventBackCallback),
-    [],
-  );
-
-  useEffect(() => {
-    BackHandler.addEventListener("hardwareBackPress", preventBackCallback);
-
-    return removeCallback;
-  }, []);
 
   type FormFields = {
     email: string;

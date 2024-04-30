@@ -21,7 +21,7 @@ import PageContainer from "@/src/components/PageContainer";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
 import SecondaryInput from "@/src/components/SecondaryInput";
 import { useMutationErrorMessage } from "@/src/hooks/query";
-import { useSignupMutation } from "@/src/hooks/user";
+import { useSignUpMutation } from "@/src/hooks/user";
 
 export default function SignupFormScreen() {
   const theme = useTheme();
@@ -33,8 +33,8 @@ export default function SignupFormScreen() {
   const [webBirthDateTempState, setWebBirthDateTempState] =
     useState("DD/MM/YYYY");
 
-  const signupMutation = useSignupMutation();
-  const signupMutationErrorMessage = useMutationErrorMessage(signupMutation);
+  const signUpMutation = useSignUpMutation();
+  const signUpMutationErrorMessage = useMutationErrorMessage(signUpMutation);
 
   const formValidator = {
     photo: z.string(),
@@ -66,7 +66,7 @@ export default function SignupFormScreen() {
     onSubmit: async ({ value }) => {
       try {
         const parsedValue = await z.object(formValidator).parseAsync(value);
-        await signupMutation.mutateAsync(parsedValue);
+        await signUpMutation.mutateAsync(parsedValue);
       } catch {}
     },
   });
@@ -376,7 +376,7 @@ export default function SignupFormScreen() {
           />
           <YStack pos="relative" h="$4" w="100%">
             <Text col="#ff0000" fos="$2" fow="bold">
-              {signupMutationErrorMessage ?? ""}
+              {signUpMutationErrorMessage ?? ""}
             </Text>
           </YStack>
         </YStack>

@@ -1,13 +1,11 @@
-import { useMutation } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
-import { FirebaseError } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import React from "react";
 import { Text, Input, YStack, XStack } from "tamagui";
 import z from "zod";
 
 import PageContainer from "@/src/components/PageContainer";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
+import { useSignInMutation } from "@/src/hooks/auth";
 
 const params = z.object({
   email: z.string().email(),
@@ -17,12 +15,7 @@ const params = z.object({
 export default function SignupOtpScreen() {
   const { email, password } = params.parse(useLocalSearchParams());
 
-  const otpMutation = useMutation<undefined, FirebaseError>({
-    mutationFn: async () => {
-      const auth = getAuth();
-      await signInWithEmailAndPassword(auth, email, password);
-    },
-  });
+  const signInMutation = useSignInMutation();
 
   return (
     <PageContainer>
@@ -50,7 +43,7 @@ export default function SignupOtpScreen() {
           w="100%"
           onPress={async () => {
             try {
-              await otpMutation.mutateAsync();
+              await signInMutation.mutateAsync({ email, password });
             } catch {}
           }}
         >

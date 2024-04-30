@@ -9,11 +9,13 @@ import {
 import {
   hive_,
   userHive_,
-  extendedHive_,
+  extendedHiveTagName_,
   hiveWithMemberInfo_,
   hiveMember_,
   hiveRequest_,
+  extendedHiveTagId_,
 } from "@/src/schemas/hive";
+import { tag_ } from "@/src/schemas/tag";
 import { useUserId } from "@/src/stores/user";
 
 export const useHiveQuery = (hiveId: number) => {
@@ -57,7 +59,7 @@ export const useHiveListInfiniteQuery = () => {
       baseURL: process.env.EXPO_PUBLIC_GROUP_API,
     },
     queryKey: ["hive", "list"],
-    validator: z.array(extendedHive_),
+    validator: z.array(extendedHiveTagName_),
   });
 };
 
@@ -389,5 +391,29 @@ export const useUserAdminHiveRequestCountQuery = () => {
     validator: z.coerce.number(),
     default: 0, // FIXME: no way to really tell if backend error or we do not have requests
     enabled: !!userId,
+  });
+};
+
+export const useHiveByTagQuery = (tagId: number) => {
+  return useLoggingQuery({
+    url: "/tag_v1/groupswithtag",
+    query: { tag_id: tagId },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_GROUP_API,
+    },
+    queryKey: ["group", tagId],
+    validator: z.array(extendedHiveTagId_),
+  });
+};
+
+export const useTagByCategoryQuery = (categoryId: number) => {
+  return useLoggingQuery({
+    url: "/tag_v1/tagbycategory",
+    query: { category_id: categoryId },
+    config: {
+      baseURL: process.env.EXPO_PUBLIC_GROUP_API,
+    },
+    queryKey: ["category", categoryId, "tag", "list"],
+    validator: z.array(tag_),
   });
 };

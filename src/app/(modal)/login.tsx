@@ -1,12 +1,7 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useForm } from "@tanstack/react-form";
-import { useMutation } from "@tanstack/react-query";
 import { zodValidator } from "@tanstack/zod-form-adapter";
 import { useRouter } from "expo-router";
-import { FirebaseError } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import React, { useEffect, useCallback } from "react";
-import { BackHandler } from "react-native";
 import { Text, Checkbox, YStack, XStack, Spinner } from "tamagui";
 import { z } from "zod";
 
@@ -15,34 +10,17 @@ import PageContainer from "@/src/components/PageContainer";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
 import SecondaryBtn from "@/src/components/SecondaryBtn";
 import SecondaryInput from "@/src/components/SecondaryInput";
+import { useSignInMutation } from "@/src/hooks/auth";
+import { useMutationErrorMessage } from "@/src/hooks/query";
+import { usePreventHardwareBackPress } from "@/src/hooks/usePreventHardwareBackPress";
 
 export default function LoginScreen() {
+  usePreventHardwareBackPress();
+
   const router = useRouter();
 
-  const preventBackCallback = useCallback(() => true, []);
-
-  const removeCallback = useCallback(
-    () =>
-      BackHandler.removeEventListener("hardwareBackPress", preventBackCallback),
-    [],
-  );
-
-  useEffect(() => {
-    BackHandler.addEventListener("hardwareBackPress", preventBackCallback);
-
-    return removeCallback;
-  }, []);
-
-  const loginMutation = useMutation<
-    undefined,
-    FirebaseError,
-    { email: string; password: string }
-  >({
-    mutationFn: async ({ email, password }) => {
-      const auth = getAuth();
-      await signInWithEmailAndPassword(auth, email, password);
-    },
-  });
+  const signInMutation = useSignInMutation();
+  const signInMutationErrorMessage = useMutationErrorMessage(signInMutation);
 
   const formValidator = {
     email: z.string().email(),
@@ -57,7 +35,7 @@ export default function LoginScreen() {
     validatorAdapter: zodValidator,
     onSubmit: async ({ value }) => {
       try {
-        await loginMutation.mutateAsync(value);
+        await signInMutation.mutateAsync(value);
       } catch {}
     },
   });
@@ -105,7 +83,7 @@ export default function LoginScreen() {
             </Text>
           </XStack>
           <Text h="$4" w="100%" col="#ff0000" fos="$2" fow="bold">
-            {loginMutation.error?.message ?? ""}
+            {signInMutationErrorMessage ?? ""}
           </Text>
           <form.Subscribe
             selector={(state) => [state.canSubmit, state.isSubmitting]}
@@ -129,7 +107,6 @@ export default function LoginScreen() {
             size="$4"
             w="100%"
             onPress={() => {
-              removeCallback();
               router.replace("/signup/form");
             }}
           >

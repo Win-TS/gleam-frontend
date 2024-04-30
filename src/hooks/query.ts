@@ -581,21 +581,14 @@ export const useLoggingMutation = <
 
 const messageResponse_ = z.object({ message: z.string() });
 export const useMutationErrorMessage = (
-  mutation: UseMutationResult<
-    any,
-    z.ZodError<unknown> | AxiosError<unknown, unknown>,
-    any,
-    any
-  >,
+  mutation: UseMutationResult<any, Error, any, any>,
 ) => {
   const error = mutation.error;
   if (!error) return undefined;
-  if (error instanceof ZodError) {
-    return error.message;
-  }
   if (isAxiosError(error)) {
     const parsed = messageResponse_.safeParse(error.response?.data);
     if (parsed.success) return parsed.data.message;
     else return error.message;
   }
+  return error.message;
 };

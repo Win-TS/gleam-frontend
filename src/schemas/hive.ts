@@ -20,16 +20,23 @@ export const extendedHive_ = hive_.extend({
     String: z.string(),
     Valid: z.coerce.boolean(),
   }),
-  tag_name: z.string(),
   frequency: z.coerce.number(),
   max_members: z.coerce.number(),
-  total_member: z.coerce.number(),
   visibility: z.coerce.boolean(),
   created_at: z.string().datetime(),
 });
 
+export const extendedHiveTagName_ = extendedHive_.extend({
+  tag_name: z.string(),
+  total_member: z.coerce.number(),
+});
+
+export const extendedHiveTagId_ = extendedHive_.extend({
+  tag_id: z.coerce.number(),
+});
+
 export const hiveWithMemberInfo_ = z.object({
-  group_info: extendedHive_,
+  group_info: extendedHiveTagName_,
   user_id: z.coerce.number(),
   status: z.string(),
 });
@@ -60,6 +67,7 @@ export const hiveRequest_ = z.object({
 export type Hive = z.infer<typeof hive_>;
 export type UserHive = z.infer<typeof userHive_>;
 export type ExtendedHive = z.infer<typeof extendedHive_>;
+export type ExtendedHiveTagName = z.infer<typeof extendedHiveTagName_>;
 export type HiveWithMemberInfo = z.infer<typeof hiveWithMemberInfo_>;
 export type HiveMember = z.infer<typeof hiveMember_>;
 export type HiveRequest = z.infer<typeof hiveRequest_>;

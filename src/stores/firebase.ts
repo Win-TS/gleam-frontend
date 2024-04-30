@@ -1,10 +1,10 @@
-import axios from "axios";
+import { initializeApp, FirebaseApp } from "@firebase/app";
+import { getAuth, getIdToken } from "@firebase/auth";
 import { router } from "expo-router";
-import { initializeApp, FirebaseApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { jwtDecode } from "jwt-decode";
+import { z } from "zod";
 import { create } from "zustand";
 
-import { user_ } from "@/src/schemas/user";
 import { useUserStore } from "@/src/stores/user";
 
 const firebaseConfig = {
@@ -22,6 +22,10 @@ type FirebaseState = {
   initialize: () => void;
 };
 
+const token_ = z.object({
+  gleamUserId: z.coerce.number(),
+});
+
 export const useFirebaseStore = create<FirebaseState>((set) => ({
   app: undefined,
   initialize: () => {
@@ -31,25 +35,11 @@ export const useFirebaseStore = create<FirebaseState>((set) => ({
     auth.onAuthStateChanged(async (authUser) => {
       if (authUser) {
         try {
-          /*
-          await axios.get("/auth_v1/verify", {
-            headers: {
-              Authorization: await auth.currentUser?.getIdToken(),
-            },
-            baseURL: process.env.EXPO_PUBLIC_AUTH_API,
-          });
-          */
-          const user = await user_.parseAsync(
-            (
-              await axios.get("/user_v1/userinfobyemail", {
-                params: { email: authUser.email },
-                baseURL: process.env.EXPO_PUBLIC_USER_API,
-              })
-            ).data,
-          );
           useUserStore.setState({
             mock: false,
-            userId: user.id,
+            userId: (
+              await token_.parseAsync(jwtDecode(await getIdToken(authUser)))
+            ).gleamUserId,
           });
           if (
             process.env.EXPO_PUBLIC_NO_AUTH_NAVIGATION === undefined ||
