@@ -422,6 +422,54 @@ const patchFormRequester = async (req: {
   ).data;
 };
 
+const postUrlencodedRequester = async (req: {
+  url: string;
+  query: object | undefined;
+  body: object | undefined;
+  config?: AxiosRequestConfig;
+}) => {
+  return (
+    await axios.post(req.url, req.body, {
+      params: req.query,
+      ...defu(req.config, {
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+      }),
+    })
+  ).data;
+};
+
+const putUrlencodedRequester = async (req: {
+  url: string;
+  query: object | undefined;
+  body: object | undefined;
+  config?: AxiosRequestConfig;
+}) => {
+  return (
+    await axios.put(req.url, req.body, {
+      params: req.query,
+      ...defu(req.config, {
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+      }),
+    })
+  ).data;
+};
+
+const patchUrlencodedRequester = async (req: {
+  url: string;
+  query: object | undefined;
+  body: object | undefined;
+  config?: AxiosRequestConfig;
+}) => {
+  return (
+    await axios.patch(req.url, req.body, {
+      params: req.query,
+      ...defu(req.config, {
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+      }),
+    })
+  ).data;
+};
+
 const deleteRequester = async (req: {
   url: string;
   query: object | undefined;
@@ -445,6 +493,9 @@ const REQUESTERS = {
   POST_FORM: postFormRequester,
   PUT_FORM: putFormRequester,
   PATCH_FORM: patchFormRequester,
+  POST_URLENCODED: postUrlencodedRequester,
+  PUT_URLENCODED: putUrlencodedRequester,
+  PATCH_URLENCODED: patchUrlencodedRequester,
   DELETE: deleteRequester,
 };
 type MethodRequester<Method extends keyof typeof REQUESTERS> =

@@ -1,7 +1,5 @@
 import { useForm } from "@tanstack/react-form";
-import { useMutation } from "@tanstack/react-query";
 import { zodValidator } from "@tanstack/zod-form-adapter";
-import axios, { AxiosError } from "axios";
 import { useRouter } from "expo-router";
 import { Spinner, Text, YStack } from "tamagui";
 import { z } from "zod";
@@ -11,6 +9,10 @@ import PageContainer from "@/src/components/PageContainer";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
 import SecondaryBtn from "@/src/components/SecondaryBtn";
 import SecondaryInput from "@/src/components/SecondaryInput";
+import {
+  useFindAuthUserByEmailMutation,
+  useUpdatePasswordMutation,
+} from "@/src/hooks/auth";
 import { usePreventHardwareBackPress } from "@/src/hooks/usePreventHardwareBackPress";
 
 export default function RecoverScreen() {
@@ -18,30 +20,8 @@ export default function RecoverScreen() {
 
   const router = useRouter();
 
-  type FormFields = {
-    email: string;
-    confirmationCode: string;
-    password: string;
-  };
-
-  const recoverMutation = useMutation<undefined, AxiosError, FormFields>({
-    mutationFn: async ({ email, password }: FormFields) => {
-      const user = (
-        await axios.get("/auth_v1/find/email", {
-          params: { email },
-          baseURL: process.env.EXPO_PUBLIC_AUTH_API,
-        })
-      ).data;
-      await axios.put(
-        "/auth_v1/update-password",
-        { uid: user.rawId, password },
-        {
-          baseURL: process.env.EXPO_PUBLIC_AUTH_API,
-          headers: { "content-type": "application/x-www-form-urlencoded" },
-        },
-      );
-    },
-  });
+  const findAuthUserByEmailMutation = useFindAuthUserByEmailMutation();
+  const updatePasswordMutation = useUpdatePasswordMutation();
 
   const formValidator = {
     email: z.string().email(),
@@ -58,8 +38,16 @@ export default function RecoverScreen() {
     validatorAdapter: zodValidator,
     onSubmit: async ({ value }) => {
       try {
-        const parsedValue = await z.object(formValidator).parseAsync(value);
-        await recoverMutation.mutateAsync(parsedValue);
+        const { email, password } = await z
+          .object(formValidator)
+          .parseAsync(value);
+        const authUser = await findAuthUserByEmailMutation.mutateAsync({
+          email,
+        });
+        await updatePasswordMutation.mutateAsync({
+          uid: authUser.rawId,
+          password,
+        });
       } catch {}
     },
   });
