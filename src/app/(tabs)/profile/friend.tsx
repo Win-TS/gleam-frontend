@@ -4,6 +4,7 @@ import { Avatar, Input, Separator, View, XStack, Text, YStack } from "tamagui";
 
 import PageContainer from "@/src/components/PageContainer";
 import VerticalList from "@/src/components/VerticalList";
+import { TextStyle } from "@/src/constants/TextStyle";
 import { useRouteToProfile } from "@/src/hooks/useRouteToProfile";
 import { useFriendListInfiniteQuery } from "@/src/hooks/user";
 import { useUserId } from "@/src/stores/user";
@@ -26,7 +27,7 @@ const FriendList = ({
           <Avatar.Image src={url || undefined} />
           <Avatar.Fallback bc="$color5" />
         </Avatar>
-        <Text>{name}</Text>
+        <Text {...TextStyle.button.large}>{name}</Text>
       </XStack>
     </Pressable>
   );

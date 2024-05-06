@@ -12,6 +12,7 @@ import PageContainer from "@/src/components/PageContainer";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
 import ProfileHivePickerSheet from "@/src/components/ProfileHivePickerSheet";
 import SecondaryBtn from "@/src/components/SecondaryBtn";
+import { TextStyle } from "@/src/constants/TextStyle";
 import { useCreatePostMutation } from "@/src/hooks/post";
 import { Hive, hive_ } from "@/src/schemas/hive";
 import { useUserId } from "@/src/stores/user";
@@ -82,7 +83,9 @@ export default function AddStreakScreen() {
             </Pressable>
           </View>
           <YStack w="100%" jc="center" ai="center" gap="$3">
-            <Text fow="bold">WHAT IS YOUR ACHIEVEMENT TODAY??</Text>
+            <Text {...TextStyle.button.small} ta="center">
+              WHAT IS YOUR ACHIEVEMENT TODAY??
+            </Text>
             <form.Field
               name="hive"
               validators={{ onChange: formValidator.hive }}
@@ -95,7 +98,9 @@ export default function AddStreakScreen() {
                       setProfileHivePickerOpen(!profileHivePickerOpen)
                     }
                   >
-                    {field.state.value?.group_name ?? "CHOOSE YOUR HIVE"}
+                    <Text col="$gleam12" {...TextStyle.button.small}>
+                      {field.state.value?.group_name ?? "CHOOSE YOUR HIVE"}
+                    </Text>
                   </SecondaryBtn>
                   <ProfileHivePickerSheet
                     open={profileHivePickerOpen}

@@ -6,6 +6,7 @@ import { Icon } from "@/assets";
 import PageContainer from "@/src/components/PageContainer";
 import PressableSection from "@/src/components/PressableSection";
 import QueryPlaceholder from "@/src/components/QueryPlaceholder";
+import { TextStyle } from "@/src/constants/TextStyle";
 import { useUserAdminHiveRequestCountQuery } from "@/src/hooks/hive";
 import {
   useFriendRequestCountQuery,
@@ -30,21 +31,23 @@ export default function NotificationScreen() {
             <XStack gap="$3" jc="center" ai="center">
               <Icon name="friend" />
               <YStack>
-                <Text fos="$5" fow="bold">
-                  Friend Request
-                </Text>
+                <Text {...TextStyle.button.large}>Friend Request</Text>
                 <QueryPlaceholder
                   query={friendRequestCountQuery}
                   renderData={(countData) => {
                     switch (countData) {
                       case 0:
-                        return <Text fos="$2">no pending requests</Text>;
+                        return (
+                          <Text {...TextStyle.description}>
+                            no pending requests
+                          </Text>
+                        );
                       case 1:
                         return (
                           <QueryPlaceholder
                             query={friendRequestListInfiniteQuery}
                             renderData={(listData) => (
-                              <Text fos="$2">
+                              <Text {...TextStyle.description}>
                                 {listData.pages[0].data[0].username}
                               </Text>
                             )}
@@ -55,7 +58,7 @@ export default function NotificationScreen() {
                           <QueryPlaceholder
                             query={friendRequestListInfiniteQuery}
                             renderData={(listData) => (
-                              <Text fos="$2">
+                              <Text {...TextStyle.description}>
                                 {listData.pages[0].data[0].username} and{" "}
                                 {countData - 1} others
                               </Text>
@@ -77,17 +80,23 @@ export default function NotificationScreen() {
             <XStack gap="$3" jc="center" ai="center">
               <Icon name="hive" />
               <YStack>
-                <Text fos="$5" fow="bold">
-                  Hive Request
-                </Text>
+                <Text {...TextStyle.button.large}>Hive Request</Text>
                 <QueryPlaceholder
                   query={userAdminHiveRequestCountQuery}
                   renderData={(data) => {
                     switch (data) {
                       case 0:
-                        return <Text fos="$2">no pending requests</Text>;
+                        return (
+                          <Text {...TextStyle.description}>
+                            no pending requests
+                          </Text>
+                        );
                       default:
-                        return <Text fos="$2">{data} requests pending</Text>;
+                        return (
+                          <Text {...TextStyle.description}>
+                            {data} requests pending
+                          </Text>
+                        );
                     }
                   }}
                 />

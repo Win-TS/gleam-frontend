@@ -1,11 +1,10 @@
 import { config as configBase } from "@tamagui/config";
-import defu from "defu";
+import defu, { Defu } from "defu";
 import { createFont, createTamagui } from "tamagui";
 
 import * as themes from "./themes";
 
-const olyford = createFont({
-  family: `Olyford`,
+const baseFont = {
   weight: {
     1: "500",
   },
@@ -27,7 +26,42 @@ const olyford = createFont({
     15: 114,
     16: 124,
   },
-});
+};
+
+const createFontMap = <FontFamilies extends string[]>(
+  fontFamilies: FontFamilies,
+): {
+  [FontFamily in FontFamilies[number] as Uncapitalize<FontFamily>]: Defu<
+    { family: FontFamily },
+    [typeof baseFont]
+  >;
+} =>
+  // @ts-ignore
+  Object.fromEntries(
+    fontFamilies.map((fontFamily) => [
+      fontFamily.charAt(0).toLowerCase() + fontFamily.slice(1),
+      createFont(
+        defu(
+          {
+            family: fontFamily,
+          },
+          baseFont,
+        ),
+      ),
+    ]),
+  );
+
+const olyford = createFontMap([
+  "OlyfordHeavy",
+  "OlyfordBlack",
+  "OlyfordExtrabold",
+  "OlyfordBold",
+  "OlyfordMedium",
+  "OlyfordRegular",
+  "OlyfordLight",
+  "OlyfordExtralight",
+  "OlyfordThin",
+] as const);
 
 const acuminProWideLight = createFont({
   family: `AcuminProWideLight`,
@@ -54,37 +88,39 @@ const acuminProWideLight = createFont({
   },
 });
 
+const acuminProWideSemibold = createFont({
+  family: `AcuminProWideSemibold`,
+  weight: {
+    1: "500",
+  },
+  size: {
+    1: 11,
+    2: 12,
+    3: 13,
+    4: 14,
+    5: 16,
+    6: 18,
+    7: 20,
+    8: 22,
+    9: 30,
+    10: 42,
+    11: 52,
+    12: 62,
+    13: 72,
+    14: 92,
+    15: 114,
+    16: 124,
+  },
+});
+
 const mergedConfig = defu(
   {
     fonts: {
-      header: olyford,
+      header: olyford.olyfordBlack,
       body: acuminProWideLight,
-      olyford,
+      ...olyford,
       acuminProWideLight,
-      acuminProWideSemibold: createFont({
-        family: `AcuminProWideSemibold`,
-        weight: {
-          1: "500",
-        },
-        size: {
-          1: 11,
-          2: 12,
-          3: 13,
-          4: 14,
-          5: 16,
-          6: 18,
-          7: 20,
-          8: 22,
-          9: 30,
-          10: 42,
-          11: 52,
-          12: 62,
-          13: 72,
-          14: 92,
-          15: 114,
-          16: 124,
-        },
-      }),
+      acuminProWideSemibold,
       mono: createFont({
         family: `SpaceMono`,
         weight: {

@@ -24,6 +24,7 @@ import ProfileHeader from "@/src/components/ProfileHeader";
 import QueryPlaceholder from "@/src/components/QueryPlaceholder";
 import Section from "@/src/components/Section";
 import SwitchWithLabel from "@/src/components/SwitchWithLabel";
+import { TextStyle } from "@/src/constants/TextStyle";
 import {
   useEditUserNameMutation,
   useEditUserPhotoMutation,
@@ -125,7 +126,7 @@ const ProfileFormHeader = ({
             />
           </XStack>
         </YStack>
-        <Text fos="$4" fow="normal" col="$color11">
+        <Text col="$color11" {...TextStyle.description}>
           {userprofile.username}
         </Text>
         <form.Subscribe
@@ -141,7 +142,9 @@ const ProfileFormHeader = ({
                 opacity={canSubmit ? 1 : 0.5}
                 onPress={form.handleSubmit}
               >
-                DONE
+                <Text col="$color1" {...TextStyle.button.small}>
+                  DONE
+                </Text>
               </PrimaryBtn>
             )
           }
@@ -182,7 +185,9 @@ export default function ProfileScreen() {
                     setIsEditProfile(true);
                   }}
                 >
-                  EDIT PROFILE
+                  <Text col="$color1" {...TextStyle.button.small}>
+                    EDIT PROFILE
+                  </Text>
                 </PrimaryBtn>
               </>
             )
@@ -192,7 +197,7 @@ export default function ProfileScreen() {
           <XStack gap="$3">
             <Pressable onPress={() => router.push("/(tabs)/profile/friend")}>
               <YStack w="$6" jc="center" ai="center">
-                <Text col="$color11" fow="bold">
+                <Text col="$color11" {...TextStyle.button.large}>
                   FRIEND
                 </Text>
 
@@ -200,7 +205,7 @@ export default function ProfileScreen() {
                   query={userprofileQuery}
                   spinnerSize="small"
                   renderData={(data) => (
-                    <Text col="$color11" fow="normal">
+                    <Text col="$color11" {...TextStyle.button.large}>
                       {data.friends_count}
                     </Text>
                   )}
@@ -219,19 +224,19 @@ export default function ProfileScreen() {
         ai="center"
         gap="$3"
       >
-        <Text col="$color1" fos="$4" fow="bold">
+        <Text col="$color1" {...TextStyle.button.small}>
           HIGHEST STREAKS
         </Text>
         <QueryPlaceholder
           query={userprofileQuery}
           spinnerSize="large"
           renderData={(data) => (
-            <Text col="$color1" fos="$10" fow="bold">
+            <Text col="$color1" {...TextStyle.button.extraLarge}>
               {data.max_streak}
             </Text>
           )}
         />
-        <Text col="$color1" fos="$4" fow="bold">
+        <Text col="$color1" {...TextStyle.button.small}>
           DAYS
         </Text>
       </XStack>
@@ -240,7 +245,7 @@ export default function ProfileScreen() {
       {isEditProfile ? (
         <Section>
           <XStack w="100%" jc="space-between" ai="center" px="$3" py="$1">
-            <Text f={1} col="$color11">
+            <Text f={1} col="$color11" {...TextStyle.button.large}>
               MY HIVE
             </Text>
             <SwitchWithLabel label="show in profile" />
@@ -249,7 +254,7 @@ export default function ProfileScreen() {
       ) : (
         <PressableSection onPress={() => router.push("/(tabs)/profile/hive")}>
           <XStack w="100%" jc="space-between" ai="center" px="$3" py="$1">
-            <Text f={1} col="$color11">
+            <Text f={1} col="$color11" {...TextStyle.button.large}>
               MY HIVE
             </Text>
             <Icon name="chevron_right" />

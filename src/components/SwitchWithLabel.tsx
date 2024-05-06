@@ -1,6 +1,7 @@
 import { Text, View, YStack } from "tamagui";
 
 import PrimarySwitch from "@/src/components/PrimarySwitch";
+import { TextStyle } from "@/src/constants/TextStyle";
 
 export default ({
   checked,
@@ -16,7 +17,7 @@ export default ({
       <View>
         <PrimarySwitch checked={checked} onCheckedChange={onCheckedChange} />
       </View>
-      <Text color="$gleam12" fontSize="$2">
+      <Text col="$gleam12" {...TextStyle.description}>
         {label}
       </Text>
     </YStack>

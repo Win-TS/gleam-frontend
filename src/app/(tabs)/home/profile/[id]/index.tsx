@@ -23,6 +23,7 @@ import ProfileHeader from "@/src/components/ProfileHeader";
 import QueryPlaceholder from "@/src/components/QueryPlaceholder";
 import SecondaryBtn from "@/src/components/SecondaryBtn";
 import VerticalList from "@/src/components/VerticalList";
+import { TextStyle } from "@/src/constants/TextStyle";
 import { useUserHiveListQuery } from "@/src/hooks/hive";
 import {
   useAddFriendMutation,
@@ -100,13 +101,17 @@ const FriendStatusButton = ({ userId }: { userId: number }) => {
           case "Accepted":
             return (
               <SecondaryBtn size="$2.5" w="$12">
-                FRIENDED
+                <Text col="$gleam12" {...TextStyle.button.small}>
+                  FRIENDED
+                </Text>
               </SecondaryBtn>
             );
           case "Pending":
             return (
               <DullBtn size="$2.5" w="$12">
-                REQUESTED
+                <Text col="$color1" {...TextStyle.button.small}>
+                  REQUESTED
+                </Text>
               </DullBtn>
             );
           default:
@@ -120,7 +125,9 @@ const FriendStatusButton = ({ userId }: { userId: number }) => {
                   } catch {}
                 }}
               >
-                ADD FRIEND
+                <Text col="$color1" {...TextStyle.button.small}>
+                  ADD FRIEND
+                </Text>
               </PrimaryBtn>
             );
         }
@@ -155,14 +162,14 @@ const ProfileScreenNoHive = ({ userId }: { userId: number }) => {
             }
           >
             <YStack w="$6" jc="center" ai="center">
-              <Text col="$color11" fow="bold">
+              <Text col="$color11" {...TextStyle.button.large}>
                 FRIEND
               </Text>
               <QueryPlaceholder
                 query={userprofileQuery}
                 spinnerSize="small"
                 renderData={(data) => (
-                  <Text col="$color11" fow="normal">
+                  <Text col="$color11" {...TextStyle.button.large}>
                     {data.friends_count}
                   </Text>
                 )}
@@ -181,19 +188,19 @@ const ProfileScreenNoHive = ({ userId }: { userId: number }) => {
         ai="center"
         gap="$3"
       >
-        <Text col="$color1" fos="$4" fow="bold">
+        <Text col="$color1" {...TextStyle.button.small}>
           HIGHEST STREAKS
         </Text>
         <QueryPlaceholder
           query={userprofileQuery}
           spinnerSize="large"
           renderData={(data) => (
-            <Text col="$color1" fos="$10" fow="bold">
+            <Text col="$color1" {...TextStyle.button.extraLarge}>
               {data.max_streak}
             </Text>
           )}
         />
-        <Text col="$color1" fos="$4" fow="bold">
+        <Text col="$color1" {...TextStyle.button.small}>
           DAYS
         </Text>
       </XStack>
@@ -251,12 +258,14 @@ export default function ProfileScreen() {
                       query={userprofileQuery}
                       spinnerSize="small"
                       renderData={(data) => (
-                        <Text col="$color11">
+                        <Text col="$color11" {...TextStyle.button.large}>
                           {data?.firstname?.toUpperCase()}
                         </Text>
                       )}
                     />
-                    <Text col="$color11">'S HIVE</Text>
+                    <Text col="$color11" {...TextStyle.button.large}>
+                      'S HIVE
+                    </Text>
                   </XStack>
                 </YStack>
               </YStack>

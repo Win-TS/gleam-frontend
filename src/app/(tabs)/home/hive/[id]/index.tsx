@@ -33,6 +33,7 @@ import PrimaryBtn from "@/src/components/PrimaryBtn";
 import QueryPlaceholder from "@/src/components/QueryPlaceholder";
 import SecondaryBtn from "@/src/components/SecondaryBtn";
 import VerticalList from "@/src/components/VerticalList";
+import { TextStyle } from "@/src/constants/TextStyle";
 import {
   useEditHiveDescriptionMutation,
   useEditHiveNameMutation,
@@ -52,7 +53,9 @@ const HiveRequestBtn = () => {
 
   return (
     <PrimaryBtn size="$2.5" w="$8" onPress={() => setOpenRequestSheet(true)}>
-      JOIN
+      <Text col="$color1" {...TextStyle.button.small}>
+        JOIN
+      </Text>
     </PrimaryBtn>
   );
 };
@@ -118,7 +121,9 @@ const HiveRequestSheet = ({ hiveId }: { hiveId: number }) => {
                   opacity={canSubmit ? 1 : 0.5}
                   onPress={form.handleSubmit}
                 >
-                  REQUEST
+                  <Text col="$gleam12" {...TextStyle.button.large}>
+                    REQUEST
+                  </Text>
                 </SecondaryBtn>
               )
             }
@@ -134,7 +139,9 @@ const HiveHeaderBtn = ({ hive }: { hive: HiveWithMemberInfo }) => {
   if (hive.status === "requested")
     return (
       <SecondaryBtn size="$2.5" w="$12" disabled>
-        REQUESTED
+        <Text col="$gleam12" {...TextStyle.button.small}>
+          REQUESTED
+        </Text>
       </SecondaryBtn>
     );
   if (
@@ -143,8 +150,10 @@ const HiveHeaderBtn = ({ hive }: { hive: HiveWithMemberInfo }) => {
     hive.status === "creator"
   )
     return (
-      <SecondaryBtn size="$2.5" w="$8" disabled>
-        JOINED
+      <SecondaryBtn size="$2.5" w="$12" disabled>
+        <Text col="$gleam12" {...TextStyle.button.small}>
+          JOINED
+        </Text>
       </SecondaryBtn>
     );
   return <></>;
@@ -163,7 +172,9 @@ const HiveLeaveBtn = ({ onPress }: { onPress?: () => void }) => {
         setOpenDialog(true);
       }}
     >
-      Leave
+      <Text col="$color1" {...TextStyle.button.small}>
+        Leave
+      </Text>
     </PrimaryBtn>
   );
 };
@@ -215,7 +226,9 @@ const HiveOptionsPopover = ({
                   br="$4"
                   onPress={() => setIsEditHive(true)}
                 >
-                  Edit
+                  <Text col="$color1" {...TextStyle.button.small}>
+                    Edit
+                  </Text>
                 </PrimaryBtn>
                 <PrimaryBtn
                   size="$2.5"
@@ -230,7 +243,9 @@ const HiveOptionsPopover = ({
                     })
                   }
                 >
-                  Setting
+                  <Text col="$color1" {...TextStyle.button.small}>
+                    Setting
+                  </Text>
                 </PrimaryBtn>
               </>
             ) : null}
@@ -283,13 +298,25 @@ const HiveHeader = ({
         </Avatar>
         <View w="100%" jc="center" ai="center">
           <View w="100%" jc="center" ai="center" gap="$1">
-            <Text fos="$2" fow="bold" ta="center" textOverflow="ellipsis">
+            <Text
+              {...TextStyle.button.extraSmall}
+              ta="center"
+              textOverflow="ellipsis"
+            >
               {hive.group_info.tag_name}
             </Text>
-            <Text fos="$6" fow="bold" ta="center" textOverflow="ellipsis">
+            <Text
+              {...TextStyle.button.large}
+              ta="center"
+              textOverflow="ellipsis"
+            >
               {hive.group_info.group_name}
             </Text>
-            <Text fos="$2" ta="center" textOverflow="ellipsis">
+            <Text
+              {...TextStyle.description}
+              ta="center"
+              textOverflow="ellipsis"
+            >
               {hive.group_info.description.String}
             </Text>
           </View>
@@ -409,7 +436,9 @@ const HiveFormHeader = ({
               opacity={canSubmit ? 1 : 0.5}
               onPress={form.handleSubmit}
             >
-              DONE
+              <Text col="$color1" {...TextStyle.button.small}>
+                DONE
+              </Text>
             </PrimaryBtn>
           )
         }
@@ -443,12 +472,12 @@ const HiveMemberBtn = ({ hiveId }: { hiveId: number }) => {
         <QueryPlaceholder
           query={hiveQuery}
           renderData={(data) => (
-            <Text col="$color1" fow="bold">
+            <Text col="$color1" {...TextStyle.button.small}>
               {data.group_info.total_member}
             </Text>
           )}
         ></QueryPlaceholder>
-        <Text col="$color1" fow="bold">
+        <Text col="$color1" {...TextStyle.button.small}>
           members
         </Text>
       </XStack>
@@ -476,7 +505,7 @@ const HiveBody = ({ hiveId }: { hiveId: number }) => {
       renderData={(data) =>
         !data.group_info.visibility && data.status === "non-member" ? (
           <YStack w="100%" jc="center" ai="center" py="$8">
-            <Text col="$color10" ta="center" fow="bold">
+            <Text col="$color10" {...TextStyle.button.large} ta="center">
               This hive is only visible to its member
             </Text>
             <FontAwesome size={64} color={theme.color10.val} name="eye-slash" />

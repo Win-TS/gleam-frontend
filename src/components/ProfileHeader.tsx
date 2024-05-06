@@ -1,5 +1,6 @@
 import { Avatar, Text, YStack } from "tamagui";
 
+import { TextStyle } from "@/src/constants/TextStyle";
 import { Userprofile } from "@/src/schemas/userprofile";
 
 export default ({ userprofile }: { userprofile: Userprofile }) => {
@@ -10,10 +11,10 @@ export default ({ userprofile }: { userprofile: Userprofile }) => {
         <Avatar.Fallback bc="$color5" />
       </Avatar>
       <YStack w="100%" jc="center" ai="center" gap="$1">
-        <Text h="$2.5" fos="$7" fow="bold" col="$color11">
+        <Text h="$2.5" col="$color11" {...TextStyle.button.large}>
           {userprofile.firstname} {userprofile.lastname}
         </Text>
-        <Text fos="$4" fow="normal" col="$color11">
+        <Text col="$color11" {...TextStyle.description}>
           {userprofile.username}
         </Text>
       </YStack>

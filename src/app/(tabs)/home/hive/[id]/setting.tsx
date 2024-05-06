@@ -6,6 +6,7 @@ import { z } from "zod";
 import DeleteHiveDialog from "@/src/components/DeleteHiveDialog";
 import PageContainer from "@/src/components/PageContainer";
 import PrimarySwitch from "@/src/components/PrimarySwitch";
+import { TextStyle } from "@/src/constants/TextStyle";
 import { useDeleteHiveMutation } from "@/src/hooks/hive";
 import { useUserId } from "@/src/stores/user";
 
@@ -25,7 +26,12 @@ export default function SettingScreen() {
   return (
     <PageContainer justifyContent="flex-start">
       <XStack w="100%" ai="center" gap="$3" p="$3">
-        <Text f={1} col="$red10" fos="$5" onPress={() => setDeleteModal(true)}>
+        <Text
+          f={1}
+          col="$red10"
+          {...TextStyle.button.large}
+          onPress={() => setDeleteModal(true)}
+        >
           Delete League
         </Text>
         <DeleteHiveDialog
@@ -41,7 +47,7 @@ export default function SettingScreen() {
       </XStack>
       <Separator w={width} $gtSm={{ maw: "$20" }} boc="$gleam12" />
       <XStack w="100%" ai="center" gap="$3" p="$3">
-        <Text f={1} col="$color11" fos="$5">
+        <Text f={1} col="$color11" {...TextStyle.button.large}>
           Private League
         </Text>
         <View p="$2">

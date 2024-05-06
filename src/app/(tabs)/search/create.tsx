@@ -16,6 +16,7 @@ import ImagePicker from "@/src/components/ImagePicker";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
 import PrimarySwitch from "@/src/components/PrimarySwitch";
 import TagPickerSheet from "@/src/components/TagPickerSheet";
+import { TextStyle } from "@/src/constants/TextStyle";
 import { useCreateHiveMutation } from "@/src/hooks/hive";
 
 const PlusMinusButton = ({
@@ -47,7 +48,7 @@ const PlusMinusButton = ({
       >
         -
       </Text>
-      <Text>{value}</Text>
+      <Text {...TextStyle.button.small}>{value}</Text>
       <Text
         col="$green10"
         onPress={() => {
@@ -163,30 +164,40 @@ export default function CreateScreen() {
         />
         <Separator w={width} boc="$gleam12" $gtSm={{ maxWidth: "$20" }} />
         <YStack w="100%" jc="center" gap="$1" $gtSm={{ maw: "$20" }}>
-          <Text f={1} col="$color12" fos="$5" onPress={() => setTagSheet(true)}>
+          <Text
+            f={1}
+            col="$color12"
+            {...TextStyle.button.small}
+            onPress={() => setTagSheet(true)}
+          >
             TAG
           </Text>
-          <Text f={1} col="$color11" fos="$2">
+          <Text f={1} col="$color11" {...TextStyle.description}>
             Select a tag
           </Text>
         </YStack>
         <Separator w={width} boc="$gleam12" $gtSm={{ maw: "$20" }} />
         <XStack w="100%" ai="center" gap="$3" $gtSm={{ maw: "$20" }}>
-          <Text f={1} col="$color12" fos="$5">
-            VISIBILITY
-          </Text>
+          <YStack f={1}>
+            <Text col="$color12" {...TextStyle.button.small}>
+              VISIBILITY
+            </Text>
+            <Text f={1} col="$color11" {...TextStyle.description}>
+              Whether non-member users is able to see hive activities
+            </Text>
+          </YStack>
           <PrimarySwitch checked={visibility} onCheckedChange={setVisibility} />
         </XStack>
         <Separator w={width} boc="$gleam12" $gtSm={{ maw: "$20" }} />
         <XStack w="100%" ai="center" gap="$3" $gtSm={{ maw: "$20" }}>
-          <Text f={1} col="$color12" fos="$5">
+          <Text f={1} col="$color12" {...TextStyle.button.small}>
             STREAK FREQUENCY
           </Text>
           <PlusMinusButton handleToggle={setFrequency} />
         </XStack>
         <Separator w={width} boc="$gleam12" $gtSm={{ maw: "$20" }} />
         <XStack w="100%" ai="center" gap="$3" $gtSm={{ maw: "$20" }}>
-          <Text f={1} col="$color12" fos="$5">
+          <Text f={1} col="$color12" {...TextStyle.button.small}>
             MAXIMUM MEMBER
           </Text>
           <PlusMinusButton handleToggle={setMaxMember} />
@@ -210,7 +221,9 @@ export default function CreateScreen() {
             router.push("/(tabs)/search");
           }}
         >
-          DONE
+          <Text col="$color1" {...TextStyle.button.large}>
+            DONE
+          </Text>
         </PrimaryBtn>
       </YStack>
       <TagPickerSheet

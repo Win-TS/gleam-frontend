@@ -19,6 +19,7 @@ import PageContainer from "@/src/components/PageContainer";
 import QueryPlaceholder from "@/src/components/QueryPlaceholder";
 import TagPickerSheet from "@/src/components/TagPickerSheet";
 import VerticalList from "@/src/components/VerticalList";
+import { TextStyle } from "@/src/constants/TextStyle";
 import {
   useHiveByTagQuery,
   useHiveListInfiniteQuery,
@@ -40,7 +41,7 @@ const ExploreHiveList = () => {
   return (
     <>
       <YStack w="100%">
-        <Text>CREATE NEW HIVE</Text>
+        <Text {...TextStyle.button.large}>CREATE NEW HIVE</Text>
       </YStack>
       <YStack w="100%">
         <Pressable onPress={() => router.push("/(tabs)/search/create")}>
@@ -53,7 +54,7 @@ const ExploreHiveList = () => {
         </Pressable>
       </YStack>
       <YStack w="100%">
-        <Text>EXPLORE</Text>
+        <Text {...TextStyle.button.large}>EXPLORE</Text>
       </YStack>
       <View f={1} w={width - 16} $gtSm={{ maw: 290 }}>
         <VerticalList
@@ -129,7 +130,7 @@ const SearchHiveByTag = ({ tagId }: { tagId: number }) => {
   return (
     <>
       <YStack w="100%">
-        <Text>CREATE NEW HIVE</Text>
+        <Text {...TextStyle.button.large}>CREATE NEW HIVE</Text>
       </YStack>
       <YStack w="100%">
         <Pressable onPress={() => router.push("/(tabs)/search/create")}>
@@ -142,7 +143,7 @@ const SearchHiveByTag = ({ tagId }: { tagId: number }) => {
         </Pressable>
       </YStack>
       <YStack w="100%">
-        <Text>EXPLORE</Text>
+        <Text {...TextStyle.button.large}>EXPLORE</Text>
       </YStack>
       <QueryPlaceholder
         query={hiveByTagQuery}

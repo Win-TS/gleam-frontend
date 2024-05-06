@@ -4,7 +4,15 @@ import { DimensionValue } from "react-native";
 export const fonts = {
   AcuminProWideLight: require("./fonts/Acumin Pro Wide/Acumin Pro Wide Light.otf"),
   AcuminProWideSemibold: require("./fonts/Acumin Pro Wide/Acumin Pro Wide Semibold.otf"),
-  Olyford: require("./fonts/Olyford/Fontspring-DEMO-olyford-extrabold.otf"),
+  OlyfordHeavy: require("./fonts/Olyford/Fontspring-DEMO-olyford-heavy.otf"),
+  OlyfordBlack: require("./fonts/Olyford/Fontspring-DEMO-olyford-black.otf"),
+  OlyfordExtrabold: require("./fonts/Olyford/Fontspring-DEMO-olyford-extrabold.otf"),
+  OlyfordBold: require("./fonts/Olyford/Fontspring-DEMO-olyford-bold.otf"),
+  OlyfordMedium: require("./fonts/Olyford/Fontspring-DEMO-olyford-medium.otf"),
+  OlyfordRegular: require("./fonts/Olyford/Fontspring-DEMO-olyford-regular.otf"),
+  OlyfordLight: require("./fonts/Olyford/Fontspring-DEMO-olyford-light.otf"),
+  OlyfordExtralight: require("./fonts/Olyford/Fontspring-DEMO-olyford-extralight.otf"),
+  OlyfordThin: require("./fonts/Olyford/Fontspring-DEMO-olyford-thin.otf"),
 };
 
 export const icons = {

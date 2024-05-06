@@ -3,7 +3,7 @@ import React from "react";
 
 import BackBtn from "@/src/components/BackBtn";
 import { useClientOnlyValue } from "@/src/components/useClientOnlyValue";
-import { gleamTitle } from "@/src/constants/gleamTitle";
+import { GleamTitle } from "@/src/constants/Title";
 
 export default function StackLayout() {
   return (
@@ -14,7 +14,7 @@ export default function StackLayout() {
         headerShown: useClientOnlyValue(false, true),
       }}
     >
-      <Stack.Screen name="index" options={gleamTitle.withoutBackBtn} />
+      <Stack.Screen name="index" options={GleamTitle.withoutBackBtn} />
       <Stack.Screen
         name="create"
         options={{

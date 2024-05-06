@@ -15,5 +15,5 @@ export default forwardRef<
     fontWeight: "bold",
   } as const);
 
-  return <Button ref={ref} {...defaultedProps}></Button>;
+  return <Button ref={ref} {...defaultedProps} />;
 });

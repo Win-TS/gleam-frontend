@@ -1,7 +1,8 @@
-import { AlertDialog, XStack } from "tamagui";
+import { AlertDialog, XStack, Text } from "tamagui";
 
 import PrimaryBtn from "@/src/components/PrimaryBtn";
 import SecondaryBtn from "@/src/components/SecondaryBtn";
+import { TextStyle } from "@/src/constants/TextStyle";
 
 export default function ({
   open,
@@ -38,12 +39,16 @@ export default function ({
           <XStack w="100%" gap="$3" pt="$4">
             <AlertDialog.Action onPress={onAction} asChild>
               <PrimaryBtn f={1} size="$2.5" br="$4">
-                YES
+                <Text col="$color1" {...TextStyle.button.large}>
+                  YES
+                </Text>
               </PrimaryBtn>
             </AlertDialog.Action>
             <AlertDialog.Cancel asChild>
               <SecondaryBtn f={1} size="$2.5" br="$4">
-                NO
+                <Text col="$gleam12" {...TextStyle.button.large}>
+                  NO
+                </Text>
               </SecondaryBtn>
             </AlertDialog.Cancel>
           </XStack>

@@ -3,12 +3,7 @@ import React from "react";
 import { StyleSheet } from "react-native";
 import { Text, View } from "tamagui";
 
-import { useColorScheme } from "@/src/components/useColorScheme";
-import Colors from "@/src/constants/Colors";
-
 export default function NotFoundScreen() {
-  const colorScheme = useColorScheme();
-
   return (
     <>
       <Stack.Screen options={{ title: "Oops!" }} />
@@ -18,9 +13,7 @@ export default function NotFoundScreen() {
         </Text>
 
         <Link href="/home/" style={styles.link}>
-          <Text fos={16} col={Colors[colorScheme ?? "light"].tint}>
-            Go to home screen!
-          </Text>
+          <Text fos={16}>Go to home screen!</Text>
         </Link>
       </View>
     </>

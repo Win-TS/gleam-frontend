@@ -18,6 +18,7 @@ import {
 import { ReactionIcon } from "@/assets";
 import DangerBtn from "@/src/components/DangerBtn";
 import QueryPlaceholder from "@/src/components/QueryPlaceholder";
+import { TextStyle } from "@/src/constants/TextStyle";
 import { useHiveQuery } from "@/src/hooks/hive";
 import {
   useCreatePostReactionMutation,
@@ -167,7 +168,9 @@ const ReactionList = ({ post }: { post: Post }) => {
                   ) : (
                     <ReactionDefaultButton post={post} reaction={reaction} />
                   )}
-                  <Text>{data.data[reaction] ?? 0}</Text>
+                  <Text {...TextStyle.button.small}>
+                    {data.data[reaction] ?? 0}
+                  </Text>
                 </XStack>
               );
             })}
@@ -196,13 +199,13 @@ export default ({ post, streak }: { post: BasePost; streak?: number }) => {
               <Avatar circular size="$4">
                 <Avatar.Image src={data.member.photourl || undefined} />
               </Avatar>
-              <Text>{data.member.username}</Text>
+              <Text {...TextStyle.button.small}>{data.member.username}</Text>
             </XStack>
           )}
         />
       </Pressable>
       <ZStack pos="relative" w="100%" pt="$2" aspectRatio={1} ai="center">
-        <View w="100%" br="$8">
+        <View w="100%" br="$8" ov="hidden">
           <Image
             w="100%"
             aspectRatio={1}
@@ -223,6 +226,7 @@ export default ({ post, streak }: { post: BasePost; streak?: number }) => {
             pos="absolute"
             t="$-2"
             h="$3"
+            maw="$16"
             px="$3"
             bw="$1"
             br="$12"
@@ -235,9 +239,15 @@ export default ({ post, streak }: { post: BasePost; streak?: number }) => {
             <QueryPlaceholder
               query={hiveQuery}
               renderData={(data) => (
-                <Text col="$gleam1">
-                  {streak ?? 2} DAYS ON{" "}
-                  {data.group_info.group_name.toUpperCase()}
+                <Text
+                  f={1}
+                  col="$gleam1"
+                  {...TextStyle.button.small}
+                  ov="hidden"
+                  whiteSpace="nowrap"
+                  textOverflow="ellipsis"
+                >
+                  {streak} DAYS ON {data.group_info.group_name.toUpperCase()}
                 </Text>
               )}
             />

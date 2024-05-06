@@ -10,6 +10,7 @@ import PageContainer from "@/src/components/PageContainer";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
 import SecondaryBtn from "@/src/components/SecondaryBtn";
 import SecondaryInput from "@/src/components/SecondaryInput";
+import { TextStyle } from "@/src/constants/TextStyle";
 import { useSignInMutation } from "@/src/hooks/auth";
 import { useMutationErrorMessage } from "@/src/hooks/query";
 import { usePreventHardwareBackPress } from "@/src/hooks/usePreventHardwareBackPress";
@@ -78,11 +79,11 @@ export default function LoginScreen() {
                 <FontAwesome name="check" />
               </Checkbox.Indicator>
             </Checkbox>
-            <Text col="#b8ab8c" fos="$3" fow="bold">
+            <Text col="#b8ab8c" {...TextStyle.description}>
               remember me
             </Text>
           </XStack>
-          <Text h="$4" w="100%" col="#ff0000" fos="$2" fow="bold">
+          <Text h="$4" w="100%" col="#ff0000" {...TextStyle.description}>
             {signInMutationErrorMessage ?? ""}
           </Text>
           <form.Subscribe
@@ -98,7 +99,9 @@ export default function LoginScreen() {
                   opacity={canSubmit ? 1 : 0.5}
                   onPress={form.handleSubmit}
                 >
-                  LOG IN
+                  <Text col="$color1" {...TextStyle.button.large}>
+                    LOG IN
+                  </Text>
                 </PrimaryBtn>
               )
             }
@@ -110,15 +113,16 @@ export default function LoginScreen() {
               router.replace("/signup/form");
             }}
           >
-            SIGN UP
+            <Text col="$gleam12" {...TextStyle.button.large}>
+              SIGN UP
+            </Text>
           </SecondaryBtn>
         </form.Provider>
       </YStack>
       <Text
         h="$4"
         col="#b8ab8c"
-        fos="$2"
-        fow="bold"
+        {...TextStyle.description}
         onPress={() => router.replace("/recover")}
       >
         Forgot password?

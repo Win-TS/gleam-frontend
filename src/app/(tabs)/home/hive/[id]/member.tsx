@@ -17,6 +17,7 @@ import { Icon } from "@/assets";
 import ActionDialog from "@/src/components/ActionDialog";
 import PageContainer from "@/src/components/PageContainer";
 import VerticalList from "@/src/components/VerticalList";
+import { TextStyle } from "@/src/constants/TextStyle";
 import {
   useDeleteHiveMemberMutation,
   useEditMemberRoleMutation,
@@ -45,8 +46,10 @@ const MemberActions = ({ member }: { member: HiveMember }) => {
   const [deleteModal, setDeleteModal] = useState<boolean>(false);
   const rankConversion = member.role === "member" ? "Promote" : "Demote";
 
-  if (member.member_id === userId) return <Text fos="$3">(You)</Text>;
-  if (member.role === "creator") return <Text fos="$3">(Creator)</Text>;
+  if (member.member_id === userId)
+    return <Text {...TextStyle.button.small}>(You)</Text>;
+  if (member.role === "creator")
+    return <Text {...TextStyle.button.small}>(Creator)</Text>;
   if (
     hiveQuery.data?.status !== "creator" &&
     hiveQuery.data?.status !== "co_leader"
@@ -104,7 +107,13 @@ const Member = ({ member }: { member: HiveMember }) => {
             <Avatar.Image src={member.user_photourl || undefined} />
             <Avatar.Fallback bc="$color5" />
           </Avatar>
-          <Text f={1} fs={1} numberOfLines={1} textOverflow="ellipsis" fos="$3">
+          <Text
+            f={1}
+            fs={1}
+            numberOfLines={1}
+            {...TextStyle.button.small}
+            textOverflow="ellipsis"
+          >
             {member.username}
           </Text>
         </XStack>

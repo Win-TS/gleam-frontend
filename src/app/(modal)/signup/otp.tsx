@@ -5,6 +5,7 @@ import z from "zod";
 
 import PageContainer from "@/src/components/PageContainer";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
+import { TextStyle } from "@/src/constants/TextStyle";
 import { useSignInMutation } from "@/src/hooks/auth";
 
 const params = z.object({
@@ -47,13 +48,14 @@ export default function SignupOtpScreen() {
             } catch {}
           }}
         >
-          Create an account
+          <Text col="$color1" {...TextStyle.button.large}>
+            Create an account
+          </Text>
         </PrimaryBtn>
         <XStack gap="$3">
           <Text
             color="#b8ab8c"
-            fos="$2"
-            fow="bold"
+            {...TextStyle.description}
             textDecorationLine="underline"
           >
             Resend OTP

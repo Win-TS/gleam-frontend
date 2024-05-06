@@ -9,6 +9,7 @@ import PageContainer from "@/src/components/PageContainer";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
 import SecondaryBtn from "@/src/components/SecondaryBtn";
 import SecondaryInput from "@/src/components/SecondaryInput";
+import { TextStyle } from "@/src/constants/TextStyle";
 import {
   useFindAuthUserByEmailMutation,
   useUpdatePasswordMutation,
@@ -71,7 +72,9 @@ export default function RecoverScreen() {
             )}
           />
           <PrimaryBtn size="$4" w="100%">
-            GET CONFIRMATION CODE
+            <Text col="$color1" {...TextStyle.button.small}>
+              GET CONFIRMATION CODE
+            </Text>
           </PrimaryBtn>
           <form.Field
             name="confirmationCode"
@@ -100,7 +103,7 @@ export default function RecoverScreen() {
               />
             )}
           />
-          <Text h="$4" w="100%" col="#ff0000" fos="$2" fow="bold">
+          <Text h="$4" w="100%" col="#ff0000" {...TextStyle.description}>
             {""}
           </Text>
           <form.Subscribe
@@ -116,7 +119,9 @@ export default function RecoverScreen() {
                   opacity={canSubmit ? 1 : 0.5}
                   onPress={form.handleSubmit}
                 >
-                  RESET PASSWORD
+                  <Text col="$color1" {...TextStyle.button.large}>
+                    RESET PASSWORD
+                  </Text>
                 </PrimaryBtn>
               )
             }
@@ -128,7 +133,9 @@ export default function RecoverScreen() {
               router.replace("/login");
             }}
           >
-            BACK TO LOGIN
+            <Text col="$gleam12" {...TextStyle.button.large}>
+              BACK TO LOGIN
+            </Text>
           </SecondaryBtn>
         </form.Provider>
       </YStack>

@@ -2,7 +2,7 @@ import { Stack } from "expo-router";
 import React from "react";
 
 import { useClientOnlyValue } from "@/src/components/useClientOnlyValue";
-import { gleamTitle } from "@/src/constants/gleamTitle";
+import { GleamTitle } from "@/src/constants/Title";
 
 export default function StackLayout() {
   return (
@@ -13,8 +13,8 @@ export default function StackLayout() {
         headerShown: useClientOnlyValue(false, true),
       }}
     >
-      <Stack.Screen name="index" options={gleamTitle.withBackBtn} />
-      <Stack.Screen name="request" options={gleamTitle.withBackBtn} />
+      <Stack.Screen name="index" options={GleamTitle.withBackBtn} />
+      <Stack.Screen name="request" options={GleamTitle.withBackBtn} />
     </Stack>
   );
 }

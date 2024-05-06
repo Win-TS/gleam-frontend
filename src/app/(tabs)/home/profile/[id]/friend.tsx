@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import PageContainer from "@/src/components/PageContainer";
 import VerticalList from "@/src/components/VerticalList";
+import { TextStyle } from "@/src/constants/TextStyle";
 import { useRouteToProfile } from "@/src/hooks/useRouteToProfile";
 import { useFriendListInfiniteQuery } from "@/src/hooks/user";
 
@@ -27,7 +28,7 @@ const FriendList = ({
           <Avatar.Image src={url || undefined} />
           <Avatar.Fallback bc="$color5" />
         </Avatar>
-        <Text>{name}</Text>
+        <Text {...TextStyle.button.small}>{name}</Text>
       </XStack>
     </Pressable>
   );

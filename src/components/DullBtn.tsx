@@ -9,8 +9,8 @@ export default forwardRef<
   const defaultedProps = defu(props, {
     borderWidth: "$1",
     borderRadius: "$12",
-    backgroundColor: "#D9D9D9",
-    borderColor: "#D9D9D9",
+    backgroundColor: "$color5",
+    borderColor: "$color5",
     color: "$color1",
     fontWeight: "bold",
   } as const);

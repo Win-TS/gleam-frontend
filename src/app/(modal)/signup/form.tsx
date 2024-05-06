@@ -20,6 +20,7 @@ import ImagePicker from "@/src/components/ImagePicker";
 import PageContainer from "@/src/components/PageContainer";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
 import SecondaryInput from "@/src/components/SecondaryInput";
+import { TextStyle } from "@/src/constants/TextStyle";
 import { useMutationErrorMessage } from "@/src/hooks/query";
 import { useSignUpMutation } from "@/src/hooks/user";
 
@@ -188,7 +189,7 @@ export default function SignupFormScreen() {
           <Separator w="100%" boc="$gleam12" />
           <XStack w="100%" gap="$3">
             <YStack fg={1} fb={0} jc="center" ai="center">
-              <Text fos="$2">Date of Birth</Text>
+              <Text {...TextStyle.description}>Date of Birth</Text>
               <form.Field
                 name="birthDate"
                 validators={{ onChange: formValidator.birthDate }}
@@ -230,19 +231,21 @@ export default function SignupFormScreen() {
                             setShowBirthDatePicker(false);
                           }}
                         />
-                      ) : field.state.value ? (
-                        [
-                          field.state.value
-                            .getDate()
-                            .toString()
-                            .padStart(2, "0"),
-                          (field.state.value.getMonth() + 1)
-                            .toString()
-                            .padStart(2, "0"),
-                          field.state.value.getFullYear().toString(),
-                        ].join("/")
                       ) : (
-                        "DD/MM/YYYY"
+                        <Text col="$color1" {...TextStyle.button.small}>
+                          {field.state.value
+                            ? [
+                                field.state.value
+                                  .getDate()
+                                  .toString()
+                                  .padStart(2, "0"),
+                                (field.state.value.getMonth() + 1)
+                                  .toString()
+                                  .padStart(2, "0"),
+                                field.state.value.getFullYear().toString(),
+                              ].join("/")
+                            : "DD/MM/YYYY"}
+                        </Text>
                       )}
                     </PrimaryBtn>
                   )
@@ -375,7 +378,7 @@ export default function SignupFormScreen() {
             )}
           />
           <YStack pos="relative" h="$4" w="100%">
-            <Text col="#ff0000" fos="$2" fow="bold">
+            <Text col="#ff0000" {...TextStyle.description}>
               {signUpMutationErrorMessage ?? ""}
             </Text>
           </YStack>
@@ -394,19 +397,20 @@ export default function SignupFormScreen() {
                   opacity={canSubmit ? 1 : 0.5}
                   onPress={form.handleSubmit}
                 >
-                  Sign up
+                  <Text col="$color1" {...TextStyle.button.large}>
+                    Sign up
+                  </Text>
                 </PrimaryBtn>
               )
             }
           />
           <XStack gap="$3">
-            <Text col="#b8ab8c" fos="$2" fow="bold">
+            <Text col="#b8ab8c" {...TextStyle.description}>
               Already have an account?
             </Text>
             <Text
               col="$gleam12"
-              fos="$2"
-              fow="bold"
+              {...TextStyle.description}
               textDecorationLine="underline"
               onPress={() => router.replace("/login")}
             >

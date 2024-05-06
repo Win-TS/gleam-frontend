@@ -12,6 +12,7 @@ import {
 import { Icon } from "@/assets";
 import PageContainer from "@/src/components/PageContainer";
 import VerticalList from "@/src/components/VerticalList";
+import { TextStyle } from "@/src/constants/TextStyle";
 import {
   useAcceptFriendMutation,
   useDeclineFriendMutation,
@@ -64,7 +65,13 @@ const FriendRequest = ({ user }: { user: User }) => {
           <Avatar.Image src={user.photourl.String || undefined} />
           <Avatar.Fallback bc="$color5" />
         </Avatar>
-        <Text f={1} fs={1} numberOfLines={1} textOverflow="ellipsis" fos="$3">
+        <Text
+          f={1}
+          fs={1}
+          numberOfLines={1}
+          {...TextStyle.button.small}
+          textOverflow="ellipsis"
+        >
           {user.username}
         </Text>
       </XStack>

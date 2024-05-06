@@ -15,6 +15,7 @@ import { z } from "zod";
 import { Icon } from "@/assets";
 import PageContainer from "@/src/components/PageContainer";
 import VerticalList from "@/src/components/VerticalList";
+import { TextStyle } from "@/src/constants/TextStyle";
 import {
   useAcceptHiveRequestMutation,
   useDeclineHiveRequestMutation,
@@ -77,7 +78,13 @@ const HiveRequest = ({ member }: { member: any }) => {
             <Avatar.Image src={member.user_photourl || undefined} />
             <Avatar.Fallback bc="$color5" />
           </Avatar>
-          <Text f={1} fs={1} numberOfLines={1} textOverflow="ellipsis" fos="$3">
+          <Text
+            f={1}
+            fs={1}
+            numberOfLines={1}
+            {...TextStyle.button.small}
+            textOverflow="ellipsis"
+          >
             {member.username}
           </Text>
         </XStack>
@@ -92,6 +99,7 @@ const HiveRequest = ({ member }: { member: any }) => {
         boc="$gleam12"
         shac="$gleam12"
         shar="$2"
+        {...TextStyle.description}
       >
         {member.description.String}
       </Text>

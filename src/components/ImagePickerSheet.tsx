@@ -5,6 +5,7 @@ import React from "react";
 import { XStack, useTheme, Sheet, Text, YStack } from "tamagui";
 
 import PrimaryBtn from "@/src/components/PrimaryBtn";
+import { TextStyle } from "@/src/constants/TextStyle";
 
 export default function ({
   open,
@@ -26,7 +27,7 @@ export default function ({
         <Sheet.Overlay />
         <Sheet.Frame p="$4" jc="center" ai="center">
           <YStack gap="$1.5" jc="center" ai="center">
-            <Text fow="bold">SELECT AN IMAGE FROM...</Text>
+            <Text {...TextStyle.button.large}>SELECT AN IMAGE FROM...</Text>
             <XStack gap="$3">
               <PrimaryBtn
                 f={1}
@@ -46,7 +47,9 @@ export default function ({
                 }}
               >
                 <FontAwesome size={36} color={theme.color1.val} name="photo" />
-                <Text col={theme.color1.val}>Photo Library</Text>
+                <Text col="$color1" {...TextStyle.button.large}>
+                  Photo Library
+                </Text>
               </PrimaryBtn>
               <PrimaryBtn
                 f={1}
@@ -84,7 +87,9 @@ export default function ({
                 }}
               >
                 <FontAwesome size={36} color={theme.color1.val} name="camera" />
-                <Text col={theme.color1.val}>Camera</Text>
+                <Text col="$color1" {...TextStyle.button.large}>
+                  Camera
+                </Text>
               </PrimaryBtn>
             </XStack>
           </YStack>

@@ -2,9 +2,10 @@ import { Portal } from "@gorhom/portal";
 import React from "react";
 import { Sheet, View, Text, YStack } from "tamagui";
 
-import PrimaryBtn from "@/src/components/PrimaryBtn";
+import DullBtn from "@/src/components/DullBtn";
 import QueryPlaceholder from "@/src/components/QueryPlaceholder";
 import VerticalList from "@/src/components/VerticalList";
+import { TextStyle } from "@/src/constants/TextStyle";
 import { useTagByCategoryQuery } from "@/src/hooks/hive";
 
 const TagList = ({
@@ -30,15 +31,17 @@ const TagList = ({
           estimatedItemSize={46}
           renderItem={({ item }: { item: any }) => (
             <View f={1} px="$3">
-              <PrimaryBtn
+              <DullBtn
                 size="$2"
                 w="100%"
                 onPress={() => {
                   setTag(item.tag_id, item.tag_name);
                 }}
               >
-                {item.tag_name}
-              </PrimaryBtn>
+                <Text col="$color12" {...TextStyle.button.extraSmall}>
+                  {item.tag_name}
+                </Text>
+              </DullBtn>
             </View>
           )}
           isFocused={isFocused}
@@ -81,7 +84,7 @@ export default function ({
                 gap="$3"
                 key={index}
               >
-                <Text>{title}</Text>
+                <Text {...TextStyle.button.large}>{title}</Text>
                 <YStack f={1} w="100%" jc="center" ai="center">
                   <View w="100%" h="100%">
                     <TagList

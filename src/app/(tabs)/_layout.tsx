@@ -5,8 +5,6 @@ import { View } from "tamagui";
 
 import { NavIcon, NavIconName } from "@/assets";
 import { useClientOnlyValue } from "@/src/components/useClientOnlyValue";
-import { useColorScheme } from "@/src/components/useColorScheme";
-import Colors from "@/src/constants/Colors";
 
 function TabBarIcon({
   name,
@@ -32,12 +30,9 @@ function TabBarIcon({
 }
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         // Disable the static render of the header on web
         // to prevent a hydration error in React Navigation v6.
         headerShown: useClientOnlyValue(false, true),

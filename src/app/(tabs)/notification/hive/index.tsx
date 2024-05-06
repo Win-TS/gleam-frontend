@@ -7,6 +7,7 @@ import PageContainer from "@/src/components/PageContainer";
 import PressableSection from "@/src/components/PressableSection";
 import QueryPlaceholder from "@/src/components/QueryPlaceholder";
 import VerticalList from "@/src/components/VerticalList";
+import { TextStyle } from "@/src/constants/TextStyle";
 import {
   useHiveQueries,
   useHiveRequestCountQuery,
@@ -40,13 +41,13 @@ const HiveRequestSection = ({ hive }: { hive: HiveWithMemberInfo }) => {
             </Avatar>
           </Avatar>
           <YStack>
-            <Text fos="$5" fow="bold">
+            <Text {...TextStyle.button.small}>
               {hive.group_info.group_name}
             </Text>
             <QueryPlaceholder
               query={hiveRequestCountQuery}
               renderData={(data) => (
-                <Text fos="$2">{data} requests pending</Text>
+                <Text {...TextStyle.description}>{data} requests pending</Text>
               )}
             />
           </YStack>

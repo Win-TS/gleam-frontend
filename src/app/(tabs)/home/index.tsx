@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { View, XStack, useWindowDimensions } from "tamagui";
+import { Text, View, XStack, useWindowDimensions } from "tamagui";
 
 import PageContainer from "@/src/components/PageContainer";
 import Post from "@/src/components/Post";
@@ -7,6 +7,7 @@ import PrimaryBtn from "@/src/components/PrimaryBtn";
 import QueryPlaceholder from "@/src/components/QueryPlaceholder";
 import SecondaryBtn from "@/src/components/SecondaryBtn";
 import VerticalList from "@/src/components/VerticalList";
+import { TextStyle } from "@/src/constants/TextStyle";
 import {
   useOngoingPostListInfiniteQuery,
   useFollowingPostListInfiniteQuery,
@@ -135,10 +136,20 @@ export default function HomeScreen() {
           currentMode={mode}
           setCurrentMode={setMode}
         >
-          Friend
+          <Text
+            col={mode === "following" ? "$color1" : "$gleam12"}
+            {...TextStyle.button.small}
+          >
+            Friend
+          </Text>
         </ModeButton>
         <ModeButton mode="ongoing" currentMode={mode} setCurrentMode={setMode}>
-          My Hive
+          <Text
+            col={mode === "ongoing" ? "$color1" : "$gleam12"}
+            {...TextStyle.button.small}
+          >
+            My Hive
+          </Text>
         </ModeButton>
       </XStack>
       {{ following: <FollowingFeed />, ongoing: <OngoingFeed /> }[mode]}

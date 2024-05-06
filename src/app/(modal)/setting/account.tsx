@@ -12,6 +12,7 @@ import PrimaryBtn from "@/src/components/PrimaryBtn";
 import PrimarySwitch from "@/src/components/PrimarySwitch";
 import QueryPlaceholder from "@/src/components/QueryPlaceholder";
 import Section from "@/src/components/Section";
+import { TextStyle } from "@/src/constants/TextStyle";
 import {
   useUserQuery,
   useEditUserUsernameMutation,
@@ -46,7 +47,7 @@ export default function SettingScreen() {
     <PageContainer justifyContent="flex-start">
       <Section>
         <XStack w="100%" px="$3" py="$1" jc="space-between">
-          <Text fos="$5">Private Account</Text>
+          <Text {...TextStyle.button.large}>Private Account</Text>
           <QueryPlaceholder
             query={userQuery}
             renderData={(data) => (
@@ -61,7 +62,7 @@ export default function SettingScreen() {
       <Section>
         <YStack w="100%" px="$3" py="$1" gap="$2">
           <form.Provider>
-            <Text fos="$5">Username</Text>
+            <Text {...TextStyle.button.large}>Username</Text>
             <form.Field
               name="username"
               validators={{ onChange: formValidator.username }}
@@ -80,7 +81,7 @@ export default function SettingScreen() {
                 />
               )}
             />
-            <Text fos="$3" col="$color10">
+            <Text col="$color10" {...TextStyle.description}>
               you may only change your username once in 7 days
             </Text>
             <XStack w="100%" jc="flex-end">
@@ -96,7 +97,9 @@ export default function SettingScreen() {
                       opacity={canSubmit ? 1 : 0.5}
                       onPress={form.handleSubmit}
                     >
-                      Change Username
+                      <Text col="$color1" {...TextStyle.button.small}>
+                        Change Username
+                      </Text>
                     </PrimaryBtn>
                   )
                 }
@@ -107,7 +110,7 @@ export default function SettingScreen() {
       </Section>
       <Section>
         <YStack w="100%" px="$3" py="$1" gap="$2">
-          <Text fos="$5">Phone Number</Text>
+          <Text {...TextStyle.button.large}>Phone Number</Text>
           <Input
             py="$1"
             w="100%"
@@ -118,7 +121,11 @@ export default function SettingScreen() {
             placeholder="Type your new phone number"
           />
           <XStack w="100%" jc="flex-end">
-            <PrimaryBtn h="$2">Receive OTP</PrimaryBtn>
+            <PrimaryBtn h="$2">
+              <Text col="$color1" {...TextStyle.button.small}>
+                Receive OTP
+              </Text>
+            </PrimaryBtn>
           </XStack>
         </YStack>
       </Section>
@@ -129,7 +136,7 @@ export default function SettingScreen() {
         }}
       >
         <View w="100%" p="$3">
-          <Text fos="$5" fow="bold" col="$red10">
+          <Text col="$red10" {...TextStyle.button.large}>
             Delete Account
           </Text>
         </View>
