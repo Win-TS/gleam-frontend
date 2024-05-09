@@ -28,7 +28,7 @@ const _Forward = forwardRef<
 
   return isFocused ?? isScreenFocused ? (
     <>
-      <FlashList ref={ref} {...defaultedProps}></FlashList>
+      <FlashList ref={ref} horizontal {...defaultedProps}></FlashList>
       {(scrollEvent?.contentOffset.y ?? 0) > 0 ? (
         <View position="absolute" w="$2" h="100%" left="$0">
           <LinearGradient

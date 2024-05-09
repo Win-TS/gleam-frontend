@@ -1,3 +1,4 @@
+import { Portal } from "@gorhom/portal";
 import { useState } from "react";
 import { AlertDialog, Input, XStack } from "tamagui";
 
@@ -9,13 +10,13 @@ export default function ({
   onAction,
 }: {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onOpenChange?: (open: boolean) => void;
   onAction?: () => void;
 }) {
   const [deleteText, setDeleteText] = useState<string>("");
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialog.Portal>
+    <Portal hostName="RootPortalHost">
+      <AlertDialog open={open} onOpenChange={onOpenChange}>
         <AlertDialog.Overlay key="overlay" />
         <AlertDialog.Content
           key="content"
@@ -55,7 +56,7 @@ export default function ({
             </AlertDialog.Action>
           </XStack>
         </AlertDialog.Content>
-      </AlertDialog.Portal>
-    </AlertDialog>
+      </AlertDialog>
+    </Portal>
   );
 }

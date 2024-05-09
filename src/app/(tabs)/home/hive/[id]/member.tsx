@@ -150,7 +150,7 @@ export default function MemberScreen() {
         br="$6"
         placeholder="What're you looking for?"
       />
-      <View f={1} w={width - 16} $gtSm={{ maw: 290 }}>
+      <View f={1} w={width} $gtSm={{ maw: "$20" }}>
         <VerticalList
           data={flattenedHiveMemberList}
           numColumns={1}

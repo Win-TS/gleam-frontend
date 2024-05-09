@@ -243,7 +243,7 @@ export default function ProfileScreen() {
       gap="$3"
       $sm={{ px: "$4" }}
     >
-      <View f={1} w={width - 16} $gtSm={{ maw: 290 }}>
+      <View f={1} w={width} $gtSm={{ maw: "$20" }}>
         {showHive ? (
           <VerticalList
             data={flattenedHiveList}
@@ -270,9 +270,9 @@ export default function ProfileScreen() {
                 </YStack>
               </YStack>
             )}
-            estimatedItemSize={Math.min(width - 32, 290) / 3 + 16}
+            estimatedItemSize={143}
             renderItem={({ item }) => (
-              <View f={1} px="$1.5">
+              <View f={1} mx="$1.5">
                 <HiveBtn
                   hive={item}
                   onPress={() =>

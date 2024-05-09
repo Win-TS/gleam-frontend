@@ -12,7 +12,6 @@ import {
   Image,
   Input,
   Popover,
-  PortalProvider,
   Sheet,
   Spinner,
   Text,
@@ -84,7 +83,7 @@ const HiveRequestSheet = ({ hiveId }: { hiveId: number }) => {
   });
 
   return (
-    <Portal>
+    <Portal hostName="RootPortalHost">
       <Sheet
         open={openRequestSheet}
         snapPointsMode="fit"
@@ -487,7 +486,6 @@ const HiveMemberBtn = ({ hiveId }: { hiveId: number }) => {
 
 const HiveBody = ({ hiveId }: { hiveId: number }) => {
   const theme = useTheme();
-  const { width } = useWindowDimensions();
 
   const hiveQuery = useHiveQuery(hiveId);
   const hivePostListInfiniteQuery = useHivePostListInfiniteQuery(hiveId);
@@ -515,10 +513,10 @@ const HiveBody = ({ hiveId }: { hiveId: number }) => {
             data={flattenedHivePostList}
             numColumns={3}
             ItemSeparatorComponent={() => <View h="$0.75" />}
-            estimatedItemSize={Math.min(width - 32, 290) / 3}
+            estimatedItemSize={96}
             onEndReached={hivePostListInfiniteQuery.fetchNextPage}
             renderItem={({ item }) => (
-              <View f={1} px="$1.5">
+              <View f={1} mx="$1.5">
                 <Pressable
                   onPress={() =>
                     router.push({
@@ -558,7 +556,7 @@ export default function HiveScreen() {
   const [openLeaveDialog, setOpenLeaveDialog] = useAtom(openLeaveDialogAtom);
 
   return (
-    <PortalProvider>
+    <>
       <PageContainer>
         <GleamContainer>
           <QueryPlaceholder
@@ -574,7 +572,7 @@ export default function HiveScreen() {
           />
         </GleamContainer>
         <HiveMemberBtn hiveId={hiveId} />
-        <View f={1} w={width - 16} $gtSm={{ maw: 290 }}>
+        <View f={1} w={width} $gtSm={{ maw: "$20" }}>
           <HiveBody hiveId={hiveId} />
         </View>
         <ActionDialog
@@ -585,6 +583,6 @@ export default function HiveScreen() {
         />
       </PageContainer>
       <HiveRequestSheet hiveId={hiveId} />
-    </PortalProvider>
+    </>
   );
 }

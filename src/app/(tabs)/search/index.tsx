@@ -14,7 +14,6 @@ import {
 } from "tamagui";
 
 import HiveBtn from "@/src/components/HiveBtn";
-import HiveByTagBtn from "@/src/components/HiveByTagBtn";
 import PageContainer from "@/src/components/PageContainer";
 import QueryPlaceholder from "@/src/components/QueryPlaceholder";
 import TagPickerSheet from "@/src/components/TagPickerSheet";
@@ -56,15 +55,15 @@ const ExploreHiveList = () => {
       <YStack w="100%">
         <Text {...TextStyle.button.large}>EXPLORE</Text>
       </YStack>
-      <View f={1} w={width - 16} $gtSm={{ maw: 290 }}>
+      <View f={1} w={width} $gtSm={{ maw: "$20" }}>
         <VerticalList
           data={flattenedHiveList}
           numColumns={3}
           ItemSeparatorComponent={() => <View h="$0.75" />}
-          estimatedItemSize={Math.min(width - 32, 290) / 3 + 16}
+          estimatedItemSize={143}
           onEndReached={hiveListInfiniteQuery.fetchNextPage}
           renderItem={({ item }) => (
-            <View f={1} px="$1.5">
+            <View f={1} mx="$1.5">
               <HiveBtn
                 hive={item}
                 onPress={() =>
@@ -95,15 +94,15 @@ const SearchHiveList = ({ search }: { search: string }) => {
   );
 
   return (
-    <View f={1} w={width - 16} $gtSm={{ maw: 290 }}>
+    <View f={1} w={width} $gtSm={{ maw: "$20" }}>
       <VerticalList
         data={flattenedHiveList}
         numColumns={3}
         ItemSeparatorComponent={() => <View h="$0.75" />}
-        estimatedItemSize={Math.min(width - 32, 290) / 3 + 16}
+        estimatedItemSize={143}
         onEndReached={searchHiveListInfiniteQuery.fetchNextPage}
         renderItem={({ item }) => (
-          <View f={1} px="$1.5">
+          <View f={1} mx="$1.5">
             <HiveBtn
               hive={item}
               onPress={() =>
@@ -149,17 +148,16 @@ const SearchHiveByTag = ({ tagId }: { tagId: number }) => {
         query={hiveByTagQuery}
         spinnerSize="large"
         renderData={(data) => (
-          <View f={1} w={width - 16} $gtSm={{ maw: 290 }}>
+          <View f={1} w={width} $gtSm={{ maw: "$20" }}>
             <VerticalList
               data={data}
               numColumns={3}
               ItemSeparatorComponent={() => <View h="$0.75" />}
-              estimatedItemSize={Math.min(width - 32, 290) / 3 + 16}
+              estimatedItemSize={143}
               renderItem={({ item }) => (
-                <View f={1} px="$1.5">
-                  <HiveByTagBtn
-                    group_name={item.group_name}
-                    hiveImg={item.photo_url.String}
+                <View f={1} mx="$1.5">
+                  <HiveBtn
+                    hive={item}
                     onPress={() =>
                       router.replace({
                         pathname: "/(tabs)/home/hive/[id]/",

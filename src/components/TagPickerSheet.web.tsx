@@ -15,7 +15,7 @@ const TagList = ({
 }: {
   categoryId: number;
   isFocused: boolean;
-  setTag: (tagId: number, tagName: string) => void;
+  setTag?: (tagId: number, tagName: string) => void;
 }) => {
   const tagByCategoryQuery = useTagByCategoryQuery(categoryId);
 
@@ -29,13 +29,13 @@ const TagList = ({
           numColumns={3}
           ItemSeparatorComponent={() => <View h="$1" />}
           estimatedItemSize={46}
-          renderItem={({ item }: { item: any }) => (
-            <View f={1} px="$3">
+          renderItem={({ item }) => (
+            <View f={1} mx="$3">
               <DullBtn
                 size="$2"
                 w="100%"
                 onPress={() => {
-                  setTag(item.tag_id, item.tag_name);
+                  setTag?.(item.tag_id, item.tag_name);
                 }}
               >
                 <Text col="$color12" {...TextStyle.button.extraSmall}>
@@ -57,8 +57,8 @@ export default function ({
   setTag,
 }: {
   open: boolean;
-  setOpen: (open: boolean) => void;
-  setTag: (tagId: number) => void;
+  setOpen?: (open: boolean) => void;
+  setTag?: (tagId: number) => void;
 }) {
   const tagCategories = [
     "Sports and Fitness",
@@ -70,7 +70,7 @@ export default function ({
   ];
 
   return (
-    <Portal>
+    <Portal hostName="RootPortalHost">
       <Sheet snapPoints={[80]} open={open} onOpenChange={setOpen}>
         <Sheet.Overlay />
         <Sheet.Frame p="$4" jc="center" ai="center" bc="$color1" gap="$3">

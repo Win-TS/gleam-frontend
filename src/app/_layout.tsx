@@ -1,5 +1,5 @@
 import { FontAwesome } from "@expo/vector-icons";
-import { PortalProvider } from "@gorhom/portal";
+import { PortalHost, PortalProvider } from "@gorhom/portal";
 import {
   DarkTheme,
   DefaultTheme,
@@ -18,7 +18,7 @@ import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
 import { AppState, AppStateStatus, Platform } from "react-native";
 // import { ModalView } from "react-native-ios-modal";
-import { TamaguiProvider /*, setupNativeSheet*/ } from "tamagui";
+import { TamaguiProvider /*, setupNativeSheet*/, View } from "tamagui";
 
 import { fonts } from "@/assets";
 import { useColorScheme } from "@/src/components/useColorScheme";
@@ -128,16 +128,31 @@ function RootLayoutNav() {
           value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
         >
           <PortalProvider>
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="(modal)"
-                options={{
-                  headerShown: false,
-                }}
-              />
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-            </Stack>
+            {process.env.EXPO_PUBLIC_STORYBOOK_ENABLED !== undefined &&
+            JSON.parse(
+              String(process.env.EXPO_PUBLIC_STORYBOOK_ENABLED).toLowerCase(),
+            ) ? (
+              <View w="100%" h="100%" pointerEvents="auto">
+                {require("../../.storybook").default()}
+              </View>
+            ) : (
+              <>
+                <PortalHost name="RootPortalHost" />
+                <Stack>
+                  <Stack.Screen
+                    name="(tabs)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(modal)"
+                    options={{
+                      headerShown: false,
+                    }}
+                  />
+                  <Stack.Screen name="index" options={{ headerShown: false }} />
+                </Stack>
+              </>
+            )}
           </PortalProvider>
         </ThemeProvider>
       </TamaguiProvider>

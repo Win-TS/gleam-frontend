@@ -1,8 +1,8 @@
+import { Portal } from "@gorhom/portal";
 import { Sheet } from "tamagui";
 
 import ProfileHivePicker from "@/src/components/ProfileHivePicker";
 import { Hive } from "@/src/schemas/hive";
-import { Portal } from "@gorhom/portal";
 
 export default function ({
   open,
@@ -11,12 +11,12 @@ export default function ({
   onPress,
 }: {
   open: boolean;
-  setOpen: (open: boolean) => void;
+  setOpen?: (open: boolean) => void;
   userId: number;
   onPress?: (hive: Hive) => void;
 }) {
   return (
-    <Portal>
+    <Portal hostName="RootPortalHost">
       <Sheet snapPoints={[80]} open={open} onOpenChange={setOpen}>
         <Sheet.Overlay />
         <Sheet.Frame p="$4" jc="center" ai="center" gap="$3">
@@ -24,7 +24,7 @@ export default function ({
             userId={userId}
             onPress={(hive) => {
               onPress?.(hive);
-              setOpen(false);
+              setOpen?.(false);
             }}
           />
         </Sheet.Frame>

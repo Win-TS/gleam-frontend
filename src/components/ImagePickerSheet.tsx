@@ -22,7 +22,7 @@ export default function ({
     ImagePicker.useCameraPermissions();
 
   return (
-    <Portal>
+    <Portal hostName="RootPortalHost">
       <Sheet snapPointsMode="fit" open={open} onOpenChange={setOpen}>
         <Sheet.Overlay />
         <Sheet.Frame p="$4" jc="center" ai="center">

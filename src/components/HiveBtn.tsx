@@ -15,7 +15,7 @@ export default ({
 }: {
   hive: Hive;
   overlay?: string;
-  onPress: () => void;
+  onPress?: () => void;
 }) => {
   return (
     <YStack alignItems="center" gap="$1">
@@ -31,7 +31,7 @@ export default ({
           ) : undefined}
         </ZStack>
       </Pressable>
-      <Text textOverflow="ellipsis" {...TextStyle.button.small}>
+      <Text col="$color12" textOverflow="ellipsis" {...TextStyle.button.small}>
         {group_name}
       </Text>
     </YStack>

@@ -1,3 +1,4 @@
+import { Portal } from "@gorhom/portal";
 import { AlertDialog, XStack, Text } from "tamagui";
 
 import PrimaryBtn from "@/src/components/PrimaryBtn";
@@ -18,8 +19,8 @@ export default function ({
   onAction?: () => void;
 }) {
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialog.Portal>
+    <Portal hostName="RootPortalHost">
+      <AlertDialog open={open} onOpenChange={onOpenChange}>
         <AlertDialog.Overlay key="overlay" />
         <AlertDialog.Content
           key="content"
@@ -53,7 +54,7 @@ export default function ({
             </AlertDialog.Cancel>
           </XStack>
         </AlertDialog.Content>
-      </AlertDialog.Portal>
-    </AlertDialog>
+      </AlertDialog>
+    </Portal>
   );
 }
