@@ -3,6 +3,7 @@ import React from "react";
 
 import BackBtn from "@/src/components/BackBtn";
 import { useClientOnlyValue } from "@/src/components/useClientOnlyValue";
+import { titleStyle } from "@/src/constants/Title";
 
 export default function ModalLayout() {
   return (
@@ -18,9 +19,7 @@ export default function ModalLayout() {
         options={{
           title: "SETTING",
           headerTitleAlign: "center",
-          headerTitleStyle: {
-            fontWeight: "bold",
-          },
+          headerTitleStyle: titleStyle,
           headerLeft: () => <BackBtn />,
         }}
       />
@@ -29,9 +28,7 @@ export default function ModalLayout() {
         options={{
           title: "ACCOUNT CENTER",
           headerTitleAlign: "center",
-          headerTitleStyle: {
-            fontWeight: "bold",
-          },
+          headerTitleStyle: titleStyle,
           headerLeft: () => <BackBtn />,
         }}
       />
@@ -40,9 +37,7 @@ export default function ModalLayout() {
         options={{
           title: "NOTIFICATION",
           headerTitleAlign: "center",
-          headerTitleStyle: {
-            fontWeight: "bold",
-          },
+          headerTitleStyle: titleStyle,
           headerLeft: () => <BackBtn />,
         }}
       />

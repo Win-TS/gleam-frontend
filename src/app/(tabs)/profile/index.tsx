@@ -46,8 +46,8 @@ const ProfileFormHeader = ({
   const editUserPhotoMutation = useEditUserPhotoMutation();
 
   const formValidator = {
-    firstname: z.string(),
-    lastname: z.string(),
+    firstname: z.string().min(1),
+    lastname: z.string().min(1),
     photo: z.optional(z.string()),
   };
 
@@ -82,74 +82,87 @@ const ProfileFormHeader = ({
 
   return (
     <YStack w="100%" jc="center" ai="center" gap="$3">
-      <form.Provider>
-        <form.Field
-          name="photo"
-          validators={{ onChange: formValidator.photo }}
-          children={(field) => (
-            <ImagePicker
-              size="$12"
-              image={field.state.value ?? userprofile.photo_url}
-              setImage={field.handleChange}
-            />
-          )}
-        />
-        <YStack w="100%" jc="center" ai="center" gap="$1">
-          <XStack w="100%" jc="center" ai="center" gap="$2">
-            <form.Field
-              name="firstname"
-              validators={{ onChange: formValidator.firstname }}
-              children={(field) => (
-                <Input
-                  f={1}
-                  h="$2.5"
-                  bc="$gleam1"
-                  col="$color11"
-                  value={field.state.value}
-                  onChangeText={field.handleChange}
-                />
-              )}
-            />
-            <form.Field
-              name="lastname"
-              validators={{ onChange: formValidator.lastname }}
-              children={(field) => (
-                <Input
-                  f={1}
-                  h="$2.5"
-                  bc="$gleam1"
-                  col="$color11"
-                  value={field.state.value}
-                  onChangeText={field.handleChange}
-                />
-              )}
-            />
-          </XStack>
-        </YStack>
-        <Text col="$color11" {...TextStyle.description}>
-          {userprofile.username}
-        </Text>
-        <form.Subscribe
-          selector={(state) => [state.canSubmit, state.isSubmitting]}
-          children={([canSubmit, isSubmitting]) =>
-            isSubmitting ? (
-              <Spinner size="large" color="$color11" />
-            ) : (
-              <PrimaryBtn
-                size="$2.5"
-                w="$12"
-                disabled={!canSubmit}
-                opacity={canSubmit ? 1 : 0.5}
-                onPress={form.handleSubmit}
-              >
-                <Text col="$color1" {...TextStyle.button.small}>
-                  DONE
-                </Text>
-              </PrimaryBtn>
-            )
-          }
-        />
-      </form.Provider>
+      <form.Field
+        name="photo"
+        validators={{ onChange: formValidator.photo }}
+        children={(field) => (
+          <ImagePicker
+            size="$12"
+            image={field.state.value ?? userprofile.photo_url}
+            setImage={field.handleChange}
+            error={
+              form.state.submissionAttempts > 0 &&
+              field.state.meta.errors.length > 0
+            }
+          />
+        )}
+      />
+      <YStack w="100%" jc="center" ai="center" gap="$1">
+        <XStack w="100%" jc="center" ai="center" gap="$2">
+          <form.Field
+            name="firstname"
+            validators={{ onChange: formValidator.firstname }}
+            children={(field) => (
+              <Input
+                f={1}
+                h="$2.5"
+                bc="$gleam1"
+                col="$color11"
+                boc={
+                  form.state.submissionAttempts > 0 &&
+                  field.state.meta.errors.length > 0
+                    ? "$red10"
+                    : undefined
+                }
+                value={field.state.value}
+                onChangeText={field.handleChange}
+              />
+            )}
+          />
+          <form.Field
+            name="lastname"
+            validators={{ onChange: formValidator.lastname }}
+            children={(field) => (
+              <Input
+                f={1}
+                h="$2.5"
+                bc="$gleam1"
+                col="$color11"
+                boc={
+                  form.state.submissionAttempts > 0 &&
+                  field.state.meta.errors.length > 0
+                    ? "$red10"
+                    : undefined
+                }
+                value={field.state.value}
+                onChangeText={field.handleChange}
+              />
+            )}
+          />
+        </XStack>
+      </YStack>
+      <Text col="$color11" {...TextStyle.description}>
+        {userprofile.username}
+      </Text>
+      <form.Subscribe
+        selector={(state) => [state.canSubmit, state.isSubmitting]}
+        children={([canSubmit, isSubmitting]) =>
+          isSubmitting ? (
+            <Spinner size="large" color="$color11" />
+          ) : (
+            <PrimaryBtn
+              size="$2.5"
+              w="$12"
+              opacity={canSubmit ? 1 : 0.5}
+              onPress={form.handleSubmit}
+            >
+              <Text col="$color1" {...TextStyle.button.small}>
+                DONE
+              </Text>
+            </PrimaryBtn>
+          )
+        }
+      />
     </YStack>
   );
 };

@@ -27,7 +27,7 @@ export default function RecoverScreen() {
   const formValidator = {
     email: z.string().email(),
     confirmationCode: z.string(),
-    password: z.string(),
+    password: z.string().min(1),
   };
 
   const form = useForm({
@@ -57,87 +57,106 @@ export default function RecoverScreen() {
     <PageContainer>
       <YStack f={1} w="100%" jc="center" ai="center" gap="$3">
         <LogoIcon />
-        <form.Provider>
-          <form.Field
-            name="email"
-            validators={{ onChange: formValidator.email }}
-            children={(field) => (
-              <SecondaryInput
-                w="100%"
-                placeholder="Email"
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChangeText={field.handleChange}
-              />
-            )}
-          />
-          <PrimaryBtn size="$4" w="100%">
-            <Text col="$color1" {...TextStyle.button.small}>
-              GET CONFIRMATION CODE
-            </Text>
-          </PrimaryBtn>
-          <form.Field
-            name="confirmationCode"
-            validators={{ onChange: formValidator.confirmationCode }}
-            children={(field) => (
-              <SecondaryInput
-                w="100%"
-                placeholder="Confirmation code"
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChangeText={field.handleChange}
-              />
-            )}
-          />
-          <form.Field
-            name="password"
-            validators={{ onChange: formValidator.password }}
-            children={(field) => (
-              <SecondaryInput
-                w="100%"
-                password
-                placeholder="Enter your new password"
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChangeText={field.handleChange}
-              />
-            )}
-          />
-          <Text h="$4" w="100%" col="#ff0000" {...TextStyle.description}>
-            {""}
+        <form.Field
+          name="email"
+          validators={{ onChange: formValidator.email }}
+          children={(field) => (
+            <SecondaryInput
+              w="100%"
+              boc={
+                form.state.submissionAttempts > 0 &&
+                field.state.meta.errors.length > 0
+                  ? "$red10"
+                  : undefined
+              }
+              placeholder="Email"
+              value={field.state.value}
+              onBlur={field.handleBlur}
+              onChangeText={field.handleChange}
+            />
+          )}
+        />
+        <PrimaryBtn size="$4" w="100%">
+          <Text col="$color1" {...TextStyle.button.small}>
+            GET CONFIRMATION CODE
           </Text>
-          <form.Subscribe
-            selector={(state) => [state.canSubmit, state.isSubmitting]}
-            children={([canSubmit, isSubmitting]) =>
-              isSubmitting ? (
-                <Spinner size="large" color="$color11" />
-              ) : (
-                <PrimaryBtn
-                  size="$4"
-                  w="100%"
-                  disabled={!canSubmit}
-                  opacity={canSubmit ? 1 : 0.5}
-                  onPress={form.handleSubmit}
-                >
-                  <Text col="$color1" {...TextStyle.button.large}>
-                    RESET PASSWORD
-                  </Text>
-                </PrimaryBtn>
-              )
-            }
-          />
-          <SecondaryBtn
-            size="$4"
-            w="100%"
-            onPress={() => {
-              router.replace("/login");
-            }}
-          >
-            <Text col="$gleam12" {...TextStyle.button.large}>
-              BACK TO LOGIN
-            </Text>
-          </SecondaryBtn>
-        </form.Provider>
+        </PrimaryBtn>
+        <form.Field
+          name="confirmationCode"
+          validators={{ onChange: formValidator.confirmationCode }}
+          children={(field) => (
+            <SecondaryInput
+              w="100%"
+              boc={
+                form.state.submissionAttempts > 0 &&
+                field.state.meta.errors.length > 0
+                  ? "$red10"
+                  : undefined
+              }
+              placeholder="Confirmation code"
+              value={field.state.value}
+              onBlur={field.handleBlur}
+              onChangeText={field.handleChange}
+            />
+          )}
+        />
+        <form.Field
+          name="password"
+          validators={{ onChange: formValidator.password }}
+          children={(field) => (
+            <SecondaryInput
+              w="100%"
+              boc={
+                form.state.submissionAttempts > 0 &&
+                field.state.meta.errors.length > 0
+                  ? "$red10"
+                  : undefined
+              }
+              password
+              placeholder="Enter your new password"
+              value={field.state.value}
+              onBlur={field.handleBlur}
+              onChangeText={field.handleChange}
+            />
+          )}
+        />
+        <Text h="$4" w="100%" col="#ff0000" {...TextStyle.description}>
+          {""}
+        </Text>
+        <form.Subscribe
+          selector={(state) => [
+            state.isDirty,
+            state.canSubmit,
+            state.isSubmitting,
+          ]}
+          children={([isDirty, canSubmit, isSubmitting]) =>
+            isSubmitting ? (
+              <Spinner size="large" color="$color11" />
+            ) : (
+              <PrimaryBtn
+                size="$4"
+                w="100%"
+                opacity={isDirty && canSubmit ? 1 : 0.5}
+                onPress={form.handleSubmit}
+              >
+                <Text col="$color1" {...TextStyle.button.large}>
+                  RESET PASSWORD
+                </Text>
+              </PrimaryBtn>
+            )
+          }
+        />
+        <SecondaryBtn
+          size="$4"
+          w="100%"
+          onPress={() => {
+            router.replace("/login");
+          }}
+        >
+          <Text col="$gleam12" {...TextStyle.button.large}>
+            BACK TO LOGIN
+          </Text>
+        </SecondaryBtn>
       </YStack>
     </PageContainer>
   );

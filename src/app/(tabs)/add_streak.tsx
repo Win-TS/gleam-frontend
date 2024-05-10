@@ -27,7 +27,7 @@ export default function AddStreakScreen() {
 
   const formValidator = {
     hive: hive_,
-    image: z.string(),
+    image: z.string().min(1),
   };
 
   const form = useForm({
@@ -58,95 +58,109 @@ export default function AddStreakScreen() {
 
   return (
     <PageContainer>
-      <form.Provider>
-        <YStack w="100%" f={1} jc="center" ai="center" gap="$6">
-          <View w="100%" p="$2" boc="$gleam12" bw="$1" br="$4">
-            <Pressable onPress={() => setImagePickerOpen(!imagePickerOpen)}>
-              <form.Field
-                name="image"
-                validators={{ onChange: formValidator.image }}
-                children={(field) => (
-                  <>
-                    {field.state.value ? (
-                      <Image w="100%" aspectRatio={1} src={field.state.value} />
-                    ) : (
-                      <View w="100%" aspectRatio={1} bc="$color5" />
-                    )}
-                    <ImagePickerSheet
-                      open={imagePickerOpen}
-                      setOpen={setImagePickerOpen}
-                      setImage={field.handleChange}
-                    />
-                  </>
-                )}
+      <YStack w="100%" f={1} jc="center" ai="center" gap="$6">
+        <form.Field
+          name="image"
+          validators={{ onChange: formValidator.image }}
+          children={(field) => (
+            <>
+              <View
+                w="100%"
+                p="$2"
+                boc={
+                  form.state.submissionAttempts > 0 &&
+                  field.state.meta.errors.length > 0
+                    ? "$red10"
+                    : "$gleam12"
+                }
+                bw="$1"
+                br="$4"
+              >
+                <Pressable onPress={() => setImagePickerOpen(!imagePickerOpen)}>
+                  {field.state.value ? (
+                    <Image w="100%" aspectRatio={1} src={field.state.value} />
+                  ) : (
+                    <View w="100%" aspectRatio={1} bc="$color5" />
+                  )}
+                </Pressable>
+              </View>
+              <ImagePickerSheet
+                open={imagePickerOpen}
+                setOpen={setImagePickerOpen}
+                setImage={field.handleChange}
               />
-            </Pressable>
-          </View>
-          <YStack w="100%" jc="center" ai="center" gap="$3">
-            <Text {...TextStyle.button.small} ta="center">
-              WHAT IS YOUR ACHIEVEMENT TODAY??
-            </Text>
-            <form.Field
-              name="hive"
-              validators={{ onChange: formValidator.hive }}
-              children={(field) => (
-                <>
-                  <SecondaryBtn
-                    w="$18"
-                    h="$3"
-                    onPress={() =>
-                      setProfileHivePickerOpen(!profileHivePickerOpen)
-                    }
-                  >
-                    <Text col="$gleam12" {...TextStyle.button.small}>
-                      {field.state.value?.group_name ?? "CHOOSE YOUR HIVE"}
-                    </Text>
-                  </SecondaryBtn>
-                  <ProfileHivePickerSheet
-                    open={profileHivePickerOpen}
-                    setOpen={setProfileHivePickerOpen}
-                    userId={userId}
-                    onPress={field.handleChange}
-                  />
-                </>
-              )}
-            />
-          </YStack>
-        </YStack>
-        <XStack w="100%" jc="space-between" ai="center">
-          <SecondaryBtn
-            h="$5"
-            w="$5"
-            p="$0"
-            onPress={() => setImagePickerOpen(!imagePickerOpen)}
-          >
-            <FontAwesome name="repeat" size={32} color={theme.gleam12.val} />
-          </SecondaryBtn>
-          <form.Subscribe
-            selector={(state) => [state.canSubmit, state.isSubmitting]}
-            children={([canSubmit, isSubmitting]) =>
-              isSubmitting ? (
-                <Spinner size="large" color="$color11" />
-              ) : (
-                <PrimaryBtn
-                  h="$5"
-                  w="$5"
-                  p="$0"
-                  disabled={!canSubmit}
-                  opacity={canSubmit ? 1 : 0.5}
-                  onPress={form.handleSubmit}
+            </>
+          )}
+        />
+        <YStack w="100%" jc="center" ai="center" gap="$3">
+          <Text {...TextStyle.button.small} ta="center">
+            WHAT IS YOUR ACHIEVEMENT TODAY??
+          </Text>
+          <form.Field
+            name="hive"
+            validators={{ onChange: formValidator.hive }}
+            children={(field) => (
+              <>
+                <SecondaryBtn
+                  w="$18"
+                  h="$3"
+                  boc={
+                    form.state.submissionAttempts > 0 &&
+                    field.state.meta.errors.length > 0
+                      ? "$red10"
+                      : undefined
+                  }
+                  onPress={() =>
+                    setProfileHivePickerOpen(!profileHivePickerOpen)
+                  }
                 >
-                  <FontAwesome
-                    name="check"
-                    size={32}
-                    color={theme.color1.val}
-                  />
-                </PrimaryBtn>
-              )
-            }
+                  <Text col="$gleam12" {...TextStyle.button.small}>
+                    {field.state.value?.group_name ?? "CHOOSE YOUR HIVE"}
+                  </Text>
+                </SecondaryBtn>
+                <ProfileHivePickerSheet
+                  open={profileHivePickerOpen}
+                  setOpen={setProfileHivePickerOpen}
+                  userId={userId}
+                  onPress={field.handleChange}
+                />
+              </>
+            )}
           />
-        </XStack>
-      </form.Provider>
+        </YStack>
+      </YStack>
+      <XStack w="100%" jc="space-between" ai="center">
+        <SecondaryBtn
+          h="$5"
+          w="$5"
+          p="$0"
+          onPress={() => setImagePickerOpen(!imagePickerOpen)}
+        >
+          <FontAwesome name="repeat" size={32} color={theme.gleam12.val} />
+        </SecondaryBtn>
+        <form.Subscribe
+          selector={(state) => [
+            state.isDirty,
+            state.canSubmit,
+            state.isSubmitting,
+          ]}
+          children={([isDirty, canSubmit, isSubmitting]) =>
+            isSubmitting ? (
+              <Spinner size="large" color="$color11" />
+            ) : (
+              <PrimaryBtn
+                h="$5"
+                w="$5"
+                p="$0"
+                opacity={isDirty && canSubmit ? 1 : 0.5}
+                onPress={form.handleSubmit}
+              >
+                <FontAwesome name="check" size={32} color={theme.color1.val} />
+              </PrimaryBtn>
+            )
+          }
+        />
+      </XStack>
     </PageContainer>
   );
 }

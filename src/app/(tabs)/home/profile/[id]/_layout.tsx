@@ -3,7 +3,7 @@ import React from "react";
 
 import BackBtn from "@/src/components/BackBtn";
 import { useClientOnlyValue } from "@/src/components/useClientOnlyValue";
-import { GleamTitle } from "@/src/constants/Title";
+import { GleamTitle, titleStyle } from "@/src/constants/Title";
 
 export default function StackLayout() {
   return (
@@ -21,9 +21,7 @@ export default function StackLayout() {
         options={{
           title: "Report",
           headerTitleAlign: "center",
-          headerTitleStyle: {
-            fontWeight: "bold",
-          },
+          headerTitleStyle: titleStyle,
           headerLeft: () => <BackBtn />,
         }}
       />

@@ -29,6 +29,7 @@ import GleamContainer from "@/src/components/GleamContainer";
 import ImagePicker from "@/src/components/ImagePicker";
 import PageContainer from "@/src/components/PageContainer";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
+import PrimaryInput from "@/src/components/PrimaryInput";
 import QueryPlaceholder from "@/src/components/QueryPlaceholder";
 import SecondaryBtn from "@/src/components/SecondaryBtn";
 import VerticalList from "@/src/components/VerticalList";
@@ -65,7 +66,7 @@ const HiveRequestSheet = ({ hiveId }: { hiveId: number }) => {
   const requestHiveMutation = useRequestHiveMutation(hiveId);
 
   const formValidator = {
-    description: z.string(),
+    description: z.string().min(1),
   };
 
   const form = useForm({
@@ -91,33 +92,41 @@ const HiveRequestSheet = ({ hiveId }: { hiveId: number }) => {
         onOpenChange={setOpenRequestSheet}
       >
         <Sheet.Frame p="$4" jc="center" ai="center" bc="$gleam12" gap="$3">
-          <form.Provider>
-            <form.Field
-              name="description"
-              validators={{ onChange: formValidator.description }}
-              children={(field) => (
-                <Input
-                  h="$12"
-                  w="100%"
-                  placeholder="Anything you want to tell the league owner?"
-                  multiline
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChangeText={field.handleChange}
-                />
-              )}
-            />
-          </form.Provider>
+          <form.Field
+            name="description"
+            validators={{ onChange: formValidator.description }}
+            children={(field) => (
+              <Input
+                h="$12"
+                w="100%"
+                boc={
+                  form.state.submissionAttempts > 0 &&
+                  field.state.meta.errors.length > 0
+                    ? "$red10"
+                    : undefined
+                }
+                placeholder="Anything you want to tell the league owner?"
+                multiline
+                value={field.state.value}
+                onBlur={field.handleBlur}
+                onChangeText={field.handleChange}
+              />
+            )}
+          />
           <form.Subscribe
-            selector={(state) => [state.canSubmit, state.isSubmitting]}
-            children={([canSubmit, isSubmitting]) =>
+            selector={(state) => [
+              state.isDirty,
+              state.canSubmit,
+              state.isSubmitting,
+            ]}
+            children={([isDirty, canSubmit, isSubmitting]) =>
               isSubmitting ? (
                 <Spinner size="large" color="$color11" />
               ) : (
                 <SecondaryBtn
                   w="100%"
-                  disabled={!canSubmit}
-                  opacity={canSubmit ? 1 : 0.5}
+                  disabled={!(isDirty && canSubmit)}
+                  opacity={isDirty && canSubmit ? 1 : 0.5}
                   onPress={form.handleSubmit}
                 >
                   <Text col="$gleam12" {...TextStyle.button.large}>
@@ -341,8 +350,8 @@ const HiveFormHeader = ({
   const hivePhotoMutation = useEditHivePhotoMutation(hive.group_info.group_id);
 
   const formValidator = {
-    name: z.string(),
-    description: z.string(),
+    name: z.string().min(1),
+    description: z.string().min(1),
     photo: z.optional(z.string()),
   };
 
@@ -371,7 +380,7 @@ const HiveFormHeader = ({
   });
 
   return (
-    <form.Provider>
+    <>
       <form.Field
         name="photo"
         validators={{ onChange: formValidator.photo }}
@@ -380,6 +389,10 @@ const HiveFormHeader = ({
             size="$8"
             image={field.state.value ?? hive.group_info.photo_url.String}
             setImage={field.handleChange}
+            error={
+              form.state.submissionAttempts > 0 &&
+              field.state.meta.errors.length > 0
+            }
           />
         )}
       />
@@ -389,14 +402,16 @@ const HiveFormHeader = ({
             name="name"
             validators={{ onChange: formValidator.name }}
             children={(field) => (
-              <Input
+              <PrimaryInput
                 value={field.state.value}
                 py="$1"
                 w="100%"
-                bw="$1"
-                boc="$gleam12"
-                fos="$6"
-                fow="bold"
+                boc={
+                  form.state.submissionAttempts > 0 &&
+                  field.state.meta.errors.length > 0
+                    ? "$red10"
+                    : undefined
+                }
                 onBlur={field.handleBlur}
                 onChangeText={field.handleChange}
               />
@@ -406,14 +421,17 @@ const HiveFormHeader = ({
             name="description"
             validators={{ onChange: formValidator.description }}
             children={(field) => (
-              <Input
+              <PrimaryInput
                 value={field.state.value}
                 h="$8"
                 w="100%"
                 py="$1"
-                bw="$1"
-                boc="$gleam12"
-                fos="$2"
+                boc={
+                  form.state.submissionAttempts > 0 &&
+                  field.state.meta.errors.length > 0
+                    ? "$red10"
+                    : undefined
+                }
                 multiline
                 onBlur={field.handleBlur}
                 onChangeText={field.handleChange}
@@ -431,7 +449,6 @@ const HiveFormHeader = ({
             <PrimaryBtn
               size="$2.5"
               w="$8"
-              disabled={!canSubmit}
               opacity={canSubmit ? 1 : 0.5}
               onPress={form.handleSubmit}
             >
@@ -442,7 +459,7 @@ const HiveFormHeader = ({
           )
         }
       />
-    </form.Provider>
+    </>
   );
 };
 

@@ -2,13 +2,14 @@ import { useForm } from "@tanstack/react-form";
 import { zodValidator } from "@tanstack/zod-form-adapter";
 import { getAuth } from "firebase/auth";
 import React, { useState } from "react";
-import { Input, Spinner, Text, View, XStack, YStack } from "tamagui";
+import { Spinner, Text, View, XStack, YStack } from "tamagui";
 import { z } from "zod";
 
 import ActionDialog from "@/src/components/ActionDialog";
 import PageContainer from "@/src/components/PageContainer";
 import PressableSection from "@/src/components/PressableSection";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
+import PrimaryInput from "@/src/components/PrimaryInput";
 import PrimarySwitch from "@/src/components/PrimarySwitch";
 import QueryPlaceholder from "@/src/components/QueryPlaceholder";
 import Section from "@/src/components/Section";
@@ -26,7 +27,7 @@ export default function SettingScreen() {
   const usernameMutation = useEditUserUsernameMutation();
 
   const formValidator = {
-    username: z.string(),
+    username: z.string().min(1),
   };
 
   const form = useForm({
@@ -61,71 +62,52 @@ export default function SettingScreen() {
       </Section>
       <Section>
         <YStack w="100%" px="$3" py="$1" gap="$2">
-          <form.Provider>
-            <Text {...TextStyle.button.large}>Username</Text>
-            <form.Field
-              name="username"
-              validators={{ onChange: formValidator.username }}
-              children={(field) => (
-                <Input
-                  py="$1"
-                  w="100%"
-                  h="$3"
-                  bw="$1"
-                  boc="$gleam12"
-                  fos="$3"
-                  placeholder="Type your new username"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChangeText={field.handleChange}
-                />
-              )}
-            />
-            <Text col="$color10" {...TextStyle.description}>
-              you may only change your username once in 7 days
-            </Text>
-            <XStack w="100%" jc="flex-end">
-              <form.Subscribe
-                selector={(state) => [state.canSubmit, state.isSubmitting]}
-                children={([canSubmit, isSubmitting]) =>
-                  isSubmitting ? (
-                    <Spinner size="large" color="$color11" />
-                  ) : (
-                    <PrimaryBtn
-                      h="$2"
-                      disabled={!canSubmit}
-                      opacity={canSubmit ? 1 : 0.5}
-                      onPress={form.handleSubmit}
-                    >
-                      <Text col="$color1" {...TextStyle.button.small}>
-                        Change Username
-                      </Text>
-                    </PrimaryBtn>
-                  )
+          <Text {...TextStyle.button.large}>Username</Text>
+          <form.Field
+            name="username"
+            validators={{ onChange: formValidator.username }}
+            children={(field) => (
+              <PrimaryInput
+                w="100%"
+                boc={
+                  form.state.submissionAttempts > 0 &&
+                  field.state.meta.errors.length > 0
+                    ? "$red10"
+                    : undefined
                 }
+                placeholder="Type your new username"
+                value={field.state.value}
+                onBlur={field.handleBlur}
+                onChangeText={field.handleChange}
               />
-            </XStack>
-          </form.Provider>
-        </YStack>
-      </Section>
-      <Section>
-        <YStack w="100%" px="$3" py="$1" gap="$2">
-          <Text {...TextStyle.button.large}>Phone Number</Text>
-          <Input
-            py="$1"
-            w="100%"
-            h="$3"
-            bw="$1"
-            boc="$gleam12"
-            fos="$3"
-            placeholder="Type your new phone number"
+            )}
           />
+          <Text col="$color10" {...TextStyle.description}>
+            you may only change your username once in 7 days
+          </Text>
           <XStack w="100%" jc="flex-end">
-            <PrimaryBtn h="$2">
-              <Text col="$color1" {...TextStyle.button.small}>
-                Receive OTP
-              </Text>
-            </PrimaryBtn>
+            <form.Subscribe
+              selector={(state) => [
+                state.isDirty,
+                state.canSubmit,
+                state.isSubmitting,
+              ]}
+              children={([isDirty, canSubmit, isSubmitting]) =>
+                isSubmitting ? (
+                  <Spinner size="large" color="$color11" />
+                ) : (
+                  <PrimaryBtn
+                    h="$2"
+                    opacity={isDirty && canSubmit ? 1 : 0.5}
+                    onPress={form.handleSubmit}
+                  >
+                    <Text col="$color1" {...TextStyle.button.small}>
+                      Change Username
+                    </Text>
+                  </PrimaryBtn>
+                )
+              }
+            />
           </XStack>
         </YStack>
       </Section>

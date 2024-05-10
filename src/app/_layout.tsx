@@ -18,7 +18,12 @@ import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
 import { AppState, AppStateStatus, Platform } from "react-native";
 // import { ModalView } from "react-native-ios-modal";
-import { TamaguiProvider /*, setupNativeSheet*/, View } from "tamagui";
+import {
+  TamaguiProvider /*, setupNativeSheet*/,
+  View,
+  ZStack,
+  useWindowDimensions,
+} from "tamagui";
 
 import { fonts } from "@/assets";
 import { useColorScheme } from "@/src/components/useColorScheme";
@@ -121,6 +126,8 @@ export default function RootLayout() {
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
+  const { width, height } = useWindowDimensions();
+
   return (
     <QueryClientProvider client={queryClient}>
       <TamaguiProvider config={config} defaultTheme={colorScheme ?? "light"}>
@@ -136,22 +143,29 @@ function RootLayoutNav() {
                 {require("../../.storybook").default()}
               </View>
             ) : (
-              <>
-                <PortalHost name="RootPortalHost" />
-                <Stack>
-                  <Stack.Screen
-                    name="(tabs)"
-                    options={{ headerShown: false }}
-                  />
-                  <Stack.Screen
-                    name="(modal)"
-                    options={{
-                      headerShown: false,
-                    }}
-                  />
-                  <Stack.Screen name="index" options={{ headerShown: false }} />
-                </Stack>
-              </>
+              <ZStack>
+                <View w={width} h={height}>
+                  <PortalHost name="RootPortalHost" />
+                </View>
+                <View w={width} h={height}>
+                  <Stack>
+                    <Stack.Screen
+                      name="(tabs)"
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="(modal)"
+                      options={{
+                        headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen
+                      name="index"
+                      options={{ headerShown: false }}
+                    />
+                  </Stack>
+                </View>
+              </ZStack>
             )}
           </PortalProvider>
         </ThemeProvider>

@@ -5,7 +5,7 @@ import React from "react";
 import BackBtn from "@/src/components/BackBtn";
 import SettingBtn from "@/src/components/SettingBtn";
 
-const titleStyle = {
+export const titleStyle = {
   fontFamily: "OlyfordBlack",
   fontWeight: "normal",
   fontSize: 29,
