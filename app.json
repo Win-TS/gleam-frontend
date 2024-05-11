@@ -14,7 +14,9 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "moe.theerapakg.gleam",
+      "googleServicesFile": "./config/ios/GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
