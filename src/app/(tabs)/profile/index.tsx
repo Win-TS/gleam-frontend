@@ -209,7 +209,7 @@ export default function ProfileScreen() {
         {!isEditProfile && (
           <XStack gap="$3">
             <Pressable onPress={() => router.push("/(tabs)/profile/friend")}>
-              <YStack w="$6" jc="center" ai="center">
+              <YStack w="$8s" jc="center" ai="center">
                 <Text col="$color11" {...TextStyle.button.large}>
                   FRIEND
                 </Text>
@@ -230,6 +230,7 @@ export default function ProfileScreen() {
       </GleamContainer>
       <XStack
         w="100%"
+        p="$2"
         br="$8"
         bc="$gleam12"
         boc="$gleam12"
