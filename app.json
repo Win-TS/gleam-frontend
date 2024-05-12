@@ -12,7 +12,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "moe.theerapakg.gleam",
@@ -23,7 +25,9 @@
         "foregroundImage": "./assets/logo/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": ["android.permission.RECORD_AUDIO"],
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
       "package": "moe.theerapakg.gleam",
       "googleServicesFile": "./config/android/google-services.json"
     },
@@ -63,6 +67,7 @@
       "eas": {
         "projectId": "46494948-a277-4a81-aa6a-a036fbca9b46"
       }
-    }
+    },
+    "owner": "ice-gleam"
   }
 }
