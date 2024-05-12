@@ -1,4 +1,3 @@
-import { Portal } from "@gorhom/portal";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Animated } from "react-native";
 import PagerView, {
@@ -8,6 +7,7 @@ import { Circle, Sheet, View, Text, XStack, YStack } from "tamagui";
 
 import DullBtn from "@/src/components/DullBtn";
 import QueryPlaceholder from "@/src/components/QueryPlaceholder";
+import StorybookPortal from "@/src/components/StorybookPortal";
 import VerticalList from "@/src/components/VerticalList";
 import { TextStyle } from "@/src/constants/TextStyle";
 import { useTagByCategoryQuery } from "@/src/hooks/hive";
@@ -82,13 +82,16 @@ export default function ({
   ).current;
   const onPagerViewPageScroll = useMemo(
     () =>
-      Animated.event<PagerViewOnPageScrollEventData>([
-        {
-          nativeEvent: {
-            position: animatedPagerViewPageScrollPosition,
+      Animated.event<PagerViewOnPageScrollEventData>(
+        [
+          {
+            nativeEvent: {
+              position: animatedPagerViewPageScrollPosition,
+            },
           },
-        },
-      ]),
+        ],
+        { useNativeDriver: false },
+      ),
     [],
   );
   useEffect(() => {
@@ -99,7 +102,7 @@ export default function ({
   }, []);
 
   return (
-    <Portal hostName="RootPortalHost">
+    <StorybookPortal>
       <Sheet snapPoints={[80]} open={open} onOpenChange={setOpen}>
         <Sheet.Overlay />
         <Sheet.Frame p="$4" jc="center" ai="center" bc="$color1" gap="$3">
@@ -150,6 +153,6 @@ export default function ({
           </XStack>
         </Sheet.Frame>
       </Sheet>
-    </Portal>
+    </StorybookPortal>
   );
 }

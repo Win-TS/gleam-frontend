@@ -1,5 +1,5 @@
 import { FontAwesome } from "@expo/vector-icons";
-import { PortalHost, PortalProvider } from "@gorhom/portal";
+import { PortalProvider } from "@gorhom/portal";
 import {
   DarkTheme,
   DefaultTheme,
@@ -18,10 +18,10 @@ import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
 import { AppState, AppStateStatus, Platform } from "react-native";
 // import { ModalView } from "react-native-ios-modal";
+import "react-native-reanimated";
 import {
   TamaguiProvider /*, setupNativeSheet*/,
   View,
-  ZStack,
   useWindowDimensions,
 } from "tamagui";
 
@@ -143,29 +143,21 @@ function RootLayoutNav() {
                 {require("../../.storybook").default()}
               </View>
             ) : (
-              <ZStack>
-                <View w={width} h={height}>
-                  <PortalHost name="RootPortalHost" />
-                </View>
-                <View w={width} h={height}>
-                  <Stack>
-                    <Stack.Screen
-                      name="(tabs)"
-                      options={{ headerShown: false }}
-                    />
-                    <Stack.Screen
-                      name="(modal)"
-                      options={{
-                        headerShown: false,
-                      }}
-                    />
-                    <Stack.Screen
-                      name="index"
-                      options={{ headerShown: false }}
-                    />
-                  </Stack>
-                </View>
-              </ZStack>
+              <View w={width} h={height}>
+                <Stack>
+                  <Stack.Screen
+                    name="(tabs)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(modal)"
+                    options={{
+                      headerShown: false,
+                    }}
+                  />
+                  <Stack.Screen name="index" options={{ headerShown: false }} />
+                </Stack>
+              </View>
             )}
           </PortalProvider>
         </ThemeProvider>

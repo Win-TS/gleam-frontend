@@ -1,10 +1,10 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Portal } from "@gorhom/portal";
 import * as ImagePicker from "expo-image-picker";
 import React from "react";
 import { XStack, useTheme, Sheet, Text, YStack } from "tamagui";
 
 import PrimaryBtn from "@/src/components/PrimaryBtn";
+import StorybookPortal from "@/src/components/StorybookPortal";
 import { TextStyle } from "@/src/constants/TextStyle";
 
 export default function ({
@@ -22,7 +22,7 @@ export default function ({
     ImagePicker.useCameraPermissions();
 
   return (
-    <Portal hostName="RootPortalHost">
+    <StorybookPortal>
       <Sheet snapPointsMode="fit" open={open} onOpenChange={setOpen}>
         <Sheet.Overlay />
         <Sheet.Frame p="$4" jc="center" ai="center">
@@ -95,6 +95,6 @@ export default function ({
           </YStack>
         </Sheet.Frame>
       </Sheet>
-    </Portal>
+    </StorybookPortal>
   );
 }

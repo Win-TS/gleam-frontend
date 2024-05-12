@@ -1,7 +1,7 @@
-import { Portal } from "@gorhom/portal";
 import { Sheet } from "tamagui";
 
 import ProfileHivePicker from "@/src/components/ProfileHivePicker";
+import StorybookPortal from "@/src/components/StorybookPortal";
 import { Hive } from "@/src/schemas/hive";
 
 export default function ({
@@ -16,7 +16,7 @@ export default function ({
   onPress?: (hive: Hive) => void;
 }) {
   return (
-    <Portal hostName="RootPortalHost">
+    <StorybookPortal>
       <Sheet snapPoints={[80]} open={open} onOpenChange={setOpen}>
         <Sheet.Overlay />
         <Sheet.Frame p="$4" jc="center" ai="center" gap="$3">
@@ -29,6 +29,6 @@ export default function ({
           />
         </Sheet.Frame>
       </Sheet>
-    </Portal>
+    </StorybookPortal>
   );
 }

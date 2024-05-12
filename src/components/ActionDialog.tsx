@@ -1,8 +1,8 @@
-import { Portal } from "@gorhom/portal";
 import { AlertDialog, XStack, Text } from "tamagui";
 
 import PrimaryBtn from "@/src/components/PrimaryBtn";
 import SecondaryBtn from "@/src/components/SecondaryBtn";
+import StorybookPortal from "@/src/components/StorybookPortal";
 import { TextStyle } from "@/src/constants/TextStyle";
 
 export default function ({
@@ -19,7 +19,7 @@ export default function ({
   onAction?: () => void;
 }) {
   return (
-    <Portal hostName="RootPortalHost">
+    <StorybookPortal>
       <AlertDialog open={open} onOpenChange={onOpenChange}>
         <AlertDialog.Portal>
           <AlertDialog.Overlay key="overlay" />
@@ -57,6 +57,6 @@ export default function ({
           </AlertDialog.Content>
         </AlertDialog.Portal>
       </AlertDialog>
-    </Portal>
+    </StorybookPortal>
   );
 }

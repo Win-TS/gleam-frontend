@@ -1,5 +1,4 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Portal } from "@gorhom/portal";
 import { useForm } from "@tanstack/react-form";
 import { zodValidator } from "@tanstack/zod-form-adapter";
 import { router, useLocalSearchParams, useRouter } from "expo-router";
@@ -31,6 +30,7 @@ import PrimaryBtn from "@/src/components/PrimaryBtn";
 import PrimaryInput from "@/src/components/PrimaryInput";
 import QueryPlaceholder from "@/src/components/QueryPlaceholder";
 import SecondaryBtn from "@/src/components/SecondaryBtn";
+import StorybookPortal from "@/src/components/StorybookPortal";
 import VerticalList from "@/src/components/VerticalList";
 import { TextStyle } from "@/src/constants/TextStyle";
 import {
@@ -83,7 +83,7 @@ const HiveRequestSheet = ({ hiveId }: { hiveId: number }) => {
   });
 
   return (
-    <Portal hostName="RootPortalHost">
+    <StorybookPortal>
       <Sheet
         open={openRequestSheet}
         snapPointsMode="fit"
@@ -137,7 +137,7 @@ const HiveRequestSheet = ({ hiveId }: { hiveId: number }) => {
           />
         </Sheet.Frame>
       </Sheet>
-    </Portal>
+    </StorybookPortal>
   );
 };
 

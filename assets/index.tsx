@@ -2,17 +2,17 @@ import { Image as ExpoImage } from "expo-image";
 import { DimensionValue } from "react-native";
 
 export const fonts = {
-  AcuminProWideLight: require("./fonts/Acumin Pro Wide/Acumin Pro Wide Light.otf"),
-  AcuminProWideSemibold: require("./fonts/Acumin Pro Wide/Acumin Pro Wide Semibold.otf"),
-  OlyfordHeavy: require("./fonts/Olyford/Fontspring-DEMO-olyford-heavy.otf"),
-  OlyfordBlack: require("./fonts/Olyford/Fontspring-DEMO-olyford-black.otf"),
-  OlyfordExtrabold: require("./fonts/Olyford/Fontspring-DEMO-olyford-extrabold.otf"),
-  OlyfordBold: require("./fonts/Olyford/Fontspring-DEMO-olyford-bold.otf"),
-  OlyfordMedium: require("./fonts/Olyford/Fontspring-DEMO-olyford-medium.otf"),
-  OlyfordRegular: require("./fonts/Olyford/Fontspring-DEMO-olyford-regular.otf"),
-  OlyfordLight: require("./fonts/Olyford/Fontspring-DEMO-olyford-light.otf"),
-  OlyfordExtralight: require("./fonts/Olyford/Fontspring-DEMO-olyford-extralight.otf"),
-  OlyfordThin: require("./fonts/Olyford/Fontspring-DEMO-olyford-thin.otf"),
+  AcuminProWideLight: require("@/assets/fonts/Acumin Pro Wide/Acumin Pro Wide Light.otf"),
+  AcuminProWideSemibold: require("@/assets/fonts/Acumin Pro Wide/Acumin Pro Wide Semibold.otf"),
+  OlyfordHeavy: require("@/assets/fonts/Olyford/Fontspring-DEMO-olyford-heavy.otf"),
+  OlyfordBlack: require("@/assets/fonts/Olyford/Fontspring-DEMO-olyford-black.otf"),
+  OlyfordExtrabold: require("@/assets/fonts/Olyford/Fontspring-DEMO-olyford-extrabold.otf"),
+  OlyfordBold: require("@/assets/fonts/Olyford/Fontspring-DEMO-olyford-bold.otf"),
+  OlyfordMedium: require("@/assets/fonts/Olyford/Fontspring-DEMO-olyford-medium.otf"),
+  OlyfordRegular: require("@/assets/fonts/Olyford/Fontspring-DEMO-olyford-regular.otf"),
+  OlyfordLight: require("@/assets/fonts/Olyford/Fontspring-DEMO-olyford-light.otf"),
+  OlyfordExtralight: require("@/assets/fonts/Olyford/Fontspring-DEMO-olyford-extralight.otf"),
+  OlyfordThin: require("@/assets/fonts/Olyford/Fontspring-DEMO-olyford-thin.otf"),
 };
 
 export const icons = {

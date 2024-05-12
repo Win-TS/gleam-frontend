@@ -226,7 +226,6 @@ export default ({ post, streak }: { post: BasePost; streak?: number }) => {
             pos="absolute"
             t="$-2"
             h="$3"
-            maw="$16"
             px="$3"
             bw="$1"
             br="$12"
@@ -240,7 +239,8 @@ export default ({ post, streak }: { post: BasePost; streak?: number }) => {
               query={hiveQuery}
               renderData={(data) => (
                 <Text
-                  f={1}
+                  numberOfLines={1}
+                  maw="$16"
                   col="$gleam1"
                   {...TextStyle.button.small}
                   ov="hidden"

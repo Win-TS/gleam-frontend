@@ -1,9 +1,9 @@
-import { Portal } from "@gorhom/portal";
 import { useState } from "react";
 import { AlertDialog, XStack } from "tamagui";
 
 import DangerBtn from "@/src/components/DangerBtn";
 import PrimaryInput from "@/src/components/PrimaryInput";
+import StorybookPortal from "@/src/components/StorybookPortal";
 
 export default function ({
   open,
@@ -16,7 +16,7 @@ export default function ({
 }) {
   const [deleteText, setDeleteText] = useState<string>("");
   return (
-    <Portal hostName="RootPortalHost">
+    <StorybookPortal>
       <AlertDialog open={open} onOpenChange={onOpenChange}>
         <AlertDialog.Portal>
           <AlertDialog.Overlay key="overlay" />
@@ -64,6 +64,6 @@ export default function ({
           </AlertDialog.Content>
         </AlertDialog.Portal>
       </AlertDialog>
-    </Portal>
+    </StorybookPortal>
   );
 }
