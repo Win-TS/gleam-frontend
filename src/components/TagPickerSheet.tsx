@@ -11,6 +11,7 @@ import QueryPlaceholder from "@/src/components/QueryPlaceholder";
 import VerticalList from "@/src/components/VerticalList";
 import { TextStyle } from "@/src/constants/TextStyle";
 import { useTagByCategoryQuery } from "@/src/hooks/hive";
+import { Tag } from "@/src/schemas/tag";
 
 const TagList = ({
   categoryId,
@@ -19,7 +20,7 @@ const TagList = ({
 }: {
   categoryId: number;
   isFocused: boolean;
-  setTag?: (tagId: number, tagName: string) => void;
+  setTag?: (tag: Tag) => void;
 }) => {
   const tagByCategoryQuery = useTagByCategoryQuery(categoryId);
 
@@ -39,7 +40,7 @@ const TagList = ({
                 size="$2"
                 w="100%"
                 onPress={() => {
-                  setTag?.(item.tag_id, item.tag_name);
+                  setTag?.(item);
                 }}
               >
                 <Text col="$color12" {...TextStyle.button.extraSmall}>
@@ -62,7 +63,7 @@ export default function ({
 }: {
   open: boolean;
   setOpen?: (open: boolean) => void;
-  setTag?: (tagId: number, tagName: string) => void;
+  setTag?: (tag: Tag) => void;
 }) {
   const tagCategories = [
     "Sports and Fitness",
@@ -124,7 +125,10 @@ export default function ({
                       <TagList
                         categoryId={index}
                         isFocused={open}
-                        setTag={setTag}
+                        setTag={(tag) => {
+                          setTag?.(tag);
+                          setOpen?.(false);
+                        }}
                       />
                     </View>
                   </YStack>

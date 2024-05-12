@@ -8,7 +8,6 @@ import {
   Separator,
   XStack,
   YStack,
-  Input,
   useWindowDimensions,
   Spinner,
 } from "tamagui";
@@ -22,6 +21,7 @@ import PressableSection from "@/src/components/PressableSection";
 import PrimaryBtn from "@/src/components/PrimaryBtn";
 import ProfileHeader from "@/src/components/ProfileHeader";
 import QueryPlaceholder from "@/src/components/QueryPlaceholder";
+import SecondaryInput from "@/src/components/SecondaryInput";
 import Section from "@/src/components/Section";
 import SwitchWithLabel from "@/src/components/SwitchWithLabel";
 import { TextStyle } from "@/src/constants/TextStyle";
@@ -103,10 +103,9 @@ const ProfileFormHeader = ({
             name="firstname"
             validators={{ onChange: formValidator.firstname }}
             children={(field) => (
-              <Input
+              <SecondaryInput
                 f={1}
                 h="$2.5"
-                bc="$gleam1"
                 col="$color11"
                 boc={
                   form.state.submissionAttempts > 0 &&
@@ -114,6 +113,7 @@ const ProfileFormHeader = ({
                     ? "$red10"
                     : undefined
                 }
+                br="$4"
                 value={field.state.value}
                 onChangeText={field.handleChange}
               />
@@ -123,10 +123,9 @@ const ProfileFormHeader = ({
             name="lastname"
             validators={{ onChange: formValidator.lastname }}
             children={(field) => (
-              <Input
+              <SecondaryInput
                 f={1}
                 h="$2.5"
-                bc="$gleam1"
                 col="$color11"
                 boc={
                   form.state.submissionAttempts > 0 &&
@@ -134,6 +133,7 @@ const ProfileFormHeader = ({
                     ? "$red10"
                     : undefined
                 }
+                br="$4"
                 value={field.state.value}
                 onChangeText={field.handleChange}
               />

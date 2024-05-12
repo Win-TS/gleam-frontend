@@ -10,7 +10,6 @@ import {
   Avatar,
   Button,
   Image,
-  Input,
   Popover,
   Sheet,
   Spinner,
@@ -96,7 +95,7 @@ const HiveRequestSheet = ({ hiveId }: { hiveId: number }) => {
             name="description"
             validators={{ onChange: formValidator.description }}
             children={(field) => (
-              <Input
+              <PrimaryInput
                 h="$12"
                 w="100%"
                 boc={

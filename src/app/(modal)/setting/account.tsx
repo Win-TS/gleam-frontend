@@ -75,6 +75,7 @@ export default function SettingScreen() {
                     ? "$red10"
                     : undefined
                 }
+                br="$4"
                 placeholder="Type your new username"
                 value={field.state.value}
                 onBlur={field.handleBlur}

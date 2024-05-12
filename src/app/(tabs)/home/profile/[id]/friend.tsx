@@ -1,10 +1,11 @@
 import { useLocalSearchParams } from "expo-router";
 import { useMemo, useState } from "react";
 import { Pressable, useWindowDimensions } from "react-native";
-import { Avatar, Input, Separator, View, XStack, YStack, Text } from "tamagui";
+import { Avatar, Separator, View, XStack, YStack, Text } from "tamagui";
 import { z } from "zod";
 
 import PageContainer from "@/src/components/PageContainer";
+import SecondaryInput from "@/src/components/SecondaryInput";
 import VerticalList from "@/src/components/VerticalList";
 import { TextStyle } from "@/src/constants/TextStyle";
 import { useRouteToProfile } from "@/src/hooks/useRouteToProfile";
@@ -54,7 +55,7 @@ export default function FriendListScreen() {
   return (
     <PageContainer>
       <YStack h="$3" w="100%">
-        <Input
+        <SecondaryInput
           size="$3"
           w="100%"
           borderWidth="$1"
@@ -75,6 +76,7 @@ export default function FriendListScreen() {
               borderColor="$gleam12"
             />
           )}
+          estimatedItemSize={58}
           onEndReached={friendListInfiniteQuery.fetchNextPage}
           renderItem={({ item }) => (
             <View flex={1} paddingHorizontal="$1.5">

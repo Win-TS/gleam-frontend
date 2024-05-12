@@ -133,6 +133,7 @@ export default function FriendNotificationScreen() {
           ItemSeparatorComponent={() => (
             <Separator w={width} $gtSm={{ maw: "$20" }} boc="$gleam12" />
           )}
+          estimatedItemSize={58}
           renderItem={({ item }) => (
             <View w="100%" jc="center" ai="center">
               <HiveRequest member={item} />

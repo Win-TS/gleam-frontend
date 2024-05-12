@@ -26,6 +26,7 @@ export default function ({
           data={hiveList}
           numColumns={3}
           ItemSeparatorComponent={() => <View h="$0.75" />}
+          estimatedItemSize={143}
           onEndReached={onEndReached}
           renderItem={({ item }) => (
             <View f={1} mx="$1.5">

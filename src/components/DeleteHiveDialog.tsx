@@ -1,8 +1,9 @@
 import { Portal } from "@gorhom/portal";
 import { useState } from "react";
-import { AlertDialog, Input, XStack } from "tamagui";
+import { AlertDialog, XStack } from "tamagui";
 
-import DangerBtn from "./DangerBtn";
+import DangerBtn from "@/src/components/DangerBtn";
+import PrimaryInput from "@/src/components/PrimaryInput";
 
 export default function ({
   open,
@@ -38,10 +39,9 @@ export default function ({
             <AlertDialog.Description fos="$3" marginTop="$5">
               Enter the word “DELETE”
             </AlertDialog.Description>
-            <Input
+            <PrimaryInput
               w="100%"
-              $gtSm={{ maw: "$20" }}
-              bc="$gleam1"
+              br="$4"
               value={deleteText}
               onChangeText={setDeleteText}
             />
@@ -51,7 +51,12 @@ export default function ({
                 asChild
                 disabled={deleteText.toUpperCase() !== "DELETE"}
               >
-                <DangerBtn f={1} size="$2.5" br="$4">
+                <DangerBtn
+                  f={1}
+                  opacity={deleteText.toUpperCase() === "DELETE" ? 1 : 0.5}
+                  size="$2.5"
+                  br="$4"
+                >
                   CONFIRM
                 </DangerBtn>
               </AlertDialog.Action>

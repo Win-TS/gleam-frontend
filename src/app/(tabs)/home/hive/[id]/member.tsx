@@ -2,7 +2,6 @@ import { useLocalSearchParams } from "expo-router";
 import { useMemo, useState } from "react";
 import { Pressable } from "react-native";
 import {
-  Input,
   XStack,
   Separator,
   Avatar,
@@ -16,6 +15,7 @@ import z from "zod";
 import { Icon } from "@/assets";
 import ActionDialog from "@/src/components/ActionDialog";
 import PageContainer from "@/src/components/PageContainer";
+import SecondaryInput from "@/src/components/SecondaryInput";
 import VerticalList from "@/src/components/VerticalList";
 import { TextStyle } from "@/src/constants/TextStyle";
 import {
@@ -143,7 +143,7 @@ export default function MemberScreen() {
 
   return (
     <PageContainer>
-      <Input
+      <SecondaryInput
         size="$3"
         w="100%"
         bw="$1"

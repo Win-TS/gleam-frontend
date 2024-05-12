@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
-import { Dimensions, Pressable, useWindowDimensions } from "react-native";
-import { Avatar, Input, Separator, View, XStack, Text, YStack } from "tamagui";
+import { Pressable, useWindowDimensions } from "react-native";
+import { Avatar, Separator, View, XStack, Text, YStack } from "tamagui";
 
 import PageContainer from "@/src/components/PageContainer";
+import SecondaryInput from "@/src/components/SecondaryInput";
 import VerticalList from "@/src/components/VerticalList";
 import { TextStyle } from "@/src/constants/TextStyle";
 import { useRouteToProfile } from "@/src/hooks/useRouteToProfile";
@@ -48,11 +49,8 @@ export default function FriendListScreen() {
   return (
     <PageContainer>
       <YStack h="$3" w="100%">
-        <Input
-          size="$3"
+        <SecondaryInput
           w="100%"
-          borderWidth="$1"
-          borderRadius="$6"
           placeholder="What're you looking for?"
           value={search}
           onChangeText={setSearch}
@@ -69,7 +67,7 @@ export default function FriendListScreen() {
               borderColor="$gleam12"
             />
           )}
-          estimatedItemSize={Dimensions.get("window").width}
+          estimatedItemSize={58}
           onEndReached={friendListInfiniteQuery.fetchNextPage}
           renderItem={({ item }) => (
             <View flex={1} paddingHorizontal="$1.5">

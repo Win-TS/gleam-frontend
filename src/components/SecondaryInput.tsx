@@ -67,8 +67,9 @@ export default forwardRef<
   const { password, ...defaultedProps } = defu(props, {
     password: false,
     size: "$3",
-    borderWidth: "$1",
-    borderRadius: "$6",
+    bc: "$color1",
+    bow: "$1",
+    br: "$6",
   } as const);
 
   return password ? (
