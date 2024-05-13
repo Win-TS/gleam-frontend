@@ -126,7 +126,7 @@ export default function ({
                   <YStack f={1} w="100%" jc="center" ai="center">
                     <View w="100%" h="100%">
                       <TagList
-                        categoryId={index}
+                        categoryId={index + 1}
                         isFocused={open}
                         setTag={(tag) => {
                           setTag?.(tag);

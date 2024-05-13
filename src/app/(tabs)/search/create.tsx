@@ -16,6 +16,7 @@ import Section from "@/src/components/Section";
 import TagPickerSheet from "@/src/components/TagPickerSheet";
 import { TextStyle } from "@/src/constants/TextStyle";
 import { useCreateHiveMutation } from "@/src/hooks/hive";
+import { Tag, tag_ } from "@/src/schemas/tag";
 
 const PlusMinusButton = ({
   handleToggle,
@@ -76,7 +77,7 @@ export default function CreateScreen() {
   const formValidator = {
     name: z.string().min(1),
     photo: z.string().min(1),
-    tagId: z.coerce.number(),
+    tag: tag_,
     frequency: z.coerce.number(),
     maxMember: z.coerce.number(),
     type: z.string().min(1),
@@ -88,7 +89,7 @@ export default function CreateScreen() {
     defaultValues: {
       name: "",
       photo: "",
-      tagId: undefined as number | undefined,
+      tag: undefined as Tag | undefined,
       frequency: 1,
       maxMember: 1,
       type: "Social" as (typeof hiveItems)[number],
@@ -98,8 +99,26 @@ export default function CreateScreen() {
     validatorAdapter: zodValidator,
     onSubmit: async ({ value }) => {
       try {
-        const parsedValue = await z.object(formValidator).parseAsync(value);
-        await createHiveMutation.mutateAsync(parsedValue);
+        const {
+          name,
+          photo,
+          tag,
+          frequency,
+          maxMember,
+          type,
+          visibility,
+          description,
+        } = await z.object(formValidator).parseAsync(value);
+        await createHiveMutation.mutateAsync({
+          name,
+          photo,
+          tagId: tag.tag_id,
+          frequency,
+          maxMember,
+          type,
+          visibility,
+          description,
+        });
         router.push("/(tabs)/search");
       } catch {}
     },
@@ -108,131 +127,134 @@ export default function CreateScreen() {
   return (
     <PageContainer>
       <Section>
-        <YStack w="100%" jc="center" ai="center" gap="$3">
-          <form.Field
-            name="photo"
-            children={(field) => (
-              <ImagePicker
-                size="$10"
-                image={field.state.value}
-                setImage={field.handleChange}
-                error={
+        <form.Field
+          name="photo"
+          validators={{ onChange: formValidator.photo }}
+          children={(field) => (
+            <ImagePicker
+              size="$10"
+              image={field.state.value}
+              setImage={field.handleChange}
+              error={
+                form.state.submissionAttempts > 0 &&
+                field.state.meta.errors.length > 0
+              }
+            />
+          )}
+        />
+        <form.Field
+          name="type"
+          validators={{ onChange: formValidator.type }}
+          children={(field) => (
+            <Select
+              value={field.state.value}
+              onValueChange={(value) =>
+                field.handleChange(value as (typeof hiveItems)[number])
+              }
+            >
+              <Select.Trigger
+                fb={0}
+                size="$2"
+                w="$12"
+                bw="$1"
+                br="$6"
+                boc={
                   form.state.submissionAttempts > 0 &&
                   field.state.meta.errors.length > 0
+                    ? "$red10"
+                    : "$gleam12"
                 }
-              />
-            )}
-          />
-          <form.Field
-            name="type"
-            children={(field) => (
-              <Select
-                onValueChange={(value) =>
-                  field.handleChange(value as (typeof hiveItems)[number])
-                }
+                bc="$color1"
+                disabled={tagSheet}
               >
-                <Select.Trigger
-                  fb={0}
-                  size="$2"
-                  w="$12"
-                  bw="$1"
-                  br="$6"
-                  boc={
-                    form.state.submissionAttempts > 0 &&
-                    field.state.meta.errors.length > 0
-                      ? "$red10"
-                      : "$gleam12"
-                  }
-                  bc="$color1"
-                  disabled={tagSheet}
-                >
-                  <XStack jc="center" ai="center" gap="$3">
-                    <FontAwesome color={theme.color9.val} name="caret-down" />
-                    <Select.Value col="$gleam12" size="$3" />
-                  </XStack>
-                </Select.Trigger>
+                <XStack jc="center" ai="center" gap="$3">
+                  <FontAwesome color={theme.color9.val} name="caret-down" />
+                  <Select.Value col="$gleam12" size="$3" />
+                </XStack>
+              </Select.Trigger>
 
-                <Select.Adapt platform="touch">
-                  <Select.Sheet snapPointsMode="fit" modal>
-                    <Select.Sheet.Frame>
-                      <Select.Sheet.ScrollView>
-                        <Select.Adapt.Contents />
-                      </Select.Sheet.ScrollView>
-                    </Select.Sheet.Frame>
-                    <Select.Sheet.Overlay />
-                  </Select.Sheet>
-                </Select.Adapt>
+              <Select.Adapt platform="touch">
+                <Select.Sheet snapPointsMode="fit" modal>
+                  <Select.Sheet.Frame>
+                    <Select.Sheet.ScrollView>
+                      <Select.Adapt.Contents />
+                    </Select.Sheet.ScrollView>
+                  </Select.Sheet.Frame>
+                  <Select.Sheet.Overlay />
+                </Select.Sheet>
+              </Select.Adapt>
 
-                <Select.Content>
-                  <Select.ScrollUpButton />
-                  <Select.Viewport>
-                    <Select.Group>
-                      {hiveItems.map((item, i) => {
-                        return (
-                          <Select.Item index={i} key={item} value={item}>
-                            <Select.ItemText>{item}</Select.ItemText>
-                            <Select.ItemIndicator ml="auto">
-                              <FontAwesome name="check" />
-                            </Select.ItemIndicator>
-                          </Select.Item>
-                        );
-                      })}
-                    </Select.Group>
-                  </Select.Viewport>
-                  <Select.ScrollDownButton />
-                </Select.Content>
-              </Select>
-            )}
-          />
-          <form.Field
-            name="name"
-            children={(field) => (
-              <SecondaryInput
-                w="100%"
-                br="$4"
-                boc={
-                  (form.state.submissionAttempts > 0 ||
-                    field.state.meta.isDirty) &&
-                  field.state.meta.errors.length > 0
-                    ? "$red10"
-                    : undefined
-                }
-                placeholder="NAME YOUR HIVE"
-                value={field.state.value}
-                onChangeText={field.handleChange}
-              />
-            )}
-          />
-          <form.Field
-            name="description"
-            children={(field) => (
-              <SecondaryInput
-                h="$12"
-                w="100%"
-                br="$4"
-                boc={
-                  (form.state.submissionAttempts > 0 ||
-                    field.state.meta.isDirty) &&
-                  field.state.meta.errors.length > 0
-                    ? "$red10"
-                    : undefined
-                }
-                placeholder="Enter short description..."
-                multiline
-                value={field.state.value}
-                onChangeText={field.handleChange}
-              />
-            )}
-          />
-        </YStack>
+              <Select.Content>
+                <Select.ScrollUpButton />
+                <Select.Viewport>
+                  <Select.Group>
+                    {hiveItems.map((item, i) => {
+                      return (
+                        <Select.Item index={i} key={item} value={item}>
+                          <Select.ItemText>{item}</Select.ItemText>
+                          <Select.ItemIndicator ml="auto">
+                            <FontAwesome name="check" />
+                          </Select.ItemIndicator>
+                        </Select.Item>
+                      );
+                    })}
+                  </Select.Group>
+                </Select.Viewport>
+                <Select.ScrollDownButton />
+              </Select.Content>
+            </Select>
+          )}
+        />
+        <form.Field
+          name="name"
+          validators={{ onChange: formValidator.name }}
+          children={(field) => (
+            <SecondaryInput
+              w="100%"
+              br="$4"
+              boc={
+                (form.state.submissionAttempts > 0 ||
+                  field.state.meta.isDirty) &&
+                field.state.meta.errors.length > 0
+                  ? "$red10"
+                  : undefined
+              }
+              placeholder="NAME YOUR HIVE"
+              value={field.state.value}
+              onChangeText={field.handleChange}
+            />
+          )}
+        />
+        <form.Field
+          name="description"
+          validators={{ onChange: formValidator.description }}
+          children={(field) => (
+            <SecondaryInput
+              h="$12"
+              w="100%"
+              br="$4"
+              boc={
+                (form.state.submissionAttempts > 0 ||
+                  field.state.meta.isDirty) &&
+                field.state.meta.errors.length > 0
+                  ? "$red10"
+                  : undefined
+              }
+              placeholder="Enter short description..."
+              multiline
+              value={field.state.value}
+              onChangeText={field.handleChange}
+            />
+          )}
+        />
       </Section>
       <form.Field
-        name="tagId"
+        name="tag"
+        validators={{ onChange: formValidator.tag }}
         children={(field) => (
           <PressableSection onPress={() => setTagSheet(true)}>
             <YStack w="100%" jc="center" gap="$1">
               <Text
-                f={1}
                 col={
                   form.state.submissionAttempts > 0 &&
                   field.state.meta.errors.length > 0
@@ -243,14 +265,14 @@ export default function CreateScreen() {
               >
                 TAG
               </Text>
-              <Text f={1} col="$color11" {...TextStyle.description}>
-                Select a tag
+              <Text col="$color11" {...TextStyle.description}>
+                {field.state.value?.tag_name ?? "Select a tag"}
               </Text>
               <TagPickerSheet
                 open={tagSheet}
                 setOpen={setTagSheet}
                 setTag={(tag) => {
-                  field.handleChange(tag.tag_id);
+                  field.handleChange(tag);
                 }}
               />
             </YStack>
@@ -259,6 +281,7 @@ export default function CreateScreen() {
       />
       <form.Field
         name="visibility"
+        validators={{ onChange: formValidator.visibility }}
         children={(field) => (
           <Section>
             <XStack w="100%" ai="center" gap="$3">
@@ -274,7 +297,7 @@ export default function CreateScreen() {
                 >
                   VISIBILITY
                 </Text>
-                <Text f={1} col="$color11" {...TextStyle.description}>
+                <Text col="$color11" {...TextStyle.description}>
                   Whether non-member users is able to see hive activities
                 </Text>
               </YStack>
@@ -288,6 +311,7 @@ export default function CreateScreen() {
       />
       <form.Field
         name="frequency"
+        validators={{ onChange: formValidator.frequency }}
         children={(field) => (
           <Section>
             <XStack w="100%" ai="center" gap="$3">
@@ -316,6 +340,7 @@ export default function CreateScreen() {
       />
       <form.Field
         name="maxMember"
+        validators={{ onChange: formValidator.maxMember }}
         children={(field) => (
           <Section>
             <XStack w="100%" ai="center" gap="$3">
