@@ -2,8 +2,8 @@ import { Image as ExpoImage } from "expo-image";
 import { DimensionValue } from "react-native";
 
 export const fonts = {
-  AcuminProWideLight: require("@/assets/fonts/Acumin Pro Wide/Acumin Pro Wide Light.otf"),
-  AcuminProWideSemibold: require("@/assets/fonts/Acumin Pro Wide/Acumin Pro Wide Semibold.otf"),
+  AcuminProWideLight: require("@/assets/fonts/AcuminProWide/Acumin-Pro-Wide-Light.otf"),
+  AcuminProWideSemibold: require("@/assets/fonts/AcuminProWide/Acumin-Pro-Wide-Semibold.otf"),
   OlyfordHeavy: require("@/assets/fonts/Olyford/Fontspring-DEMO-olyford-heavy.otf"),
   OlyfordBlack: require("@/assets/fonts/Olyford/Fontspring-DEMO-olyford-black.otf"),
   OlyfordExtrabold: require("@/assets/fonts/Olyford/Fontspring-DEMO-olyford-extrabold.otf"),

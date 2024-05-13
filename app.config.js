@@ -36,7 +36,6 @@ export default {
       "@react-native-firebase/app",
       "expo-font",
       "expo-router",
-      "expo-secure-store",
       [
         "expo-image-picker",
         {
