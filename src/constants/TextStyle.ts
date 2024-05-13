@@ -1,6 +1,6 @@
 export const TextStyle = {
   header: {
-    ff: "$olyfordBlack",
+    ff: "$acuminProBlack",
     fow: "normal",
     fos: 20,
   } as const,
@@ -11,22 +11,22 @@ export const TextStyle = {
   } as const,
   button: {
     extraLarge: {
-      ff: "$olyfordExtrabold",
+      ff: "$acuminProBold",
       fow: "normal",
       fos: 48,
     } as const,
     large: {
-      ff: "$olyfordExtrabold",
+      ff: "$acuminProBold",
       fow: "normal",
       fos: 20,
     } as const,
     small: {
-      ff: "$olyfordExtrabold",
+      ff: "$acuminProBold",
       fow: "normal",
       fos: 16,
     } as const,
     extraSmall: {
-      ff: "$olyfordExtrabold",
+      ff: "$acuminProBold",
       fow: "normal",
       fos: 12,
     } as const,

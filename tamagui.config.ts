@@ -63,64 +63,20 @@ const olyford = createFontMap([
   "OlyfordThin",
 ] as const);
 
-const acuminProWideLight = createFont({
-  family: `AcuminProWideLight`,
-  weight: {
-    1: "500",
-  },
-  size: {
-    1: 11,
-    2: 12,
-    3: 13,
-    4: 14,
-    5: 16,
-    6: 18,
-    7: 20,
-    8: 22,
-    9: 30,
-    10: 42,
-    11: 52,
-    12: 62,
-    13: 72,
-    14: 92,
-    15: 114,
-    16: 124,
-  },
-});
-
-const acuminProWideSemibold = createFont({
-  family: `AcuminProWideSemibold`,
-  weight: {
-    1: "500",
-  },
-  size: {
-    1: 11,
-    2: 12,
-    3: 13,
-    4: 14,
-    5: 16,
-    6: 18,
-    7: 20,
-    8: 22,
-    9: 30,
-    10: 42,
-    11: 52,
-    12: 62,
-    13: 72,
-    14: 92,
-    15: 114,
-    16: 124,
-  },
-});
+const acumin = createFontMap([
+  "AcuminProBlack",
+  "AcuminProBold",
+  "AcuminProWideSemibold",
+  "AcuminProWideLight",
+] as const);
 
 const mergedConfig = defu(
   {
     fonts: {
-      header: olyford.olyfordBlack,
-      body: acuminProWideLight,
+      header: acumin.acuminProBlack,
+      body: acumin.acuminProWideLight,
       ...olyford,
-      acuminProWideLight,
-      acuminProWideSemibold,
+      ...acumin,
       mono: createFont({
         family: `SpaceMono`,
         weight: {

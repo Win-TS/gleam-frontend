@@ -6,7 +6,7 @@ import BackBtn from "@/src/components/BackBtn";
 import SettingBtn from "@/src/components/SettingBtn";
 
 export const titleStyle = {
-  fontFamily: "OlyfordBlack",
+  fontFamily: "AcuminProBlack",
   fontWeight: "normal",
   fontSize: 29,
 } as const;
